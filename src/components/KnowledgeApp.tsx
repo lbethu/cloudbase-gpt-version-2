@@ -12,6 +12,7 @@ import {
   FileCheck2,
   FileText,
   FolderKanban,
+  HardDrive,
   Layers3,
   LayoutDashboard,
   Menu,
@@ -30,18 +31,20 @@ import { richMockDocuments, sourceGroups, teamDefinitions } from "@/data/rich-mo
 import { sopKnowledgeDocuments, sopKnowledgeStats, sopNavigatorCompanies } from "@/data/sop-knowledge-base";
 import { generateKnowledgeAnswer } from "@/lib/retrieval";
 import { AIGuidanceModulesView, AutomationPreview, CloudBaseArchitecture, ReviewerDecisionsView } from "@/components/CloudBaseSections";
+import { DriveSearchView } from "@/components/DriveSearchView";
 import {
   KnowledgeAnswer,
   KnowledgeDocument,
   DocumentStatus,
 } from "@/types/knowledge";
 
-type View = "dashboard" | "architecture" | "ask" | "sopHub" | "teams" | "modules" | "navigator" | "library" | "upload" | "source" | "reviewer" | "decisions" | "integration";
+type View = "dashboard" | "architecture" | "ask" | "driveSearch" | "sopHub" | "teams" | "modules" | "navigator" | "library" | "upload" | "source" | "reviewer" | "decisions" | "integration";
 
 const navItems: Array<{ id: View; label: string; icon: typeof Search }> = [
   { id: "dashboard", label: "CloudBase AI Home", icon: LayoutDashboard },
   { id: "architecture", label: "Architecture overview", icon: Layers3 },
   { id: "ask", label: "Ask CloudBase AI", icon: MessageSquareText },
+  { id: "driveSearch", label: "Google Drive search", icon: HardDrive },
   { id: "sopHub", label: "Knowledge sources", icon: BookOpen },
   { id: "teams", label: "Team AI dashboards", icon: Users },
   { id: "modules", label: "AI guidance modules", icon: Sparkles },
@@ -183,6 +186,7 @@ export function KnowledgeApp() {
           {view === "dashboard" && <Dashboard navigate={navigate} />}
           {view === "architecture" && <CloudBaseArchitecture />}
           {view === "ask" && <AskView openSource={openSource} />}
+          {view === "driveSearch" && <DriveSearchView />}
           {view === "sopHub" && <SopKnowledgeBase navigate={navigate} openSource={openSource} />}
           {view === "teams" && <TeamDashboards openSource={openSource} />}
           {view === "modules" && <AIGuidanceModulesView />}
@@ -212,6 +216,7 @@ function PageHeading({ eyebrow, title, copy }: { eyebrow: string; title: string;
 function Dashboard({ navigate }: { navigate: (view: View) => void }) {
   const actionCards = [
     { view: "ask" as View, icon: MessageSquareText, title: "AI Knowledge Guidance", copy: "Ask role-aware questions and receive source-backed next actions.", tone: "purple" },
+    { view: "driveSearch" as View, icon: HardDrive, title: "Google Drive Search", copy: "Search your access-limited Drive folder live and jump straight to the file or its folder.", tone: "green" },
     { view: "architecture" as View, icon: Layers3, title: "Architecture Overview", copy: "See the five layers behind the CloudBase AI foundation.", tone: "navy" },
     { view: "teams" as View, icon: Users, title: "Team AI Dashboards", copy: "Open guidance for Sales, Field, PM/PL, Tech, Leadership, and onboarding.", tone: "green" },
     { view: "modules" as View, icon: Sparkles, title: "AI Guidance Modules", copy: "Explore ten planned knowledge and workflow assistants.", tone: "teal" },

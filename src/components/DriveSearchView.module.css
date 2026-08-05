@@ -1,0 +1,199 @@
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  color: var(--text-muted, #6b7280);
+}
+
+.searchBox input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: inherit;
+  outline: none;
+}
+
+.searchBox input:focus {
+  outline: none;
+}
+
+.notice {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.notice code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+
+.notice.error {
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.resultList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+.resultCount {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 2px 0 4px 8px;
+}
+
+.resultList button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+.resultList button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.resultTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.resultRank {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.35);
+  font-family: monospace;
+}
+
+.resultList button span {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* The generic rule above would otherwise flatten the global .badge-* colors
+   (it wins on specificity since it targets span directly) — restore them. */
+.resultList button :global(.badge) {
+  font-size: 10px;
+}
+
+.resultList button :global(.badge-green) {
+  color: #187052;
+}
+
+.resultList button :global(.badge-amber) {
+  color: #916322;
+}
+
+.resultList button :global(.badge-blue) {
+  color: #3566b4;
+}
+
+.selected {
+  background: rgba(99, 91, 255, 0.09) !important;
+  border-color: rgba(99, 91, 255, 0.28) !important;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.previewHeader > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.previewHeader span {
+  display: block;
+  font-size: 12.5px;
+  color: rgba(0, 0, 0, 0.5);
+  margin-top: 3px;
+}
+
+.previewHeader :global(.badge) {
+  font-size: 10px;
+  margin-top: 0;
+}
+
+.previewHeader :global(.badge-green) {
+  color: #187052;
+}
+
+.previewHeader :global(.badge-amber) {
+  color: #916322;
+}
+
+.previewHeader :global(.badge-blue) {
+  color: #3566b4;
+}
+
+.previewActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.previewActions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.previewFrame {
+  width: 100%;
+  height: 560px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .previewFrame {
+    height: 420px;
+  }
+}

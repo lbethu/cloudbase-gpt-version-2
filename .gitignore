@@ -5,3 +5,7 @@ out
 *.log
 .env*
 !.env.example
+# Intermediate rename artifacts from setting up .env.local — never commit these,
+# they can contain real credentials in plain text.
+env.local
+env.local.txt

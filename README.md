@@ -59,8 +59,20 @@ No supplied or confidential company document participates in this review build. 
 - TypeScript
 - Custom responsive design system
 - Lucide icons
-- Local typed data and retrieval
-- No external API, model, database, or paid service
+- Local typed data and retrieval for the mock foundation and imported SOP navigator
+- Optional live Google Drive search (server-side only, via a service account — see below). No other external API, model, database, or paid service is used.
+
+## Google Drive live search (optional)
+
+A separate "Google Drive search" tab searches a real, access-limited Google
+Drive folder directly and returns the matching document plus a link to it
+and to its containing folder — this is additive and does not change the
+existing mock/SOP experience described above. It requires a one-time Google
+Cloud service-account setup. See
+[docs/google-drive-integration.md](docs/google-drive-integration.md) for the
+full walkthrough, and copy `.env.example` to `.env.local` to configure it.
+Until configured, the tab clearly states it isn't connected yet rather than
+failing silently.
 
 ## Run locally
 
