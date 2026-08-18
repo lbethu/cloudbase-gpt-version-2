@@ -119,7 +119,7 @@ npm start
 ```text
 cloudpoint-knowledge-base-gpt/
 ├── docs/
-│   ├── hunter-review-notes.md
+│   ├── Review-notes.md
 │   ├── knowledge-architecture.md
 │   ├── mock-data-plan.md
 │   ├── project-overview.md
