@@ -50,7 +50,7 @@ export default async function SopsPage({ searchParams }: { searchParams: Promise
         eyebrow="Knowledge"
         title="SOP Library"
         description="Governed standard operating procedures, checklists and guides. Each SOP keeps its full version history; only an approved version is the version in force."
-        actions={viewer.has("sop.author") ? <Link className="cb-btn" href="/sops/new">Create SOP draft</Link> : undefined}
+        actions={viewer.has("sop.author") ? <><Link className="cb-btn cb-btn--primary" href="/sops/upload">Upload SOP document</Link><Link className="cb-btn" href="/sops/new">Draft SOP record</Link></> : undefined}
       />
       <div className="cb-stats" style={{ marginBottom: 20 }}>
         <div className="cb-card cb-stat"><strong>{all.length}</strong><span>SOPs and guides registered</span></div>

@@ -3,7 +3,8 @@ import type { ContentType, KnowledgeItem } from "@/domain";
 import type { Identity } from "@/server/auth/identity";
 import { getAiProvider } from "@/server/ai/adapters";
 import { getRepositories } from "@/server/repositories";
-import { bestPassage } from "./passages";
+import { bestPassage, matchingPassages } from "./passages";
+import { tokenize } from "@/server/search/lexical";
 import { recordAudit } from "./audit";
 import { askSystemPrompt, buildGovernedAnswer, latest, validateModelAnswer, type AskAnswer, type AskSource } from "./ask-core";
 import { relatedTo } from "./relationships";
@@ -18,14 +19,20 @@ export async function askCloudBase(identity: Identity, question: string): Promis
   const permitted = permittedItems(identity);
   trace.push({ step: "Scope", detail: `${permitted.length} governed objects readable by ${identity.name || identity.email}`, ms: Date.now() - t0 });
   const t1 = Date.now();
-  const { hits, provider: searchProvider } = await searchKnowledge(identity, { q, limit: 8 });
-  trace.push({ step: "Retrieve", detail: `${hits.length} candidates ranked by ${searchProvider} search`, ms: Date.now() - t1 });
+  // Keyword queries ("sql", "bigtime invoice") mean "find this everywhere"; questions get the focused top-N.
+  const keywordMode = tokenize(q).length <= 3 && !/\b(how|what|why|when|where|who|which|do|does|is|are|can|should)\b/i.test(q) && !q.includes("?");
+  const { hits, provider: searchProvider } = await searchKnowledge(identity, { q, limit: keywordMode ? 25 : 8 });
+  trace.push({ step: "Retrieve", detail: `${hits.length} ${keywordMode ? "documents mention this term" : "candidates"} — ranked by ${searchProvider} search${keywordMode ? " (find-everywhere mode)" : ""}`, ms: Date.now() - t1 });
   const byKey = new Map(permitted.map((i) => [`${i.ref.type}:${i.ref.id}`, i]));
 
-  const sources: AskSource[] = hits.slice(0, 6).map((hit, index) => {
+  const sources: AskSource[] = hits.slice(0, keywordMode ? 25 : 6).map((hit, index) => {
     const full = byKey.get(`${hit.item.ref.type}:${hit.item.ref.id}`)!;
-    const { passage, section, page } = bestPassage(getRepositories(), full, q);
+    const { passage, section, page, chunkId, occurrences } = bestPassage(getRepositories(), full, q);
+    const more = keywordMode ? matchingPassages(getRepositories(), full, q, 4).filter((m) => m.chunkId !== chunkId) : [];
     return {
+      passageUrl: chunkId ? `${hit.item.url}?chunk=${encodeURIComponent(chunkId)}` : hit.item.url,
+      occurrences,
+      morePassages: more.map((m) => ({ text: m.passage, section: m.section, page: m.page, url: m.chunkId ? `${hit.item.url}?chunk=${encodeURIComponent(m.chunkId)}` : undefined })),
       index,
       ref: hit.item.ref,
       title: hit.item.title,
@@ -58,7 +65,8 @@ export async function askCloudBase(identity: Identity, question: string): Promis
 
   if (!provider.enabled || sources.length === 0) {
     const answer = buildGovernedAnswer(q, sources, related);
-    trace.push({ step: "Compose", detail: sources.length ? "Extractive statements labelled FACT with citations (AI disabled)" : "No supporting source — abstained (UNKNOWN)" });
+    if (keywordMode && sources.length) answer.notices.unshift(`“${q}” appears in ${sources.length} governed document${sources.length === 1 ? "" : "s"} you can read (${sources.reduce((n, s) => n + (s.occurrences ?? 0), 0)} occurrences). Every one is listed under Sources with the exact passages.`);
+    trace.push({ step: "Compose", detail: sources.length ? `${answer.statements.length} extractive FACT statements with citations (AI disabled)` : "No supporting source — abstained (UNKNOWN)" });
     answer.trace = trace;
     return answer;
   }

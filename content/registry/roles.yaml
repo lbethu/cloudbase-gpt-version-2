@@ -29,8 +29,8 @@
   grants: [copilot.manage, automation.manage, review.read]
 - id: admin
   name: Administrator
-  description: Governance center, configuration and audit history.
-  grants: [admin.access, audit.read, review.read, agent.run, crm.read]
+  description: Governance center, configuration, audit history — and final approval authority for SOPs, publications, copilots and automations.
+  grants: [admin.access, audit.read, review.read, agent.run, crm.read, sop.review, sop.approve, knowledge.publish, copilot.manage, automation.manage, rnd.approve]
 - id: restricted-readonly
   name: Restricted read-only
   description: Example of explicit deny precedence — cannot open source files even if another role grants it.

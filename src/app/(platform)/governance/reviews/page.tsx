@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CheckSquare } from "lucide-react";
 import { Badge, TypeBadge } from "@/components/ui/Badge";
 import { Callout, EmptyState, PageHeader } from "@/components/ui/primitives";
+import { WorkflowActions } from "@/components/sops/WorkflowActions";
 import { getRepositories } from "@/server/repositories";
 import { teamName } from "@/server/services/catalog";
 import { deriveReviewTasks } from "@/server/services/reviews";
@@ -33,7 +34,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
       ) : (
         <div className="cb-table-wrap cb-card">
           <table className="cb-table">
-            <thead><tr><th>Task</th><th>Item</th><th>Team</th><th>Requires</th><th>Note</th></tr></thead>
+            <thead><tr><th>Task</th><th>Item</th><th>Team</th><th>Requires</th><th>Note</th><th>Decision</th></tr></thead>
             <tbody>
               {list.map((t) => (
                 <tr key={t.id}>
@@ -42,6 +43,13 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
                   <td>{teamName(t.owningTeam)}</td>
                   <td className="cb-mono">{t.requiredPermission}</td>
                   <td className="cb-muted">{t.note}</td>
+                  <td>
+                    {t.kind === "sop-approval" && (() => {
+                      const sop = getRepositories().sops.get(t.target.id);
+                      const pending = sop?.versions.filter((v) => v.status === "review") ?? [];
+                      return pending.length === 1 ? <WorkflowActions compact sopId={t.target.id} version={pending[0].version} status="review" canApprove={viewer.has("sop.approve")} canReview={viewer.has("sop.review")} canAuthor={false} /> : <Link href={t.url} className="cb-btn cb-btn--sm">Choose version</Link>;
+                    })()}
+                  </td>
                 </tr>
               ))}
             </tbody>

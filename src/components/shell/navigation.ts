@@ -97,7 +97,8 @@ export interface PaletteCommand {
 
 export const PALETTE_COMMANDS: PaletteCommand[] = [
   { id: "ask", label: "Ask CloudBase", href: "/ask", permission: "ask.use", hint: "Governed answer with sources" },
-  { id: "sop-draft", label: "Create SOP draft", href: "/sops/new", permission: "sop.author" },
+  { id: "sop-upload", label: "Upload SOP document", href: "/sops/upload", permission: "sop.author", hint: "Word or PDF → draft" },
+  { id: "sop-draft", label: "Create SOP draft record", href: "/sops/new", permission: "sop.author" },
   { id: "rnd-idea", label: "Submit R&D idea", href: "/cros/ideas/new", permission: "rnd.submit" },
   { id: "automation", label: "Propose automation", href: "/automations/propose", permission: "automation.read" },
   { id: "research", label: "Create research proposal", href: "/research/templates/research-proposal", permission: "knowledge.read" },

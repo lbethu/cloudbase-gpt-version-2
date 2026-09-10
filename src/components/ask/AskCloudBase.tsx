@@ -166,8 +166,9 @@ export function AskCloudBase({ initialQuestion = "", aiMode }: { initialQuestion
                       {s.index + 1}
                     </span>
                     <TypeBadge type={s.ref.type} />
-                    <Link href={s.url}>{s.title}</Link>
+                    <Link href={s.passageUrl ?? s.url}>{s.title}</Link>
                     <StatusBadge status={s.status} />
+                    {s.occurrences ? <span className="cb-subtle cb-small">{s.occurrences} mention{s.occurrences === 1 ? "" : "s"}</span> : null}
                     {!s.governed && (
                       <Badge tone="warning" title="This source has not been approved through the governed workflow.">
                         not yet approved
@@ -178,6 +179,25 @@ export function AskCloudBase({ initialQuestion = "", aiMode }: { initialQuestion
                     {s.section ? <strong>{s.section} — </strong> : null}
                     {s.passage}
                   </p>
+                  {s.morePassages && s.morePassages.length > 0 && (
+                    <details style={{ marginTop: 6 }}>
+                      <summary className="cb-small" style={{ cursor: "pointer", color: "var(--accent-soft-fg)", fontWeight: 600 }}>
+                        {s.morePassages.length} more passage{s.morePassages.length === 1 ? "" : "s"} in this document
+                      </summary>
+                      {s.morePassages.map((m, i) => (
+                        <p key={i} className="cb-source-passage" style={{ marginTop: 6 }}>
+                          {m.section ? <strong>{m.section}{m.page && !/^page\b/i.test(m.section) ? ` (p. ${m.page})` : ""} — </strong> : null}
+                          {m.text}
+                          {m.url && (
+                            <>
+                              {" "}
+                              <Link href={m.url} style={{ fontWeight: 600 }}>open ↗</Link>
+                            </>
+                          )}
+                        </p>
+                      ))}
+                    </details>
+                  )}
                 </div>
               ))}
             </div>

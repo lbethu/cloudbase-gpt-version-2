@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Bot, Download, ExternalLink } from "lucide-react";
+import { Bot, Download, ExternalLink, FolderOpen } from "lucide-react";
 import { SOP_STATUS_LABELS } from "@/domain";
 import { Badge, StatusBadge } from "@/components/ui/Badge";
 import { AsideCard, DetailHeader, DetailLayout, MetaList, RelatedPanel } from "@/components/ui/DetailPage";
 import { BodySection, BulletList, Callout, NotRecorded } from "@/components/ui/primitives";
 import { can } from "@/server/authz";
+import { WorkflowActions } from "@/components/sops/WorkflowActions";
+import { getConfig } from "@/server/config";
 import { getRepositories } from "@/server/repositories";
 import { requireVisible } from "@/server/services/access";
 import { relatedFor, teamName } from "@/server/services/catalog";
@@ -30,6 +32,7 @@ export default async function SopPage({ params, searchParams }: { params: Promis
   const relatedCopilots = related.find((g) => g.type === "copilot")?.entries ?? [];
   const filesAllowed = can(viewer.identity, "files.read");
   const isEffective = effective?.version === shown.version;
+  const driveAvailable = Boolean(shown.sourceFile?.driveUrl) || getConfig().drive.configured;
 
   return (
     <>
@@ -60,10 +63,22 @@ export default async function SopPage({ params, searchParams }: { params: Promis
                 <Bot /> Open related Copilot
               </Link>
             )}
+            {can(viewer.identity, "sop.author") && (
+              <Link className="cb-btn" href={`/sops/upload?existing=${sop.id}`}>Upload new version</Link>
+            )}
             {shown.sourceFile && filesAllowed && (
               <>
+                {driveAvailable ? (
+                  <a className="cb-btn cb-btn--primary" href={`/api/files/${encodeURIComponent(shown.sourceFile.id)}/drive`} target="_blank" rel="noopener" title="Opens the document in Google Drive — no download">
+                    <FolderOpen /> Open in Google Drive
+                  </a>
+                ) : (
+                  <span className="cb-btn" aria-disabled="true" title="Connect Google Drive (Governance → Integrations) to open documents in Drive without downloading">
+                    <FolderOpen /> Open in Google Drive — not connected
+                  </span>
+                )}
                 <a className="cb-btn" href={`/api/files/${encodeURIComponent(shown.sourceFile.id)}`} target="_blank" rel="noopener">
-                  <ExternalLink /> Open source file
+                  <ExternalLink /> View file
                 </a>
                 <a className="cb-btn" href={`/api/files/${encodeURIComponent(shown.sourceFile.id)}?download=1`}>
                   <Download /> Download
@@ -74,6 +89,11 @@ export default async function SopPage({ params, searchParams }: { params: Promis
         }
       />
 
+      {(can(viewer.identity, "sop.approve") || can(viewer.identity, "sop.review") || can(viewer.identity, "sop.author")) && (
+        <div style={{ marginBottom: 16 }}>
+          <WorkflowActions sopId={sop.id} version={shown.version} status={shown.status} canApprove={can(viewer.identity, "sop.approve")} canReview={can(viewer.identity, "sop.review")} canAuthor={can(viewer.identity, "sop.author")} />
+        </div>
+      )}
       {!effective && (
         <Callout tone="warning" title="No version of this SOP has been approved yet">
           {sop.provenance ? `${sop.provenance.note} Imported from: ${sop.provenance.importedFrom}.` : "This SOP is in the governed workflow. Do not treat its content as approved policy until an approver publishes an effective version."}

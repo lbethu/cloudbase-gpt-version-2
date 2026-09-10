@@ -27,6 +27,11 @@ export interface AskSource {
   section?: string;
   updatedAt?: string;
   owningTeam: string;
+  /** Deep link to the matched passage on the object page. */
+  passageUrl?: string;
+  /** Additional passages that also mention the query (find-everywhere mode). */
+  morePassages?: Array<{ text: string; section?: string; page?: number; url?: string }>;
+  occurrences?: number;
 }
 
 export const AskStatement = z.object({
@@ -59,7 +64,7 @@ export function buildGovernedAnswer(question: string, sources: AskSource[], rela
   if (!sources.length) {
     return { question, mode: "governed-retrieval", statements: [{ text: NO_SOURCE_MESSAGE, kind: "UNKNOWN", citations: [] }], sources: [], related, notices, trace: [] };
   }
-  const statements: AskStatement[] = sources.slice(0, 3).map((s) => ({
+  const statements: AskStatement[] = sources.slice(0, 8).map((s) => ({
     text: `${CONTENT_TYPE_LABELS[s.ref.type]} “${s.title}”${s.section ? ` (${s.section})` : ""}: ${s.passage}`,
     kind: "FACT",
     citations: [s.index],

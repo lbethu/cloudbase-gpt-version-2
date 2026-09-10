@@ -41,6 +41,27 @@ export type FileAccess =
   | { ok: true; resolved: ResolvedFile; stream: fs.ReadStream; size: number }
   | { ok: false; status: 401 | 403 | 404 };
 
+/** Authorization only (no stream) — shared by the download and "open in Drive" routes. */
+export function authorizeSourceFile(identity: Identity | null, fileId: string, action = "files.read"): { ok: true; resolved: ResolvedFile } | { ok: false; status: 401 | 403 | 404 } {
+  const resolved = findSourceFile(fileId);
+  const actor = identity?.subject ?? "anonymous";
+  if (!identity) {
+    recordAudit({ actor, action, outcome: "denied", detail: { fileId, reason: "no-identity" } });
+    return { ok: false, status: 401 };
+  }
+  if (!resolved) {
+    recordAudit({ actor, action, outcome: "denied", detail: { fileId, reason: "not-found" } });
+    return { ok: false, status: 404 };
+  }
+  const sop = getRepositories().sops.get(resolved.owner.id);
+  const allowed = can(identity, "files.read") && !!sop && canRead(identity, { type: "sop", classification: sop.classification, owningTeam: sop.owningTeam, teams: sop.teams, accessGrants: sop.accessGrants });
+  if (!allowed) {
+    recordAudit({ actor, action, target: { type: "sop", id: resolved.owner.id }, outcome: "denied", detail: { fileId } });
+    return { ok: false, status: 403 };
+  }
+  return { ok: true, resolved };
+}
+
 export function openSourceFile(identity: Identity | null, fileId: string): FileAccess {
   const resolved = findSourceFile(fileId);
   const actor = identity?.subject ?? "anonymous";

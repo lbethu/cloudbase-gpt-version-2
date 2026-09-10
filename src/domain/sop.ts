@@ -30,6 +30,9 @@ export const SourceFile = z.object({
   path: z.string().min(1),
   mediaType: z.string().default("application/octet-stream"),
   label: z.string().default(""),
+  /** Google Drive location of the same document (webViewLink). Resolved automatically when Drive is connected. */
+  driveUrl: z.string().url().optional(),
+  driveFileId: z.string().optional(),
 });
 export type SourceFile = z.infer<typeof SourceFile>;
 
