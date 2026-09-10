@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveIdentityFromRequest } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { can } from "@/server/authz";
 import { isDriveConfigured, searchDrive } from "@/lib/googleDrive";
 import { recordAudit } from "@/server/services/audit";
@@ -11,6 +12,7 @@ import { recordAudit } from "@/server/services/audit";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+  await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
   if (!identity || !can(identity, "knowledge.read")) {
     recordAudit({ actor: identity?.subject ?? "anonymous", action: "drive.search", outcome: "denied", detail: {} });

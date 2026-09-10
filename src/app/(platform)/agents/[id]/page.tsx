@@ -23,7 +23,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
   const agent = getRepositories().agents.get(id);
   if (!agent) notFound();
   const { findings } = await agentFindings(viewer.identity!, { agentIds: [agent.id] });
-  const runs = listAgentRuns(100).filter((r) => r.agentId === agent.id).slice(0, 8);
+  const runs = (await listAgentRuns(100)).filter((r) => r.agentId === agent.id).slice(0, 8);
   return (
     <>
       <DetailHeader type="agent" title={agent.title} status={agent.status} summary={agent.purpose} extraBadges={<Badge tone={agent.kind === "ai-assisted" ? "violet" : "outline"}>{agent.kind}</Badge>} facts={[{ label: "Team", value: <Link href={`/teams/${agent.owningTeam}`}>{teamName(agent.owningTeam)}</Link> }, { label: "Cadence", value: agent.cadence }, { label: "Audiences", value: agent.audiences.join(", ") || "—" }, { label: "Implementation", value: <span className="cb-mono">{agent.implementation}</span> }]} actions={<RunAgentButton agentId={agent.id} disabled={!viewer.has("agent.run") || agent.status !== "active" || agent.kind === "ai-assisted"} />} />

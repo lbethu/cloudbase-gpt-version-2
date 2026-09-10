@@ -1,10 +1,8 @@
 import "server-only";
-import fs from "node:fs";
 import path from "node:path";
 import mammoth from "mammoth";
 import type { ImportedContent } from "@/domain";
-import { getConfig } from "@/server/config";
-import { clearRegistryCache } from "@/server/repositories/registry";
+import { getRegistryWriter } from "@/server/repositories/writer";
 
 /**
  * Runtime full-text extraction for a single governed source file (the same
@@ -44,8 +42,8 @@ interface Section {
   page?: number;
 }
 
-async function extractDocx(file: string): Promise<Section[]> {
-  const { value: html } = await mammoth.convertToHtml({ path: file });
+async function extractDocx(buffer: Buffer): Promise<Section[]> {
+  const { value: html } = await mammoth.convertToHtml({ buffer });
   const blocks = [...html.matchAll(/<(h[1-6]|p|li|td|th)[^>]*>([\s\S]*?)<\/\1>/g)];
   const sections: Section[] = [];
   let current: Section = { title: "Document", text: "" };
@@ -59,28 +57,25 @@ async function extractDocx(file: string): Promise<Section[]> {
   }
   if (current.text.trim()) sections.push(current);
   if (!sections.length) {
-    const { value } = await mammoth.extractRawText({ path: file });
+    const { value } = await mammoth.extractRawText({ buffer });
     sections.push({ title: "Document", text: clean(value) });
   }
   return sections;
 }
 
-async function extractPdf(file: string): Promise<Section[]> {
+async function extractPdf(buffer: Buffer): Promise<Section[]> {
   const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({ data: fs.readFileSync(file) });
+  const parser = new PDFParse({ data: buffer });
   const result = await parser.getText();
   const pages = Array.isArray(result.pages) && result.pages.length ? result.pages.map((p, i) => ({ num: p.num ?? i + 1, text: p.text ?? "" })) : [{ num: 1, text: result.text }];
   await parser.destroy?.();
   return pages.map((p) => ({ title: `Page ${p.num}`, text: clean(p.text), page: p.num })).filter((p) => p.text);
 }
 
-/** Extracts one file (path relative to source-documents) and upserts its ImportedContent record. */
-export async function extractAndIndex(relPath: string): Promise<ImportedContent> {
-  const cfg = getConfig();
-  const abs = path.resolve(cfg.sourceDocumentsDir, relPath);
-  if (!abs.startsWith(path.resolve(cfg.sourceDocumentsDir) + path.sep)) throw new Error("Invalid path");
-  const ext = path.extname(abs).toLowerCase();
-  const sections = ext === ".pdf" ? await extractPdf(abs) : ext === ".docx" ? await extractDocx(abs) : null;
+/** Extracts one document (bytes + its storage-relative path) and upserts its ImportedContent record. */
+export async function extractAndIndex(relPath: string, bytes: Buffer): Promise<ImportedContent> {
+  const ext = path.extname(relPath).toLowerCase();
+  const sections = ext === ".pdf" ? await extractPdf(bytes) : ext === ".docx" ? await extractDocx(bytes) : null;
   if (!sections) throw new Error("Unsupported file type");
   const id = `imported:${slug(relPath)}`;
   const chunks: ImportedContent["chunks"] = [];
@@ -94,11 +89,6 @@ export async function extractAndIndex(relPath: string): Promise<ImportedContent>
     sections: sections.map((s) => ({ title: s.title, summary: s.text.slice(0, 160).replace(/\s+/g, " ") })),
     chunks,
   };
-  const file = path.join(cfg.contentDir, "knowledge", "imported", "sop-content.json");
-  const existing: ImportedContent[] = fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as ImportedContent[]) : [];
-  const next = [...existing.filter((r) => r.id !== id), record];
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, JSON.stringify(next, null, 2));
-  clearRegistryCache();
+  await getRegistryWriter().upsertImportedContent(record);
   return record;
 }

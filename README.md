@@ -81,6 +81,22 @@ npm run verify                  # all three
 
 `npm run extract:sources` extracts the full text of every file in `source-documents/` (DOCX headings/paragraphs via mammoth, PDF per page via pdf-parse) into `content/knowledge/imported/sop-content.json` and re-points the SOP registry. Run it whenever a source file changes. Search, Ask CloudBase and the SOP library all rank over these passages, so any keyword inside a document (e.g. "SQL" in the Sales Playbook) finds the SOP.
 
+## Storage: file registry or PostgreSQL
+
+CloudBase runs with **no database at all** by default — governed records live as YAML/Markdown under `content/`, which makes every change to organizational truth reviewable as a pull request. The same `Repositories` interface is also implemented over PostgreSQL, so a deployment that needs multi-instance hosting, durable write workflows or a queryable audit trail can switch without touching a page, service or permission check.
+
+```bash
+# Free managed Postgres: Neon (neon.tech) or Supabase (supabase.com)
+export DATABASE_URL="postgres://…"     # secret — .env.local only, never committed
+npm run db:migrate                     # forward-only migrations in /drizzle
+npm run db:seed                        # loads content/ into the database (idempotent)
+CLOUDBASE_STORAGE=postgres npm run dev
+```
+
+Governed objects are stored as Zod-validated JSON documents in one `governed_records` table with the authorization and listing columns promoted alongside, so a new entity type ships without a migration. Uploaded documents go to the local filesystem or any S3-compatible bucket (`S3_BUCKET` — AWS S3, Cloudflare R2, Supabase Storage, MinIO) and are only ever delivered through the authorized `/api/files/{id}` route. Audit events follow the same switch: JSONL in file mode, the `audit_events` table in database mode. Full detail: `content/docs/cloudbase/cloudbase-data-storage.md`.
+
+Set `CLOUDBASE_TEST_DATABASE_URL` to a throwaway database to run the Postgres parity suite (`tests/unit/postgres-storage.test.ts`); without it that suite is skipped and the default test run needs no infrastructure.
+
 ## Adding knowledge
 
 - Team: add to `content/registry/teams.yaml`.

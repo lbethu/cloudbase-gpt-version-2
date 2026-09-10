@@ -40,6 +40,9 @@ export interface CloudBaseConfig {
     azureDeployment: string;
   };
   search: { provider: "lexical" | "hybrid" };
+  storage: { mode: "file" | "postgres" };
+  database: { url: string };
+  blob: { mode: "local" | "s3"; bucket: string; endpoint: string; region: string; accessKeyId: string; secretAccessKey: string; forcePathStyle: boolean };
   features: { legacyPrototype: boolean };
   drive: { configured: boolean };
   github: { token: string; configured: boolean };
@@ -96,6 +99,17 @@ export function getConfig(): CloudBaseConfig {
       azureDeployment: process.env.CLOUDBASE_AI_AZURE_DEPLOYMENT ?? "",
     },
     search: { provider: (process.env.CLOUDBASE_SEARCH_PROVIDER as "lexical" | "hybrid" | undefined) ?? "lexical" },
+    storage: { mode: (process.env.CLOUDBASE_STORAGE?.trim() as "file" | "postgres" | undefined) || (process.env.DATABASE_URL?.trim() ? "postgres" : "file") },
+    database: { url: process.env.DATABASE_URL?.trim() ?? "" },
+    blob: {
+      mode: (process.env.CLOUDBASE_BLOB_STORAGE?.trim() as "local" | "s3" | undefined) || (process.env.S3_BUCKET?.trim() ? "s3" : "local"),
+      bucket: process.env.S3_BUCKET ?? "",
+      endpoint: process.env.S3_ENDPOINT ?? "",
+      region: process.env.S3_REGION ?? "us-east-1",
+      accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "",
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
+      forcePathStyle: bool(process.env.S3_FORCE_PATH_STYLE, true),
+    },
     features: { legacyPrototype: bool(process.env.CLOUDBASE_ENABLE_LEGACY_PROTOTYPE, env !== "production") },
     drive: { configured: Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) },
     github: { token: process.env.GITHUB_TOKEN ?? "", configured: bool(process.env.CLOUDBASE_GITHUB_ENABLED, true) },

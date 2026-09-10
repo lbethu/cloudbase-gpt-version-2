@@ -6,7 +6,8 @@ describe("review queue derivation", () => {
   it("creates an approval task for every SOP awaiting review", () => {
     const tasks = deriveReviewTasks(repos);
     const sopTasks = tasks.filter((t) => t.kind === "sop-approval");
-    expect(sopTasks.length).toBe(repos.sops.list().length);
+    const awaitingReview = repos.sops.list().filter((s) => s.versions.some((v) => v.status === "review"));
+    expect(sopTasks.length).toBe(awaitingReview.length);
     expect(sopTasks.every((t) => t.requiredPermission === "sop.approve")).toBe(true);
     expect(sopTasks.find((t) => t.target.id === "sop-105-2")?.note).toMatch(/2 versions/);
   });

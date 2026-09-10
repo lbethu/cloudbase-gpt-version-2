@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { resolveIdentityFromRequest } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { can } from "@/server/authz";
 import { askCloudBase } from "@/server/services/ask";
 
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 const Body = z.object({ question: z.string().trim().min(3).max(500) });
 
 export async function POST(request: NextRequest) {
+  await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
   if (!identity) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   if (!can(identity, "ask.use")) return NextResponse.json({ error: "Not authorized." }, { status: 403 });

@@ -39,11 +39,20 @@ describe("registry", () => {
     expect(repos.copilots.list().every((c) => !c.accessUrl)).toBe(true);
     expect(repos.cros.capabilities().every((c) => c.maturity === undefined)).toBe(true);
   });
-  it("imported SOPs are in review with source files and never claim approval", () => {
+  it("imported SOPs carry source files and only claim approval with recorded human evidence", () => {
     for (const sop of repos.sops.list()) {
-      expect(sop.effectiveVersion).toBeUndefined();
+      // An effective version may exist only because an approver recorded it
+      // through the governed workflow — never because the importer said so.
+      if (sop.effectiveVersion) {
+        const effective = sop.versions.find((v) => v.version === sop.effectiveVersion);
+        expect(effective?.status).toBe("approved");
+        expect(effective?.approval?.approvedBy).toBeTruthy();
+        expect(effective?.approval?.approvedAt).toBeTruthy();
+      }
       for (const v of sop.versions) {
-        expect(v.status).toBe("review");
+        expect(["review", "draft", "approved", "superseded"]).toContain(v.status);
+        if (v.status === "approved") expect(v.approval?.approvedBy).toBeTruthy();
+        else expect(v.approval).toBeUndefined();
         expect(v.sourceFile?.path).toMatch(/\.(docx|pdf)$/);
         expect(v.sourceFile?.path.includes("..")).toBe(false);
         expect(v.importedContentId && repos.sops.importedContent(v.importedContentId)).toBeTruthy();

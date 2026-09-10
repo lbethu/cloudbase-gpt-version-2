@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "node:stream";
 import { resolveIdentityFromRequest } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { openSourceFile } from "@/server/services/files";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +13,11 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest, context: { params: Promise<{ fileId: string }> }) {
   const { fileId } = await context.params;
   const identity = await resolveIdentityFromRequest(request);
-  const access = openSourceFile(identity, fileId);
+  await ensureRepositories();
+  const access = await openSourceFile(identity, fileId);
   if (!access.ok) return NextResponse.json({ error: access.status === 401 ? "Not authenticated." : access.status === 403 ? "Not authorized." : "Not found." }, { status: access.status });
   const filename = access.resolved.file.path.split("/").pop() ?? "document";
-  const body = Readable.toWeb(access.stream) as ReadableStream;
+  const body = Readable.toWeb(access.stream as Readable) as ReadableStream;
   return new NextResponse(body, {
     headers: {
       "content-type": access.resolved.file.mediaType,

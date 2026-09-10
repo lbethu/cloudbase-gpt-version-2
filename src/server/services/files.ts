@@ -1,11 +1,11 @@
 import "server-only";
-import fs from "node:fs";
 import path from "node:path";
 import type { SourceFile } from "@/domain";
 import type { Identity } from "@/server/auth/identity";
 import { can, canRead } from "@/server/authz";
 import { getConfig } from "@/server/config";
 import { getRepositories } from "@/server/repositories";
+import { getBlobStorage } from "@/server/storage/blob";
 import { recordAudit } from "./audit";
 
 /**
@@ -38,7 +38,7 @@ export function findSourceFile(fileId: string): ResolvedFile | null {
 }
 
 export type FileAccess =
-  | { ok: true; resolved: ResolvedFile; stream: fs.ReadStream; size: number }
+  | { ok: true; resolved: ResolvedFile; stream: NodeJS.ReadableStream; size: number }
   | { ok: false; status: 401 | 403 | 404 };
 
 /** Authorization only (no stream) — shared by the download and "open in Drive" routes. */
@@ -62,30 +62,16 @@ export function authorizeSourceFile(identity: Identity | null, fileId: string, a
   return { ok: true, resolved };
 }
 
-export function openSourceFile(identity: Identity | null, fileId: string): FileAccess {
-  const resolved = findSourceFile(fileId);
-  const actor = identity?.subject ?? "anonymous";
-  if (!identity) {
-    recordAudit({ actor, action: "files.read", outcome: "denied", detail: { fileId, reason: "no-identity" } });
-    return { ok: false, status: 401 };
-  }
-  if (!resolved) {
-    recordAudit({ actor, action: "files.read", outcome: "denied", detail: { fileId, reason: "not-found" } });
+export async function openSourceFile(identity: Identity | null, fileId: string): Promise<FileAccess> {
+  const access = authorizeSourceFile(identity, fileId);
+  if (!access.ok) return access;
+  const { resolved } = access;
+  const storage = getBlobStorage();
+  const stat = await storage.stat(resolved.file.path);
+  if (!stat) {
+    recordAudit({ actor: identity!.subject, action: "files.read", target: { type: "sop", id: resolved.owner.id }, outcome: "error", detail: { fileId, reason: "missing-in-storage", storage: storage.name } });
     return { ok: false, status: 404 };
   }
-  const sop = getRepositories().sops.get(resolved.owner.id);
-  const allowed =
-    can(identity, "files.read") &&
-    !!sop &&
-    canRead(identity, { type: "sop", classification: sop.classification, owningTeam: sop.owningTeam, teams: sop.teams, accessGrants: sop.accessGrants });
-  if (!allowed) {
-    recordAudit({ actor, action: "files.read", target: { type: "sop", id: resolved.owner.id }, outcome: "denied", detail: { fileId } });
-    return { ok: false, status: 403 };
-  }
-  if (!fs.existsSync(resolved.absolutePath)) {
-    recordAudit({ actor, action: "files.read", target: { type: "sop", id: resolved.owner.id }, outcome: "error", detail: { fileId, reason: "missing-on-disk" } });
-    return { ok: false, status: 404 };
-  }
-  recordAudit({ actor, action: "files.read", target: { type: "sop", id: resolved.owner.id }, outcome: "allowed", detail: { fileId } });
-  return { ok: true, resolved, stream: fs.createReadStream(resolved.absolutePath), size: fs.statSync(resolved.absolutePath).size };
+  recordAudit({ actor: identity!.subject, action: "files.read", target: { type: "sop", id: resolved.owner.id }, outcome: "allowed", detail: { fileId, storage: storage.name } });
+  return { ok: true, resolved, stream: await storage.stream(resolved.file.path), size: stat.size };
 }

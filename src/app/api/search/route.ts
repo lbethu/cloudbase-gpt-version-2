@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { ContentType } from "@/domain";
 import { resolveIdentityFromRequest } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { searchKnowledge } from "@/server/services/search";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ const Query = z.object({
 
 /** Permission-scoped search. Items the caller cannot read are never scored. */
 export async function GET(request: NextRequest) {
+  await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
   if (!identity) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   const params = request.nextUrl.searchParams;

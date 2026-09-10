@@ -30,14 +30,14 @@ describe("SOP approval workflow", () => {
   it("denies approval without sop.approve and never writes", async () => {
     const { approveSopVersion } = await import("@/server/services/sop-workflow");
     const before = fs.readFileSync(path.join(contentDir, "registry/sops/sop-101-1.yaml"), "utf8");
-    const r = approveSopVersion(identity(["employee", "reviewer"]), "sop-101-1", "imported.1", "ok");
+    const r = await approveSopVersion(identity(["employee", "reviewer"]), "sop-101-1", "imported.1", "ok");
     expect(r.ok).toBe(false);
     expect(fs.readFileSync(path.join(contentDir, "registry/sops/sop-101-1.yaml"), "utf8")).toBe(before);
   });
   it("approves a version in review, sets it effective and records evidence", async () => {
     const { approveSopVersion } = await import("@/server/services/sop-workflow");
     const { getRepositories } = await import("@/server/repositories");
-    const r = approveSopVersion(identity(["employee", "approver"]), "sop-101-1", "imported.1", "Verified against the finance process.");
+    const r = await approveSopVersion(identity(["employee", "approver"]), "sop-101-1", "imported.1", "Verified against the finance process.");
     expect(r.ok).toBe(true);
     const sop = getRepositories().sops.get("sop-101-1")!;
     expect(sop.effectiveVersion).toBe("imported.1");
@@ -48,13 +48,13 @@ describe("SOP approval workflow", () => {
   });
   it("refuses to approve an already-approved version and supersedes on re-approval of a newer one", async () => {
     const { approveSopVersion, sendBackSopVersion, submitSopVersion } = await import("@/server/services/sop-workflow");
-    expect(approveSopVersion(identity(["employee", "approver"]), "sop-101-1", "imported.1", "").ok).toBe(false);
+    expect((await approveSopVersion(identity(["employee", "approver"]), "sop-101-1", "imported.1", "")).ok).toBe(false);
     // two-version SOP: send one back, then approve the other
-    const back = sendBackSopVersion(identity(["employee", "reviewer"]), "sop-105-2", "imported.1", "Duplicate of imported.2 — confirm which is current.");
+    const back = await sendBackSopVersion(identity(["employee", "reviewer"]), "sop-105-2", "imported.1", "Duplicate of imported.2 — confirm which is current.");
     expect(back.ok).toBe(true);
-    expect(sendBackSopVersion(identity(["employee", "reviewer"]), "sop-105-2", "imported.2", "").ok).toBe(false); // note required
-    expect(approveSopVersion(identity(["employee", "approver"]), "sop-105-2", "imported.2", "Current").ok).toBe(true);
-    expect(submitSopVersion(identity(["employee", "contributor"]), "sop-105-2", "imported.1").ok).toBe(true);
+    expect((await sendBackSopVersion(identity(["employee", "reviewer"]), "sop-105-2", "imported.2", "")).ok).toBe(false); // note required
+    expect((await approveSopVersion(identity(["employee", "approver"]), "sop-105-2", "imported.2", "Current")).ok).toBe(true);
+    expect((await submitSopVersion(identity(["employee", "contributor"]), "sop-105-2", "imported.1")).ok).toBe(true);
   });
 });
 

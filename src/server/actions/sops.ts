@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentIdentity } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { approveSopVersion, sendBackSopVersion, submitSopVersion, uploadSopDocument, type WorkflowResult } from "@/server/services/sop-workflow";
 
 /** Server actions: identity is resolved server-side; the client only sends intent. */
@@ -17,15 +18,16 @@ const toState = (r: WorkflowResult): ActionState => (r.ok ? { ok: true, message:
 export async function sopTransitionAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const identity = await getCurrentIdentity();
   if (!identity) return { ok: false, message: "Not authenticated." };
+  await ensureRepositories();
   const sopId = String(formData.get("sopId") ?? "");
   const version = String(formData.get("version") ?? "");
   const note = String(formData.get("note") ?? "");
   const action = String(formData.get("action") ?? "");
   if (!/^[A-Za-z0-9._-]+$/.test(sopId) || !version) return { ok: false, message: "Invalid request." };
   let result: WorkflowResult;
-  if (action === "approve") result = approveSopVersion(identity, sopId, version, note);
-  else if (action === "send-back") result = sendBackSopVersion(identity, sopId, version, note);
-  else if (action === "submit") result = submitSopVersion(identity, sopId, version);
+  if (action === "approve") result = await approveSopVersion(identity, sopId, version, note);
+  else if (action === "send-back") result = await sendBackSopVersion(identity, sopId, version, note);
+  else if (action === "submit") result = await submitSopVersion(identity, sopId, version);
   else return { ok: false, message: "Unknown action." };
   if (result.ok) {
     revalidatePath(`/sops/${sopId}`);
@@ -39,6 +41,7 @@ export async function sopTransitionAction(_prev: ActionState, formData: FormData
 export async function uploadSopAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const identity = await getCurrentIdentity();
   if (!identity) return { ok: false, message: "Not authenticated." };
+  await ensureRepositories();
   const file = formData.get("file");
   if (!(file instanceof File) || !file.size) return { ok: false, message: "Choose a .docx or .pdf file." };
   const result = await uploadSopDocument(identity, {

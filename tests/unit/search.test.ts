@@ -29,7 +29,7 @@ describe("lexical search", () => {
   it("applies type, team and status filters", () => {
     expect(applyFilters(index, { types: ["copilot"] }).every((i) => i.ref.type === "copilot")).toBe(true);
     expect(applyFilters(index, { team: "sales-bd" }).every((i) => i.owningTeam === "sales-bd" || i.teams.includes("sales-bd"))).toBe(true);
-    expect(applyFilters(index, { types: ["sop"], status: "In review" }).length).toBe(repos.sops.list().length);
+    expect(applyFilters(index, { types: ["sop"], status: "In review" }).length).toBe(repos.sops.list().filter((s) => s.versions.some((v) => v.status === "review") && !s.effectiveVersion).length);
   });
   it("never scores items the principal cannot read", async () => {
     const confidential: KnowledgeItem = { ref: { type: "rfp", id: "secret" }, title: "Secret pursuit plan", summary: "", owningTeam: "sales-bd", teams: [], status: "draft", classification: "confidential", tags: [], url: "/rfp/secret", body: "secret pursuit plan for a named client" };

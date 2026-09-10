@@ -19,7 +19,7 @@ export default async function AgentsPage({ searchParams }: { searchParams: Promi
   const { findings, agents } = await agentFindings(viewer.identity!);
   const list = findings.filter((f) => !agent || f.agentId === agent).filter((f) => !severity || f.severity === severity);
   const sev = summarizeFindings(findings);
-  const runs = listAgentRuns(12);
+  const runs = await listAgentRuns(12);
   const perAgent = agents.map((a) => ({ label: a.title, value: findings.filter((f) => f.agentId === a.id).length, href: `/agents?agent=${a.id}` }));
   return (
     <>

@@ -1,13 +1,11 @@
 id: sop-cloudpoint-sales-playbook-processes-training-manual
 title: Cloudpoint Sales Playbook, Processes & Training Manual
-sopNumber: ""
-category: Sales Playbook
 summary: Sales playbook, process, and training reference for opportunity handling, discovery, qualification, proposal preparation, and handoff to delivery.
-kind: manual
 owningTeam: sales-bd
 teams: []
 owner: Sales Enablement
 classification: internal
+accessGrants: []
 tags:
   - Sales Playbook
   - Sales
@@ -18,11 +16,19 @@ tags:
   - cloudpoint
   - discovery
   - exact
-version: imported
 updatedAt: 2026-09-10
+lastReviewedAt: 2026-09-10
+version: imported.1
+repositories: []
+sopNumber: ""
+kind: manual
+category: Sales Playbook
+effectiveVersion: imported.1
 versions:
   - version: imported.1
-    status: review
+    status: approved
+    effectiveDate: 2026-09-10
+    reviewedAt: 2026-09-10
     changeSummary: Imported from "Cloudpoint Sales Playbook, Processes & Training Manual".
     importedContentId: imported:sales-book-cloudpoint-sales-playbook-processes-training-manual-pdf
     sourceFile:
@@ -30,11 +36,19 @@ versions:
       path: Sales book/Cloudpoint Sales Playbook, Processes & Training Manual.pdf
       mediaType: application/pdf
       label: Cloudpoint Sales Playbook, Processes & Training Manual
+    approval:
+      approvedBy: dev@cloudpoint.local
+      approvedAt: 2026-09-10
+      note: ""
     purpose: Sales playbook, process, and training reference for opportunity handling, discovery, qualification, proposal preparation, and handoff to delivery.
+    prerequisites: []
+    procedure: []
+    verification: []
+    warnings: []
     references: []
 relatedSystems: []
 provenance:
   importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
   importedAt: 2026-09-10
   note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
-  locked: false
+  locked: true

@@ -12,7 +12,7 @@ export default async function AuditPage() {
   const viewer = await getViewer();
   if (!viewer.has("audit.read")) return <Callout tone="warning" title="Not authorized">Audit history requires audit.read.</Callout>;
   await requirePermission("audit.read", { audit: true });
-  const events = listAuditEvents(300);
+  const events = await listAuditEvents(300);
   return (
     <>
       <PageHeader eyebrow="Governance" title="Audit history" description="Privileged and sensitive actions: source-file access, Ask CloudBase queries (metadata only), denied authorizations, provider errors and governance views. Append-only." />

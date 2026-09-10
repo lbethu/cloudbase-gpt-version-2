@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "node:path";
 import { resolveIdentityFromRequest } from "@/server/auth/identity";
+import { ensureRepositories } from "@/server/repositories";
 import { isDriveConfigured, searchDrive } from "@/lib/googleDrive";
 import { recordAudit } from "@/server/services/audit";
 import { authorizeSourceFile } from "@/server/services/files";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest, context: { params: Promise<{ fileId: string }> }) {
   const { fileId } = await context.params;
+  await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
   const access = authorizeSourceFile(identity, fileId, "files.open-drive");
   if (!access.ok) return NextResponse.json({ error: access.status === 401 ? "Not authenticated." : access.status === 403 ? "Not authorized." : "Not found." }, { status: access.status });
