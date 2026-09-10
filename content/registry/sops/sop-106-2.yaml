@@ -1,0 +1,41 @@
+id: sop-106-2
+title: 106.2 - Campaign Close-outs
+sopNumber: "106.2"
+category: Operations SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - column
+  - campaign
+  - conference
+  - cost
+  - expenses
+  - marketing
+  - scorecard
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "106.2 - Campaign Close-outs".
+    importedContentId: imported:sop-106-2-campaign-close-outs-docx
+    sourceFile:
+      id: file-106-2-campaign-close-outs-1
+      path: sop/106.2 - Campaign Close-outs.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 106.2 - Campaign Close-outs
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

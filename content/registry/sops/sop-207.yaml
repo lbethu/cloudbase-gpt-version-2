@@ -1,0 +1,40 @@
+id: sop-207
+title: 207- Campaign Execution
+sopNumber: "207"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - marketing
+  - campaign
+  - execution
+  - purpose
+  - all
+  - applies
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "207- Campaign Execution".
+    importedContentId: imported:sop-207-campaign-execution-docx
+    sourceFile:
+      id: file-207-campaign-execution-1
+      path: sop/207- Campaign Execution.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 207- Campaign Execution
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

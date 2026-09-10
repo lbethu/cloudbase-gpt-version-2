@@ -1,0 +1,39 @@
+id: sop-field-safety-checklist
+title: Field Safety Checklist
+sopNumber: ""
+category: Field Safety
+summary: Field safety checklist for confirming site readiness, work conditions, equipment, safety expectations, and issue escalation before field activity.
+kind: checklist
+owningTeam: field-reality-capture
+teams: []
+owner: Field Safety / Operations
+classification: internal
+tags:
+  - Field Safety
+  - Field Operations
+  - Field Team SOPs
+  - field
+  - checklist
+  - safety
+  - before
+  - conditions
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "Field Safety Checklist".
+    importedContentId: imported:field-team-field-safety-checklist-pdf
+    sourceFile:
+      id: file-field-safety-checklist-1
+      path: Field team/Field Safety Checklist.pdf
+      mediaType: application/pdf
+      label: Field Safety Checklist
+    purpose: Field safety checklist for confirming site readiness, work conditions, equipment, safety expectations, and issue escalation before field activity.
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

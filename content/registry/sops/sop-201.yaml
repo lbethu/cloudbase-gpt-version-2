@@ -1,0 +1,41 @@
+id: sop-201
+title: 201- Creating Campaigns
+sopNumber: "201"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - marketing
+  - campaigns
+  - our
+  - campaign
+  - creating
+  - pipedrive
+  - scorecard
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "201- Creating Campaigns".
+    importedContentId: imported:sop-201-creating-campaigns-docx
+    sourceFile:
+      id: file-201-creating-campaigns-1
+      path: sop/201- Creating Campaigns.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 201- Creating Campaigns
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

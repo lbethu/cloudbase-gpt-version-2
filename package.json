@@ -1,26 +1,45 @@
 {
-  "name": "cloudpoint-knowledge-base-gpt",
-  "version": "1.0.0",
+  "name": "cloudbase-ai",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check:drive": "node scripts/check-drive-connection.js"
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "import:sops": "node scripts/import-legacy-sop-index.mjs",
+    "check:drive": "node scripts/check-drive-connection.js",
+    "verify": "npm run typecheck && npm test && npm run build",
+    "extract:sources": "node scripts/extract-source-documents.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "d3-force": "^3.0.0",
     "googleapis": "^174.0.0",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^0.468.0",
+    "mammoth": "^1.12.2",
+    "marked": "^18.0.12",
     "next": "^15.1.3",
+    "pdf-parse": "^2.4.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sanitize-html": "^2.17.7",
+    "server-only": "^0.0.1",
+    "shiki": "^4.4.3",
+    "yaml": "^2.9.0",
+    "zod": "^4.6.1"
   },
   "devDependencies": {
+    "@types/d3-force": "^3.0.10",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
-    "typescript": "^5.7.2"
+    "@types/sanitize-html": "^2.16.1",
+    "typescript": "^5.7.2",
+    "vitest": "^5.0.0"
   }
 }

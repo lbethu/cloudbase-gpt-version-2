@@ -1,0 +1,41 @@
+id: sop-220
+title: 220-Marketing Content Review & Approval SOP
+sopNumber: "220"
+category: Marketing SOP
+summary: Standard Operating Procedure (SOP)
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - marketing
+  - sales
+  - approval
+  - content
+  - materials
+  - review
+  - all
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "220-Marketing Content Review & Approval SOP".
+    importedContentId: imported:sop-220-marketing-content-review-approval-sop-docx
+    sourceFile:
+      id: file-220-marketing-content-review-approval-sop-1
+      path: sop/220-Marketing Content Review & Approval SOP.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 220-Marketing Content Review & Approval SOP
+    purpose: Standard Operating Procedure (SOP)
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

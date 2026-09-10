@@ -1,0 +1,41 @@
+id: sop-102-5
+title: 102.5 - Miscellaneous Accounts Payable Tasks
+sopNumber: "102.5"
+category: Finance SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - accounts
+  - finance
+  - logs
+  - mileage
+  - miscellaneous
+  - payable
+  - tasks
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "102.5 - Miscellaneous Accounts Payable Tasks".
+    importedContentId: imported:sop-102-5-miscellaneous-accounts-payable-tasks-docx
+    sourceFile:
+      id: file-102-5-miscellaneous-accounts-payable-tasks-1
+      path: sop/102.5 - Miscellaneous Accounts Payable Tasks.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 102.5 - Miscellaneous Accounts Payable Tasks
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

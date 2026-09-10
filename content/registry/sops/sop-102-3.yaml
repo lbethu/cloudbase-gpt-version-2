@@ -1,0 +1,41 @@
+id: sop-102-3
+title: 102.3 - Balance_Reconcile Bank Accounts
+sopNumber: "102.3"
+category: Finance SOP
+summary: 102.3 - Balance/Reconcile Bank Accounts
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - account
+  - accounts
+  - bank
+  - finance
+  - balance
+  - balance/reconcile
+  - big
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "102.3 - Balance_Reconcile Bank Accounts".
+    importedContentId: imported:sop-102-3-balance-reconcile-bank-accounts-docx
+    sourceFile:
+      id: file-102-3-balance-reconcile-bank-accounts-1
+      path: sop/102.3 - Balance_Reconcile Bank Accounts.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 102.3 - Balance_Reconcile Bank Accounts
+    purpose: 102.3 - Balance/Reconcile Bank Accounts
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

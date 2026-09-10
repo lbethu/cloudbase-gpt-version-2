@@ -1,0 +1,41 @@
+id: sop-101-3
+title: 101.3 - Past Dues
+sopNumber: "101.3"
+category: Finance SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - past
+  - dues
+  - finance
+  - attachments
+  - checklists
+  - clients
+  - contacting
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "101.3 - Past Dues".
+    importedContentId: imported:sop-101-3-past-dues-docx
+    sourceFile:
+      id: file-101-3-past-dues-1
+      path: sop/101.3 - Past Dues.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 101.3 - Past Dues
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

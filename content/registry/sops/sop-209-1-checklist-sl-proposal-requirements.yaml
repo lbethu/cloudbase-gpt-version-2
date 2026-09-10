@@ -1,0 +1,40 @@
+id: sop-209-1-checklist-sl-proposal-requirements
+title: 209.1 Checklist- SL Proposal Requirements
+sopNumber: ""
+category: Sales SOP
+summary: 202.1 Checklist- Showcase Packing List
+kind: checklist
+owningTeam: sales-bd
+teams: []
+owner: Sales Operations Owner
+classification: internal
+tags:
+  - Sales SOP
+  - Sales
+  - Company SOP Library
+  - checklist
+  - items
+  - checklist-
+  - pandadoc
+  - proposal
+  - sales
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "209.1 Checklist- SL Proposal Requirements".
+    importedContentId: imported:sop-209-1-checklist-sl-proposal-requirements-docx
+    sourceFile:
+      id: file-209-1-checklist-sl-proposal-requirements-1
+      path: sop/209.1 Checklist- SL Proposal Requirements.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 209.1 Checklist- SL Proposal Requirements
+    purpose: 202.1 Checklist- Showcase Packing List
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

@@ -1,0 +1,40 @@
+id: sop-cloudpoint-field-safety-guide
+title: Cloudpoint Field Safety Guide
+sopNumber: ""
+category: Field Safety
+summary: Field safety guide for jobsite expectations, hazard awareness, crew readiness, safe work habits, and escalation guidance.
+kind: guide
+owningTeam: field-reality-capture
+teams: []
+owner: Field Safety / Operations
+classification: internal
+tags:
+  - Field Safety
+  - Field Operations
+  - Field Team SOPs
+  - field
+  - safety
+  - guide
+  - applying
+  - awareness
+  - before
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "Cloudpoint Field Safety Guide".
+    importedContentId: imported:field-team-cloudpoint-field-safety-guide-pdf
+    sourceFile:
+      id: file-cloudpoint-field-safety-guide-1
+      path: Field team/Cloudpoint Field Safety Guide.pdf
+      mediaType: application/pdf
+      label: Cloudpoint Field Safety Guide
+    purpose: Field safety guide for jobsite expectations, hazard awareness, crew readiness, safe work habits, and escalation guidance.
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

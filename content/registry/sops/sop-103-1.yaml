@@ -1,0 +1,41 @@
+id: sop-103-1
+title: 103.1 - Close-Out Month
+sopNumber: "103.1"
+category: Finance SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - month
+  - close-out
+  - finance
+  - logs
+  - mileage
+  - bottom
+  - cars
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "103.1 - Close-Out Month".
+    importedContentId: imported:sop-103-1-close-out-month-docx
+    sourceFile:
+      id: file-103-1-close-out-month-1
+      path: sop/103.1 - Close-Out Month.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 103.1 - Close-Out Month
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

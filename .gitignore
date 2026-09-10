@@ -9,3 +9,8 @@ out
 # they can contain real credentials in plain text.
 env.local
 env.local.txt
+tests/fixtures/audit-tmp/
+# Runtime state
+var/
+# Source documents are served only through the authorized file route; never from public/
+public/source-documents/

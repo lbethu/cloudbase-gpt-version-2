@@ -1,0 +1,41 @@
+id: sop-209-2-checklist-steps-for-closing-a-won-deal
+title: 209.2 Checklist- Steps for Closing a Won Deal
+sopNumber: ""
+category: Sales SOP
+summary: ""
+kind: checklist
+owningTeam: sales-bd
+teams: []
+owner: Sales Operations Owner
+classification: internal
+tags:
+  - Sales SOP
+  - Sales
+  - Company SOP Library
+  - sales
+  - deal
+  - won
+  - checklist-
+  - closing
+  - steps
+  - assist
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "209.2 Checklist- Steps for Closing a Won Deal".
+    importedContentId: imported:sop-209-2-checklist-steps-for-closing-a-won-deal-docx
+    sourceFile:
+      id: file-209-2-checklist-steps-for-closing-a-won-deal-1
+      path: sop/209.2 Checklist- Steps for Closing a Won Deal.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 209.2 Checklist- Steps for Closing a Won Deal
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

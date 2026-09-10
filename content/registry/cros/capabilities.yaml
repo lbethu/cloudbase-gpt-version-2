@@ -1,0 +1,30 @@
+# Capabilities = what Cloudpoint can reliably reuse. Maturity absent until evaluated.
+- id: CAP-001
+  code: CAP-001
+  title: AI-Assisted Experience Builder Engineering
+  owningTeam: technical-gis
+  teams: [ai-automation]
+- id: CAP-002
+  code: CAP-002
+  title: Enterprise Knowledge Retrieval
+  owningTeam: ai-automation
+- id: CAP-003
+  code: CAP-003
+  title: AI-Assisted Indoor Structural Interpretation
+  owningTeam: technical-gis
+  teams: [field-reality-capture]
+- id: CAP-004
+  code: CAP-004
+  title: Multi-View Indoor Asset Detection
+  owningTeam: technical-gis
+  teams: [field-reality-capture]
+- id: CAP-005
+  code: CAP-005
+  title: Governed AI-Assisted GIS Engineering
+  owningTeam: technical-gis
+  teams: [ai-automation]
+- id: CAP-006
+  code: CAP-006
+  title: AI-Assisted RFP Opportunity Evaluation
+  owningTeam: sales-bd
+  teams: [ai-automation]

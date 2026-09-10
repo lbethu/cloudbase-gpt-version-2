@@ -1,0 +1,40 @@
+id: sop-215
+title: 215- Closing Campaigns
+sopNumber: "215"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - marketing
+  - campaigns
+  - our
+  - closing
+  - applies
+  - avaza
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "215- Closing Campaigns".
+    importedContentId: imported:sop-215-closing-campaigns-docx
+    sourceFile:
+      id: file-215-closing-campaigns-1
+      path: sop/215- Closing Campaigns.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 215- Closing Campaigns
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

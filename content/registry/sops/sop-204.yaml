@@ -1,0 +1,41 @@
+id: sop-204
+title: 204- Webinars_ Set-up, Hosting, and Posting
+sopNumber: "204"
+category: Marketing SOP
+summary: "204- Webinars: Set-up, Hosting, and Posting"
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - hosting
+  - marketing
+  - posting
+  - set-up
+  - webinars
+  - applies
+  - emcee
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "204- Webinars_ Set-up, Hosting, and Posting".
+    importedContentId: imported:sop-204-webinars-set-up-hosting-and-posting-docx
+    sourceFile:
+      id: file-204-webinars-set-up-hosting-and-posting-1
+      path: sop/204- Webinars_ Set-up, Hosting, and Posting.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 204- Webinars_ Set-up, Hosting, and Posting
+    purpose: "204- Webinars: Set-up, Hosting, and Posting"
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

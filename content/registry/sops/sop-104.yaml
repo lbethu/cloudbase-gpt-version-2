@@ -1,0 +1,41 @@
+id: sop-104
+title: 104 - Inventory and Asset Tracking
+sopNumber: "104"
+category: Operations SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - tracking
+  - operations
+  - asset
+  - assets
+  - inventory
+  - purpose
+  - applies
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "104 - Inventory and Asset Tracking".
+    importedContentId: imported:sop-104-inventory-and-asset-tracking-docx
+    sourceFile:
+      id: file-104-inventory-and-asset-tracking-1
+      path: sop/104 - Inventory and Asset Tracking.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 104 - Inventory and Asset Tracking
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

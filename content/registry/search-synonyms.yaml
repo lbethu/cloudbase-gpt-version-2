@@ -1,0 +1,27 @@
+# Query expansion groups for lexical search. Data, not code — extend freely.
+- concept: field-readiness
+  terms: [field readiness, before field work, before going onsite, site readiness, field safety, safety checklist, hazard, ppe, crew readiness]
+- concept: project-delivery-roles
+  terms: [project lead, project manager, pm, pl, delivery ownership, kickoff]
+- concept: sales-process
+  terms: [sales process, sales playbook, opportunity, discovery, qualification, proposal, quote, pandadoc]
+- concept: lead-qualification
+  terms: [lead qualification, inbound lead, qualify leads, pipedrive, prospect]
+- concept: finance
+  terms: [invoice, invoicing, payment, past due, accounts payable, vendor invoice, reconcile, credit card, expenses, "1099"]
+- concept: marketing
+  terms: [marketing content, campaign, newsletter, webinar, blog, conference, showcase, exhibiting]
+- concept: project-startup
+  terms: [project startup, project start, kickoff, block of hours, lump sum, managed services, hourly project]
+- concept: close-out
+  terms: [close-out, closeout, close out, month end, project close]
+- concept: experience-builder
+  terms: [experience builder, exb, arcgis experience builder, custom widget]
+- concept: hosted-feature-layer
+  terms: [hosted feature layer, feature service, arcgis online, publish layer]
+- concept: indoor
+  terms: [indoor, indoor mapping, "360", lidar, scan, reality capture, asset detection]
+- concept: rfp
+  terms: [rfp, proposal, opportunity evaluation, go no-go, appraisal, bid]
+- concept: copilot
+  terms: [copilot, assistant, gpt, ai assistant, chatbot]

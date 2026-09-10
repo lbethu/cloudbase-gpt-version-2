@@ -1,0 +1,41 @@
+id: sop-202
+title: 202- Showcase Events
+sopNumber: "202"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - events
+  - marketing
+  - showcase
+  - attendees
+  - cloudpoint
+  - not
+  - planning
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "202- Showcase Events".
+    importedContentId: imported:sop-202-showcase-events-docx
+    sourceFile:
+      id: file-202-showcase-events-1
+      path: sop/202- Showcase Events.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 202- Showcase Events
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

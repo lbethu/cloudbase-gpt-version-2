@@ -1,0 +1,41 @@
+id: sop-103-3
+title: 103.3 - 1099 (Year-End)
+sopNumber: "103.3"
+category: Finance SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - finance
+  - year-end
+  - board
+  - card
+  - check
+  - checklist
+  - checklists
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "103.3 - 1099 (Year-End)".
+    importedContentId: imported:sop-103-3-1099-year-end-docx
+    sourceFile:
+      id: file-103-3-1099-year-end-1
+      path: sop/103.3 - 1099 (Year-End).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 103.3 - 1099 (Year-End)
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

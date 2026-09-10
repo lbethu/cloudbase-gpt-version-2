@@ -1,0 +1,41 @@
+id: sop-105-1
+title: 105.1 - Project Startup for Managed Services Projects (Verified)
+sopNumber: "105.1"
+category: Operations SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - project
+  - managed
+  - projects
+  - services
+  - operations
+  - startup
+  - verified
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "105.1 - Project Startup for Managed Services Projects (Verified)".
+    importedContentId: imported:sop-105-1-project-startup-for-managed-services-projects-verified-docx
+    sourceFile:
+      id: file-105-1-project-startup-for-managed-services-projects-verified-1
+      path: sop/105.1 - Project Startup for Managed Services Projects (Verified).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 105.1 - Project Startup for Managed Services Projects (Verified)
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

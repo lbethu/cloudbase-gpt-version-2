@@ -1,0 +1,6 @@
+- id: CLUSTER-001
+  code: CLUSTER-001
+  title: Indoor Spatial Intelligence
+  owningTeam: rnd
+  teams: [technical-gis, field-reality-capture]
+  description: Capabilities that interpret indoor environments from scan and imagery data.

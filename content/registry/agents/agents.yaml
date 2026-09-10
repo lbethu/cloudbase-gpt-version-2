@@ -1,0 +1,58 @@
+# Platform agents. Deterministic agents run on the governed registry inside CloudBase;
+# they produce findings and recommendations and never mutate governed records.
+- id: coverage-agent
+  title: Knowledge Coverage Agent
+  purpose: Finds governed objects missing owners, descriptions, evidence, links or test cases so knowledge does not silently decay.
+  owningTeam: ai-automation
+  audiences: [leadership, ai, gis, operations]
+  cadence: on-demand
+  implementation: coverage
+  authorityBoundaries:
+    - Reports gaps; never edits registry records.
+- id: freshness-sentinel
+  title: Freshness Sentinel
+  purpose: Flags approved or published content past its review cadence and SOPs stuck in review.
+  owningTeam: company-wide
+  audiences: [leadership, operations, sales, gis, field]
+  cadence: daily
+  implementation: freshness
+  authorityBoundaries:
+    - Opens review recommendations; approval remains human.
+- id: relationship-agent
+  title: Relationship Agent
+  purpose: Detects proposed (unconfirmed) links, orphaned capabilities and R&D projects without downstream capabilities.
+  owningTeam: rnd
+  audiences: [leadership, ai]
+  cadence: on-demand
+  implementation: relationships
+  authorityBoundaries:
+    - Suggests links for human confirmation; never writes relationships.
+- id: duplicate-detector
+  title: Duplicate & Conflict Detector
+  purpose: Finds SOPs with multiple unreconciled versions and near-duplicate titles across the library.
+  owningTeam: operations-admin
+  audiences: [operations, leadership]
+  cadence: weekly
+  implementation: duplicates
+  authorityBoundaries:
+    - Recommends which version to confirm; the owner decides.
+- id: pipeline-agent
+  title: Pipeline Hygiene Agent
+  purpose: Reviews the opportunity pipeline for stale stages, missing next steps, SQL-stage deals without an RFP decision, and won deals without a project reference.
+  owningTeam: sales-bd
+  audiences: [sales, leadership]
+  cadence: daily
+  implementation: pipeline
+  authorityBoundaries:
+    - Never changes deal stages or values.
+- id: rfp-appraisal-agent
+  title: RFP Appraisal Agent
+  purpose: AI-assisted opportunity evaluation producing GO / CONDITIONAL_GO / NO_GO recommendations with a compliance matrix.
+  kind: ai-assisted
+  owningTeam: sales-bd
+  audiences: [sales, leadership]
+  cadence: on-demand
+  status: planned
+  implementation: rfp-appraisal
+  authorityBoundaries:
+    - Recommends only; a human records the pursuit decision.

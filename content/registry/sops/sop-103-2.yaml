@@ -1,0 +1,41 @@
+id: sop-103-2
+title: 103.2 - Monthly Budget Report
+sopNumber: "103.2"
+category: Finance SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - budget
+  - month
+  - prior
+  - finance
+  - monthly
+  - name
+  - report
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "103.2 - Monthly Budget Report".
+    importedContentId: imported:sop-103-2-monthly-budget-report-docx
+    sourceFile:
+      id: file-103-2-monthly-budget-report-1
+      path: sop/103.2 - Monthly Budget Report.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 103.2 - Monthly Budget Report
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

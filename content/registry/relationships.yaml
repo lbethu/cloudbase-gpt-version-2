@@ -1,0 +1,34 @@
+# Extensible relationship model. confidence: declared (confirmed by a human) | proposed (implied, pending confirmation).
+# R&D projects → capabilities (implied by naming; confirm in CROS)
+- { from: { type: rnd-project, id: CP-RND-001 }, to: { type: capability, id: CAP-001 }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-002 }, to: { type: capability, id: CAP-002 }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-003 }, to: { type: capability, id: CAP-003 }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-004 }, to: { type: capability, id: CAP-004 }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-005 }, to: { type: capability, id: CAP-005 }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-006 }, to: { type: capability, id: CAP-006 }, type: creates, confidence: proposed }
+# Capability cluster membership
+- { from: { type: capability, id: CAP-003 }, to: { type: capability-cluster, id: CLUSTER-001 }, type: belongs-to, confidence: proposed }
+- { from: { type: capability, id: CAP-004 }, to: { type: capability-cluster, id: CLUSTER-001 }, type: belongs-to, confidence: proposed }
+# Copilots ↔ R&D / capabilities
+- { from: { type: rnd-project, id: CP-RND-005 }, to: { type: copilot, id: experience-builder-engineering-copilot }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-006 }, to: { type: copilot, id: rfp-appraisal-assistant }, type: creates, confidence: proposed }
+- { from: { type: rnd-project, id: CP-RND-002 }, to: { type: copilot, id: sop-knowledge-assistant }, type: creates, confidence: proposed }
+- { from: { type: copilot, id: experience-builder-engineering-copilot }, to: { type: capability, id: CAP-001 }, type: supports, confidence: proposed }
+- { from: { type: copilot, id: rfp-appraisal-assistant }, to: { type: capability, id: CAP-006 }, type: supports, confidence: proposed }
+- { from: { type: copilot, id: sop-knowledge-assistant }, to: { type: capability, id: CAP-002 }, type: supports, confidence: proposed }
+# SOPs ↔ copilots / domains (declared: the SOP text governs the activity)
+- { from: { type: sop, id: sop-223 }, to: { type: copilot, id: project-reference-assistant }, type: governs, confidence: declared, note: "Project reference creation and updates are governed by SOP 223." }
+- { from: { type: sop, id: sop-209 }, to: { type: copilot, id: rfp-appraisal-assistant }, type: related-to, confidence: declared, note: "Proposal creation follows SOP 209 after a GO decision." }
+- { from: { type: copilot, id: sop-knowledge-assistant }, to: { type: documentation, id: cloudbase-ask-governance }, type: documents, confidence: declared }
+# Documentation ↔ standards
+- { from: { type: documentation, id: copilot-engineering-standard }, to: { type: copilot, id: cros-copilot }, type: governs, confidence: declared }
+- { from: { type: documentation, id: copilot-engineering-standard }, to: { type: copilot, id: experience-builder-engineering-copilot }, type: governs, confidence: declared }
+- { from: { type: documentation, id: copilot-engineering-standard }, to: { type: copilot, id: project-reference-assistant }, type: governs, confidence: declared }
+- { from: { type: documentation, id: copilot-engineering-standard }, to: { type: copilot, id: rfp-appraisal-assistant }, type: governs, confidence: declared }
+- { from: { type: documentation, id: copilot-engineering-standard }, to: { type: copilot, id: sop-knowledge-assistant }, type: governs, confidence: declared }
+- { from: { type: documentation, id: rfp-evaluation-assistant-pattern }, to: { type: rnd-project, id: CP-RND-006 }, type: documents, confidence: declared }
+- { from: { type: documentation, id: rfp-evaluation-assistant-pattern }, to: { type: copilot, id: rfp-appraisal-assistant }, type: documents, confidence: declared }
+- { from: { type: documentation, id: cros-maturity-model }, to: { type: capability-cluster, id: CLUSTER-001 }, type: informs, confidence: declared }
+- { from: { type: documentation, id: cloudbase-architecture }, to: { type: rnd-project, id: CP-RND-002 }, type: documents, confidence: declared }
+- { from: { type: documentation, id: cloudbase-ask-governance }, to: { type: rnd-project, id: CP-RND-002 }, type: documents, confidence: declared }
+- { from: { type: documentation, id: cloudbase-ask-governance }, to: { type: capability, id: CAP-002 }, type: documents, confidence: declared }

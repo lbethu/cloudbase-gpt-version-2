@@ -1,0 +1,41 @@
+id: sop-208
+title: 208- Tech and News Blog Post Creation
+sopNumber: "208"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - blog
+  - creation
+  - marketing
+  - news
+  - post
+  - tech
+  - operations
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "208- Tech and News Blog Post Creation".
+    importedContentId: imported:sop-208-tech-and-news-blog-post-creation-docx
+    sourceFile:
+      id: file-208-tech-and-news-blog-post-creation-1
+      path: sop/208- Tech and News Blog Post Creation.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 208- Tech and News Blog Post Creation
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

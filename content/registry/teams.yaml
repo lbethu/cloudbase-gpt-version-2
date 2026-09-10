@@ -1,0 +1,43 @@
+# Team workspaces. Add a team here — no code change required.
+# owners/experts are identity subjects (work email or Entra object id).
+- id: company-wide
+  name: Company-Wide
+  shortName: CP
+  scope: company-wide
+  sortOrder: 0
+  description: Knowledge every Cloudpoint employee should be able to find — policies, shared processes, onboarding.
+- id: leadership
+  name: Leadership
+  shortName: LEAD
+  sortOrder: 10
+  description: Strategy, portfolio decisions, R&D governance, and organizational priorities.
+- id: sales-bd
+  name: Sales / Business Development
+  shortName: SALES
+  sortOrder: 20
+  description: Campaigns, lead qualification, proposals, RFP response, marketing content, and events.
+- id: technical-gis
+  name: Technical / GIS
+  shortName: GIS
+  sortOrder: 30
+  description: GIS engineering, ArcGIS platform work, Experience Builder, data engineering, and delivery QA.
+- id: field-reality-capture
+  name: Field / Reality Capture
+  shortName: FIELD
+  sortOrder: 40
+  description: Field safety, mobile data collection, 360° imagery, LiDAR, and site readiness.
+- id: operations-admin
+  name: Operations / Admin
+  shortName: OPS
+  sortOrder: 50
+  description: Finance, project startup and close-out, vendors and subcontractors, inventory, and administration.
+- id: ai-automation
+  name: AI / Automation
+  shortName: AI
+  sortOrder: 60
+  description: Copilots, automation engineering, AI governance, and the CloudBase platform itself.
+- id: rnd
+  name: R&D
+  shortName: R&D
+  sortOrder: 70
+  description: CROS — ideas, evaluations, research, experiments, evidence, and capability maturity.

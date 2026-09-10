@@ -1,0 +1,52 @@
+id: sop-105-2
+title: 105.2 - Project Startup for Block of Hours Projects
+sopNumber: "105.2"
+category: Operations SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - project
+  - block
+  - hours
+  - projects
+  - operations
+  - startup
+  - bigtime
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "105.2 - Project Startup for Block of Hours Projects (1)". Two files were found for this SOP; the effective version must be confirmed by the owner.
+    importedContentId: imported:sop-105-2-project-startup-for-block-of-hours-projects-1-docx
+    sourceFile:
+      id: file-105-2-project-startup-for-block-of-hours-projects-1
+      path: sop/105.2 - Project Startup for Block of Hours Projects (1).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 105.2 - Project Startup for Block of Hours Projects (1)
+    purpose: ""
+    references: []
+  - version: imported.2
+    status: review
+    changeSummary: Imported from "105.2 - Project Startup for Block of Hours Projects". Two files were found for this SOP; the effective version must be confirmed by the owner.
+    importedContentId: imported:sop-105-2-project-startup-for-block-of-hours-projects-docx
+    sourceFile:
+      id: file-105-2-project-startup-for-block-of-hours-projects-2
+      path: sop/105.2 - Project Startup for Block of Hours Projects.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 105.2 - Project Startup for Block of Hours Projects
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

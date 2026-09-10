@@ -1,0 +1,52 @@
+# CROS R&D registry. CROS is authoritative; CloudBase reads this registry.
+# `maturity` is intentionally absent until a governed evaluation assigns a level.
+- id: CP-RND-001
+  code: CP-RND-001
+  title: Westlawn AI-Assisted Experience Builder Engineering
+  summary: AI-assisted engineering of ArcGIS Experience Builder applications under governed review.
+  owningTeam: rnd
+  teams: [technical-gis, ai-automation]
+  status: active
+  technologies: [ArcGIS Experience Builder, AI code assistance]
+- id: CP-RND-002
+  code: CP-RND-002
+  title: CloudBase AI — Organizational Knowledge Intelligence
+  summary: Governed, source-backed retrieval and assistance over Cloudpoint's organizational knowledge — this platform.
+  owningTeam: rnd
+  teams: [ai-automation]
+  status: active
+  technologies: [Next.js, retrieval, provider-neutral AI adapters]
+  repositories:
+    - { owner: lbethu, repo: Cloudpoint-KNowledgebaseGPT_V1, label: CloudBase AI platform }
+- id: CP-RND-003
+  code: CP-RND-003
+  title: IndoorScan AI — GeoAI-Assisted Indoor Mapping
+  summary: GeoAI-assisted interpretation of indoor scan data into structural mapping products.
+  owningTeam: rnd
+  teams: [field-reality-capture, technical-gis]
+  status: active
+  technologies: [LiDAR, GeoAI]
+- id: CP-RND-004
+  code: CP-RND-004
+  title: 360° Indoor Asset Intelligence — Multi-View GeoAI Detection
+  summary: Multi-view detection of indoor assets from 360° imagery.
+  owningTeam: rnd
+  teams: [field-reality-capture, technical-gis]
+  status: active
+  technologies: [360° imagery, computer vision]
+- id: CP-RND-005
+  code: CP-RND-005
+  title: Experience Builder Engineering Copilot
+  summary: A copilot supporting governed, AI-assisted Experience Builder engineering.
+  owningTeam: rnd
+  teams: [technical-gis, ai-automation]
+  status: active
+  technologies: [ArcGIS Experience Builder, copilot engineering]
+- id: CP-RND-006
+  code: CP-RND-006
+  title: RFP Appraisal Engine — AI-Assisted Opportunity Intelligence
+  summary: Structured, AI-assisted evaluation of RFP opportunities with GO / CONDITIONAL_GO / NO_GO decision support.
+  owningTeam: rnd
+  teams: [sales-bd, ai-automation]
+  status: active
+  technologies: [document analysis, decision support]

@@ -1,0 +1,53 @@
+# Copilot registry. `accessUrl` stays empty until a deployment is approved and configured.
+- id: cros-copilot
+  title: CROS Copilot
+  status: prototype
+  owningTeam: rnd
+  teams: [leadership, ai-automation]
+  purpose: R&D decision and research intelligence.
+  description: Helps leadership and technical teams evaluate new ideas, search internal reuse, research industry context, analyze GIS/Esri alignment, identify evidence gaps, plan experiments, and recommend next actions.
+  supportedUsers: [Leadership, R&D leads, Technical leads]
+  authorityBoundaries:
+    - Recommends; never records CROS decisions, evidence approvals or maturity changes.
+    - Drafts intake; a human confirms before backend submission.
+  limitations:
+    - Prototype. Outputs are not governed CROS records until a human submits them.
+- id: experience-builder-engineering-copilot
+  title: Experience Builder Engineering Copilot
+  status: concept
+  owningTeam: technical-gis
+  teams: [ai-automation]
+  purpose: Supports governed AI-assisted Experience Builder engineering.
+  supportedUsers: [GIS developers]
+  authorityBoundaries:
+    - Assists engineering; does not deploy or publish applications.
+- id: project-reference-assistant
+  title: Project Reference Assistant
+  status: concept
+  owningTeam: sales-bd
+  teams: [operations-admin, leadership]
+  purpose: Converts governed project information into reusable project references.
+  description: Turns approved project information into one-page references, proposal-friendly summaries, technical experience statements and case-study drafts. Never invents outcomes, ROI, dates, locations or metrics — it asks for missing information.
+  supportedUsers: [Sales, Project managers, Leadership]
+  authorityBoundaries:
+    - Never invents outcomes, ROI, dates, locations or metrics.
+    - Output is a draft until approved wording is recorded on the project reference.
+- id: rfp-appraisal-assistant
+  title: RFP Appraisal Assistant
+  status: concept
+  owningTeam: sales-bd
+  teams: [ai-automation]
+  purpose: Supports structured opportunity evaluation.
+  supportedUsers: [Sales, Business development, Leadership]
+  outputContract: "Decision vocabulary: GO, CONDITIONAL_GO, NO_GO — always with reasons, red flags and a compliance matrix."
+  authorityBoundaries:
+    - Recommends a decision; a human records the pursuit decision.
+- id: sop-knowledge-assistant
+  title: SOP Knowledge Assistant
+  status: concept
+  owningTeam: company-wide
+  teams: [ai-automation]
+  purpose: Helps employees discover and use governed SOP knowledge.
+  supportedUsers: [All employees]
+  authorityBoundaries:
+    - The assistant never replaces the governed SOP; it points to the approved version.

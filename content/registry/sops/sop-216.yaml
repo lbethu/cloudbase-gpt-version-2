@@ -1,0 +1,52 @@
+id: sop-216
+title: 216- Inbound Lead Qualification Process
+sopNumber: "216"
+category: Sales SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Sales Operations Owner
+classification: internal
+tags:
+  - Sales SOP
+  - Sales
+  - Company SOP Library
+  - inbound
+  - process
+  - sales
+  - lead
+  - leads
+  - qualification
+  - across
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "216- Inbound Lead Qualification Process (1)". Two files were found for this SOP; the effective version must be confirmed by the owner.
+    importedContentId: imported:sop-216-inbound-lead-qualification-process-1-docx
+    sourceFile:
+      id: file-216-inbound-lead-qualification-process-1
+      path: sop/216- Inbound Lead Qualification Process (1).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 216- Inbound Lead Qualification Process (1)
+    purpose: ""
+    references: []
+  - version: imported.2
+    status: review
+    changeSummary: Imported from "216- Inbound Lead Qualification Process". Two files were found for this SOP; the effective version must be confirmed by the owner.
+    importedContentId: imported:sop-216-inbound-lead-qualification-process-docx
+    sourceFile:
+      id: file-216-inbound-lead-qualification-process-2
+      path: sop/216- Inbound Lead Qualification Process.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 216- Inbound Lead Qualification Process
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

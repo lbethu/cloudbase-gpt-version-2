@@ -1,0 +1,41 @@
+id: sop-213
+title: 213- Conference Exhibiting Execution
+sopNumber: "213"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - conference
+  - exhibiting
+  - marketing
+  - different
+  - execution
+  - purpose
+  - applies
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "213- Conference Exhibiting Execution".
+    importedContentId: imported:sop-213-conference-exhibiting-execution-docx
+    sourceFile:
+      id: file-213-conference-exhibiting-execution-1
+      path: sop/213- Conference Exhibiting Execution.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 213- Conference Exhibiting Execution
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

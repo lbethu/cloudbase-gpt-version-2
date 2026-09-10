@@ -1,0 +1,41 @@
+id: sop-102-4
+title: 102.4 - Balance_Reconcile Credit Cards
+sopNumber: "102.4"
+category: Finance SOP
+summary: 102.4 - Balance/Reconcile Credit Cards
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - chase
+  - credit
+  - cards
+  - finance
+  - accounts
+  - balance
+  - balance/reconcile
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "102.4 - Balance_Reconcile Credit Cards".
+    importedContentId: imported:sop-102-4-balance-reconcile-credit-cards-docx
+    sourceFile:
+      id: file-102-4-balance-reconcile-credit-cards-1
+      path: sop/102.4 - Balance_Reconcile Credit Cards.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 102.4 - Balance_Reconcile Credit Cards
+    purpose: 102.4 - Balance/Reconcile Credit Cards
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

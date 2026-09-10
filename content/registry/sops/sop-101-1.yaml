@@ -1,0 +1,41 @@
+id: sop-101-1
+title: 101.1 - Invoicing
+sopNumber: "101.1"
+category: SOP Library
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Process Owner
+classification: internal
+tags:
+  - SOP Library
+  - Operations
+  - Company SOP Library
+  - invoices
+  - invoicing
+  - attachments
+  - creating
+  - happens
+  - library
+  - monthly
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "101.1 - Invoicing".
+    importedContentId: imported:sop-101-1-invoicing-docx
+    sourceFile:
+      id: file-101-1-invoicing-1
+      path: sop/101.1 - Invoicing.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 101.1 - Invoicing
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

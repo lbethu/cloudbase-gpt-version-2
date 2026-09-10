@@ -1,0 +1,41 @@
+id: sop-102-2
+title: 102.2 - Approving_Paying Employee Expenses
+sopNumber: "102.2"
+category: Finance SOP
+summary: 102.1- Paying Vendor Invoices
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - anything
+  - paying
+  - finance
+  - has
+  - invoices
+  - over
+  - added
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "102.2 - Approving_Paying Employee Expenses".
+    importedContentId: imported:sop-102-2-approving-paying-employee-expenses-docx
+    sourceFile:
+      id: file-102-2-approving-paying-employee-expenses-1
+      path: sop/102.2 - Approving_Paying Employee Expenses.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 102.2 - Approving_Paying Employee Expenses
+    purpose: 102.1- Paying Vendor Invoices
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

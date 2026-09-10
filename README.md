@@ -1,182 +1,105 @@
 # CloudBase AI
 
-CloudBase AI is an enterprise-style prototype for an internal company intelligence, knowledge guidance, and future workflow automation platform.
+**Cloudpoint Knowledge & Intelligence Hub** — one internal platform to discover Cloudpoint knowledge, SOPs, R&D (CROS), capabilities, project references, AI copilots, automations and technical guidance, with source attribution, ownership, versions and governed human approval.
 
-The approval-facing library contains 45 real documents across 10 source groups, 7 team AI dashboards, and 10 planned guidance modules. Mock records must be replaced by authoritative, access-controlled sources before production use.
+This is a production-oriented internal operating platform, not a marketing site or a chatbot. AI may search, summarize, connect, recommend and draft; it never approves SOPs, publishes policy, promotes R&D maturity or creates organizational truth.
 
-## Why this prototype exists
+## What is here
 
-The prototype validates the user experience and knowledge architecture before sensitive documents are introduced. It gives reviewers a concrete way to assess:
+| Area | Route | Notes |
+| --- | --- | --- |
+| Home | `/` | Domains, recommendations, recent updates, active R&D, copilots, review attention |
+| Universal search | `/search`, `⌘K` | Full-text search over every extracted SOP section/page (507 passages from 45 files) with highlighted matches and "matched in §section · page" locations |
+| Dashboards | `/dashboards/{leadership,sales,gis,field,operations,ai}` | Role-based agentic dashboards: KPIs, agent insights, lifecycle/maturity/pipeline charts |
+| Knowledge Graph | `/graph` | Force-directed explorer of every relationship (declared, proposed, ownership), permission-scoped |
+| CRM | `/crm`, `/crm/accounts`, `/crm/contacts`, `/crm/opportunities` | Pipeline board (IQL→MQL→SQL→proposal→negotiation→won/lost), accounts, contacts; governed records + read-only Pipedrive connector |
+| Agents | `/agents` | Deterministic platform agents (coverage, freshness, relationships, duplicates, pipeline hygiene) with audited runs |
+| Integrations | `/governance/integrations` | Entra ID, GitHub, Pipedrive, AI provider, Drive, search, audit — status and how-to |
+| Ask CloudBase | `/ask` | Governed answers: FACT / SUPPORTED_INFERENCE / ASSUMPTION / UNKNOWN with citations |
+| Team Workspaces | `/teams` | Teams are registry data; knowledge is shared by relationship, never duplicated |
+| SOP Library | `/sops` | Governed lifecycle (draft → review → approved → superseded → historical), versions, protected source files |
+| Documentation | `/docs` | Markdown + frontmatter, highlighted code, copy buttons, TOC |
+| Research | `/research` | Research library + 7 templates, CROS-linked |
+| CROS | `/cros` | Read-only R&D operating system: projects, capabilities, clusters, ideas, evaluations, evidence, experiments, decisions, portfolio, CROS Copilot entry |
+| Capabilities | `/capabilities` | Project vs. capability, maturity R0–R7, clusters |
+| Project References | `/projects` | Reference library + Project Reference Assistant |
+| RFP Intelligence | `/rfp` | Records + “How we build an RFP Evaluation Assistant” |
+| Copilots | `/copilots` | Registry, Creation Center, Engineering Standard |
+| Automations | `/automations` | Library, proposal intake, Engineering Standard |
+| Governance | `/governance/*` | Review queue, admin center, audit history |
 
-- Source-backed answer structure
-- SOP and category navigation
-- Document metadata and ownership
-- Content upload and review workflow
-- Mock retrieval quality
-- The path to governed real-data integration
+Legacy prototype (fictional review corpus) remains at `/legacy` and `/presentation` behind `CLOUDBASE_ENABLE_LEGACY_PROTOTYPE` (off in production).
 
-## Version 1 scope
+## Architecture
 
-- Executive dashboard with prototype health metrics
-- Ask Knowledge Base experience with confidence, sources, matching sections, and next steps
-- Local TypeScript retrieval engine with weighted lexical scoring
-- SOP Navigator across a future-ready category taxonomy
-- Filterable document library
-- Front-end upload and processing simulation
-- Source viewer with metadata, sections, chunks, and replacement notes
-- Five-phase real-data integration plan
-- 45 realistic mock documents and 109 indexed chunks
-- Ten source groups and seven team AI dashboards
-- Ten planned AI guidance and workflow modules
-- Five-layer CloudBase AI architecture
-- Knowledge source map and document coverage matrix
-- Reviewer Mode with approval decisions and real-data requirements
-- Responsive enterprise interface
+```
+src/app/(platform)        routes — server components, permission-aware
+src/components            shell (sidebar, ⌘K palette), ui primitives, detail-page standard
+src/domain                Zod schemas for every governed entity
+src/server/auth           IdentityProvider seam (dev · Entra ID via authenticating proxy)
+src/server/authz          default-deny, explicit-deny precedence, classification checks
+src/server/repositories   interfaces + file registry implementation (PostgreSQL later)
+src/server/services       search, ask, relationships, reviews, files, audit, markdown
+src/server/search         SearchProvider — lexical today, hybrid/vector seam
+src/server/ai             AiProvider — disabled by default; OpenAI / Azure OpenAI / Anthropic / Gemini adapters
+content/registry          teams, roles, sops/*, cros/*, copilots, automations, relationships, synonyms
+content/docs              governed documentation (markdown + frontmatter)
+content/templates         research templates
+content/knowledge         imported, source-backed SOP text
+source-documents/         original SOP files — served ONLY via /api/files/{id} with authorization + audit
+```
 
-## Mock source groups
+See `docs/cloudbase-implementation-plan.md` for the audit, decisions and phase plan, and `/docs/cloudbase-architecture` inside the app.
 
-- COM Site
-- SOP Library
-- Sales Playbook
-- PM/PL Documents
-- Field Team Resources
-- Tech Team Resources
-- RFP / Proposal Knowledge
-- Training / Onboarding
-- Project Templates
-- Delivery Standards
-
-All mock guidance is fictional and exists only to validate the product workflow and knowledge architecture.
-
-## Review-data boundary
-
-No supplied or confidential company document participates in this review build. Search, navigation, the document library, and the source viewer use the fictional CloudBase AI corpus only.
-
-## Tech stack
-
-- Next.js 15 App Router
-- React 19
-- TypeScript
-- Custom responsive design system
-- Lucide icons
-- Local typed data and retrieval for the mock foundation and imported SOP navigator
-- Optional live Google Drive search (server-side only, via a service account — see below). No other external API, model, database, or paid service is used.
-
-## Google Drive live search (optional)
-
-A separate "Google Drive search" tab searches a real, access-limited Google
-Drive folder directly and returns the matching document plus a link to it
-and to its containing folder — this is additive and does not change the
-existing mock/SOP experience described above. It requires a one-time Google
-Cloud service-account setup. See
-[docs/google-drive-integration.md](docs/google-drive-integration.md) for the
-full walkthrough, and copy `.env.example` to `.env.local` to configure it.
-Until configured, the tab clearly states it isn't connected yet rather than
-failing silently.
-
-## Run locally
+## Run
 
 ```bash
 npm install
-npm run dev
+cp .env.example .env.local      # dev identity is enabled by default outside production
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-## Executive presentation
-
-After starting the application, open:
-
-```text
-http://localhost:3000/presentation
-```
-
-The Executive Product Walkthrough is a presentation-friendly, 5–7 minute narrative covering:
-
-- The product problem and solution
-- Knowledge source architecture
-- Why the prototype uses mock company-style data
-- Current source-group coverage
-- Team-based dashboards
-- Source-backed Q&A retrieval
-- Future document ingestion
-- Reviewer approval decisions
-- The real-data integration roadmap
-
-Use [docs/executive-walkthrough.md](docs/executive-walkthrough.md) as the presenter guide and [docs/demo-script.md](docs/demo-script.md) as the spoken script.
-
-The walkthrough is print-friendly and clearly labels all approval-facing content as mock prototype data. It must not be represented as approved company policy or a production data integration.
-
-Create a production build with:
+Quality gates:
 
 ```bash
+npm run typecheck
+npm test
 npm run build
-npm start
+npm run verify                  # all three
 ```
 
-## Folder structure
+## Governance rules baked in
 
-```text
-cloudpoint-knowledge-base-gpt/
-├── docs/
-│   ├── Review-notes.md
-│   ├── knowledge-architecture.md
-│   ├── mock-data-plan.md
-│   ├── project-overview.md
-│   └── real-data-integration-plan.md
-├── public/
-├── src/
-│   ├── app/
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── components/
-│   │   └── KnowledgeApp.tsx
-│   ├── data/
-│   │   └── documents.ts
-│   ├── lib/
-│   │   └── retrieval.ts
-│   └── types/
-│       └── knowledge.ts
-├── package.json
-└── README.md
-```
+- **Default deny.** Every page, API route and file download is authorized server-side against `content/registry/roles.yaml`. Hidden links are not the control.
+- **Permission-scoped retrieval.** Search, Ask CloudBase and related-content panels only ever see items the viewer may read.
+- **No fabricated data.** No fake SOPs, employees, projects, clients or metrics. Empty states are designed. Imported SOPs enter as *in review*; nothing is approved until an approver records it.
+- **CROS is authoritative.** CloudBase reads the CROS registry; maturity is never inferred. Relationships implied by naming are marked *proposed* until confirmed.
+- **Audit.** File access, Ask queries (metadata only), denied authorizations and provider errors are appended to `var/audit/`.
+- **Versioned knowledge.** SOP history is never overwritten; a new version supersedes the old one.
 
-## Knowledge and retrieval architecture
+## Source documents → searchable text
 
-Documents are represented as typed records with company, source-kind, SOP, governance, section, and retrieval metadata. The local engine normalizes a question and scores authorized chunks using:
+`npm run extract:sources` extracts the full text of every file in `source-documents/` (DOCX headings/paragraphs via mammoth, PDF per page via pdf-parse) into `content/knowledge/imported/sop-content.json` and re-points the SOP registry. Run it whenever a source file changes. Search, Ask CloudBase and the SOP library all rank over these passages, so any keyword inside a document (e.g. "SQL" in the Sales Playbook) finds the SOP.
 
-- Content keyword overlap
-- Explicit chunk keywords
-- Section-heading matches
-- Document-title matches
-- Category and tag matches
-- Exact phrase bonuses
+## Adding knowledge
 
-The top results produce a concise answer, a confidence label, source cards, and a recommended next action. `src/lib/retrieval.ts` is the seam for a future hybrid vector-search and approved model-synthesis implementation.
+- Team: add to `content/registry/teams.yaml`.
+- SOP: add `content/registry/sops/<id>.yaml` (or use *Create SOP draft* in the app to generate one).
+- Documentation: add markdown with frontmatter under `content/docs/<domain>/`.
+- Relationship: add a line to `content/registry/relationships.yaml`.
+- Copilot / automation / project reference / research / RFP record: add to the matching registry folder.
 
-## Real-data integration plan
+Every file is validated on load; a malformed record fails with the file and field named.
 
-1. Approve the prototype workflow and taxonomy.
-2. Inventory and ingest approved SOPs.
-3. Map COM site, sales, PM/PL, and operational collections.
-4. Add identity-aware permissions and content review.
-5. Deploy hybrid retrieval, grounded synthesis, evaluation, monitoring, and secure hosting.
+## Integrations
 
-See [docs/real-data-integration-plan.md](docs/real-data-integration-plan.md) for the detailed plan.
+- **GitHub** — link any record with `repositories: [{ owner, repo }]`; detail pages show repo stats and latest commit (read-only; `GITHUB_TOKEN` for private repos).
+- **Pipedrive** — `PIPEDRIVE_API_TOKEN` + `PIPEDRIVE_COMPANY_DOMAIN` surface live deals/organizations/people read-only in the CRM workspace; governed records always win.
 
-## Future roadmap
+## Identity in production
 
-- Approved document connectors and extraction pipeline
-- Hybrid vector and keyword retrieval
-- SSO and role-based access controls
-- Content-owner approval and freshness workflows
-- Answer feedback and retrieval evaluation
-- Audit logs and source-access analytics
-- Approved enterprise language-model integration
+Run behind an authenticating proxy (Azure App Service Easy Auth or equivalent) with `CLOUDBASE_AUTH_MODE=entra`. The proxy must strip inbound `x-ms-client-principal`. Map Entra groups/app roles to CloudBase roles and teams with `CLOUDBASE_ENTRA_GROUP_ROLE_MAP` / `CLOUDBASE_ENTRA_GROUP_TEAM_MAP`. The development identity provider is refused in production builds.
 
-## Notes for reviewer
+## Google Drive live search (optional)
 
-The key approval decision is whether the experience, answer structure, source groups, team dashboards, metadata, and source-review flow are appropriate before authoritative company collections are mapped.
-
-The strongest reviewer path is: dashboard → ask a sample question → open a cited source → inspect upload staging → review the integration plan.
+Preserved from the prototype; requires `knowledge.read` and a service account — see `docs/google-drive-integration.md`.

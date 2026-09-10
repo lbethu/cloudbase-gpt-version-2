@@ -1,0 +1,42 @@
+id: sop-project-manager-and-project-lead-overview
+title: Project Manager and Project Lead Overview
+sopNumber: ""
+category: PM/PL Guidance
+summary: Project Manager and Project Lead overview covering delivery ownership, coordination expectations, kickoff preparation, and handoff responsibilities.
+kind: guide
+owningTeam: operations-admin
+teams:
+  - technical-gis
+owner: Delivery Leadership
+classification: internal
+tags:
+  - PM/PL Guidance
+  - Project Delivery
+  - PM/PL SOPs
+  - project
+  - overview
+  - delivery
+  - lead
+  - manager
+  - pm/pl
+  - clarify
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "Project Manager and Project Lead Overview".
+    importedContentId: imported:project-manager-and-project-lead-project-manager-and-project-lead-overview-pdf
+    sourceFile:
+      id: file-project-manager-and-project-lead-overview-1
+      path: Project manager and project lead/Project Manager and Project Lead Overview.pdf
+      mediaType: application/pdf
+      label: Project Manager and Project Lead Overview
+    purpose: Project Manager and Project Lead overview covering delivery ownership, coordination expectations, kickoff preparation, and handoff responsibilities.
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

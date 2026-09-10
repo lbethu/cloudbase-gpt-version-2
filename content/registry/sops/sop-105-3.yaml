@@ -1,0 +1,41 @@
+id: sop-105-3
+title: 105.3 - Project Startup for Item Based (Lump Sum) Projects (Verified)
+sopNumber: "105.3"
+category: Operations SOP
+summary: 105.3 - Project Startup for Item-Based (Lump Sum) Projects (Verified)
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - project
+  - projects
+  - item-based
+  - lump
+  - operations
+  - startup
+  - sum
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "105.3 - Project Startup for Item Based (Lump Sum) Projects (Verified)".
+    importedContentId: imported:sop-105-3-project-startup-for-item-based-lump-sum-projects-verified-docx
+    sourceFile:
+      id: file-105-3-project-startup-for-item-based-lump-sum-projects-verified-1
+      path: sop/105.3 - Project Startup for Item Based (Lump Sum) Projects (Verified).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 105.3 - Project Startup for Item Based (Lump Sum) Projects (Verified)
+    purpose: 105.3 - Project Startup for Item-Based (Lump Sum) Projects (Verified)
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

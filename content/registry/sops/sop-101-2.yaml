@@ -1,0 +1,41 @@
+id: sop-101-2
+title: 101.2 - Posting Payments (ACH_Check)
+sopNumber: "101.2"
+category: Finance SOP
+summary: 101.2 - Posting Payments (ACH/Check)
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Finance / Accounting Owner
+classification: internal
+tags:
+  - Finance SOP
+  - Finance
+  - Company SOP Library
+  - posting
+  - ach
+  - check
+  - finance
+  - payment
+  - payments
+  - ach/check
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "101.2 - Posting Payments (ACH_Check)".
+    importedContentId: imported:sop-101-2-posting-payments-ach-check-docx
+    sourceFile:
+      id: file-101-2-posting-payments-ach-check-1
+      path: sop/101.2 - Posting Payments (ACH_Check).docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 101.2 - Posting Payments (ACH_Check)
+    purpose: 101.2 - Posting Payments (ACH/Check)
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

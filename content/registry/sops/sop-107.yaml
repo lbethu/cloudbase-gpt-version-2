@@ -1,0 +1,41 @@
+id: sop-107
+title: 107- Selection & Approval of Subcontractors
+sopNumber: "107"
+category: Operations SOP
+summary: 106.3 - Project Close-outs
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - operations
+  - approval
+  - close-outs
+  - none
+  - prerequisites
+  - project
+  - purpose
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "107- Selection & Approval of Subcontractors".
+    importedContentId: imported:sop-107-selection-approval-of-subcontractors-docx
+    sourceFile:
+      id: file-107-selection-approval-of-subcontractors-1
+      path: sop/107- Selection & Approval of Subcontractors.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 107- Selection & Approval of Subcontractors
+    purpose: 106.3 - Project Close-outs
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

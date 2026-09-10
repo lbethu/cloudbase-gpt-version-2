@@ -1,0 +1,41 @@
+id: sop-223
+title: 223- Project Reference Creation and Updates
+sopNumber: "223"
+category: SOP Library
+summary: 219- Conference Abstract Submission
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Process Owner
+classification: internal
+tags:
+  - SOP Library
+  - Operations
+  - Company SOP Library
+  - project
+  - references
+  - use
+  - abstract
+  - applies
+  - clients
+  - conference
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "223- Project Reference Creation and Updates".
+    importedContentId: imported:sop-223-project-reference-creation-and-updates-docx
+    sourceFile:
+      id: file-223-project-reference-creation-and-updates-1
+      path: sop/223- Project Reference Creation and Updates.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 223- Project Reference Creation and Updates
+    purpose: 219- Conference Abstract Submission
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

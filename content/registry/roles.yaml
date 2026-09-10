@@ -1,0 +1,38 @@
+# Role → permission mapping. Authorization is default-deny; `denies` beat grants.
+- id: employee
+  name: Employee
+  description: Every authenticated Cloudpoint employee.
+  grants: [knowledge.read, sop.read, rnd.read, capability.read, copilot.read, automation.read, files.read, ask.use, agent.read, integration.read]
+- id: contributor
+  name: Contributor
+  description: Can author drafts and submit ideas/proposals.
+  grants: [knowledge.create, knowledge.edit, sop.author, rnd.submit]
+- id: sales
+  name: Sales
+  description: CRM workspace access — accounts, contacts and the opportunity pipeline.
+  grants: [crm.read]
+- id: sales-manager
+  name: Sales manager
+  description: Manages CRM records and runs sales agents.
+  grants: [crm.read, crm.manage, agent.run]
+- id: reviewer
+  name: Reviewer
+  description: Reviews SOPs, R&D submissions and AI assets; sees the review queue.
+  grants: [sop.review, rnd.review, review.read]
+- id: approver
+  name: Approver
+  description: Approves SOP publication, R&D decisions, capability promotion.
+  grants: [sop.approve, rnd.approve, knowledge.publish, capability.manage, review.read]
+- id: ai-steward
+  name: AI Steward
+  description: Manages the Copilot and Automation registries.
+  grants: [copilot.manage, automation.manage, review.read]
+- id: admin
+  name: Administrator
+  description: Governance center, configuration and audit history.
+  grants: [admin.access, audit.read, review.read, agent.run, crm.read]
+- id: restricted-readonly
+  name: Restricted read-only
+  description: Example of explicit deny precedence — cannot open source files even if another role grants it.
+  grants: [knowledge.read, sop.read]
+  denies: [files.read]

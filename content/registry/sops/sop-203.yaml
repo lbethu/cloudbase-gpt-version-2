@@ -1,0 +1,41 @@
+id: sop-203
+title: 203- Quarterly Newsletter Process
+sopNumber: "203"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - newsletter
+  - quarterly
+  - marketing
+  - connected
+  - our
+  - process
+  - purpose
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "203- Quarterly Newsletter Process".
+    importedContentId: imported:sop-203-quarterly-newsletter-process-docx
+    sourceFile:
+      id: file-203-quarterly-newsletter-process-1
+      path: sop/203- Quarterly Newsletter Process.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 203- Quarterly Newsletter Process
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

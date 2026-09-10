@@ -1,0 +1,41 @@
+id: sop-106-1
+title: 106.1 - Block of Hours Reports
+sopNumber: "106.1"
+category: Operations SOP
+summary: ""
+kind: sop
+owningTeam: operations-admin
+teams: []
+owner: Operations / Delivery Owner
+classification: internal
+tags:
+  - Operations SOP
+  - Operations
+  - Company SOP Library
+  - block
+  - hours
+  - reports
+  - invoice
+  - operations
+  - screen
+  - bigtime
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "106.1 - Block of Hours Reports".
+    importedContentId: imported:sop-106-1-block-of-hours-reports-docx
+    sourceFile:
+      id: file-106-1-block-of-hours-reports-1
+      path: sop/106.1 - Block of Hours Reports.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 106.1 - Block of Hours Reports
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

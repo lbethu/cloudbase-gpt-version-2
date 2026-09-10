@@ -1,0 +1,41 @@
+id: sop-219
+title: 219- Conference Abstract Submission
+sopNumber: "219"
+category: Marketing SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Marketing Owner
+classification: internal
+tags:
+  - Marketing SOP
+  - Marketing
+  - Company SOP Library
+  - marketing
+  - abstract
+  - conference
+  - purpose
+  - submission
+  - all
+  - applies
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "219- Conference Abstract Submission".
+    importedContentId: imported:sop-219-conference-abstract-submission-docx
+    sourceFile:
+      id: file-219-conference-abstract-submission-1
+      path: sop/219- Conference Abstract Submission.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 219- Conference Abstract Submission
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false

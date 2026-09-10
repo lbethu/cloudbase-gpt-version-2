@@ -1,0 +1,41 @@
+id: sop-218
+title: 218- PandaDoc Backup Process
+sopNumber: "218"
+category: Sales SOP
+summary: ""
+kind: sop
+owningTeam: sales-bd
+teams: []
+owner: Sales Operations Owner
+classification: internal
+tags:
+  - Sales SOP
+  - Sales
+  - Company SOP Library
+  - process
+  - sales
+  - backup
+  - pandadoc
+  - all
+  - applies
+  - back
+version: imported
+updatedAt: 2026-09-10
+versions:
+  - version: imported.1
+    status: review
+    changeSummary: Imported from "218- PandaDoc Backup Process".
+    importedContentId: imported:sop-218-pandadoc-backup-process-docx
+    sourceFile:
+      id: file-218-pandadoc-backup-process-1
+      path: sop/218- PandaDoc Backup Process.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 218- PandaDoc Backup Process
+    purpose: ""
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: legacy prototype index (src/legacy/data/sop-knowledge-base.ts)
+  importedAt: 2026-09-10
+  note: Text was extracted from the original file. Owner verification is required before this SOP can be approved.
+  locked: false
