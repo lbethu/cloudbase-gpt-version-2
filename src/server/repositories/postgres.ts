@@ -78,7 +78,19 @@ async function load(): Promise<Snapshot> {
 export async function ensureSnapshot(): Promise<void> {
   if (snapshot && Date.now() - snapshot.loadedAt < TTL_MS) return;
   if (!loading) loading = load().finally(() => (loading = null));
-  snapshot = await loading;
+  try {
+    snapshot = await loading;
+  } catch (error) {
+    // A database that is unreachable, unmigrated or unseeded would otherwise
+    // surface as a raw driver stack on every page. Say what to do instead.
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `CloudBase is configured to serve governed records from PostgreSQL (CLOUDBASE_STORAGE=postgres) but the database could not be read: ${reason}\n` +
+        `Check that DATABASE_URL is reachable from this machine, then run \`npm run db:migrate\` and \`npm run db:seed\`. ` +
+        `To go back to the git-versioned file registry, unset CLOUDBASE_STORAGE (or set it to "file").`,
+      { cause: error },
+    );
+  }
 }
 
 function current(): Snapshot {

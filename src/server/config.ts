@@ -99,10 +99,14 @@ export function getConfig(): CloudBaseConfig {
       azureDeployment: process.env.CLOUDBASE_AI_AZURE_DEPLOYMENT ?? "",
     },
     search: { provider: (process.env.CLOUDBASE_SEARCH_PROVIDER as "lexical" | "hybrid" | undefined) ?? "lexical" },
-    storage: { mode: (process.env.CLOUDBASE_STORAGE?.trim() as "file" | "postgres" | undefined) || (process.env.DATABASE_URL?.trim() ? "postgres" : "file") },
+    // The file registry is the default and never has to be asked for. Serving
+    // from the database is an explicit opt-in (CLOUDBASE_STORAGE=postgres):
+    // merely having a DATABASE_URL in the environment must not switch a
+    // working deployment onto a database that has not been migrated or seeded.
+    storage: { mode: process.env.CLOUDBASE_STORAGE?.trim() === "postgres" ? "postgres" : "file" },
     database: { url: process.env.DATABASE_URL?.trim() ?? "" },
     blob: {
-      mode: (process.env.CLOUDBASE_BLOB_STORAGE?.trim() as "local" | "s3" | undefined) || (process.env.S3_BUCKET?.trim() ? "s3" : "local"),
+      mode: process.env.CLOUDBASE_BLOB_STORAGE?.trim() === "s3" ? "s3" : "local",
       bucket: process.env.S3_BUCKET ?? "",
       endpoint: process.env.S3_ENDPOINT ?? "",
       region: process.env.S3_REGION ?? "us-east-1",

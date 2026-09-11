@@ -87,9 +87,11 @@ CloudBase runs with **no database at all** by default — governed records live 
 
 ```bash
 # Free managed Postgres: Neon (neon.tech) or Supabase (supabase.com)
-export DATABASE_URL="postgres://…"     # secret — .env.local only, never committed
+# 1. put DATABASE_URL in .env.local (secret; gitignored). On its own it changes
+#    nothing — the app keeps serving from the file registry.
 npm run db:migrate                     # forward-only migrations in /drizzle
 npm run db:seed                        # loads content/ into the database (idempotent)
+# 2. opt in only once the database is migrated and seeded:
 CLOUDBASE_STORAGE=postgres npm run dev
 ```
 

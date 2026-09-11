@@ -27,9 +27,10 @@ Both modes implement the same `Repositories` interface. Nothing in the UI, and n
 
 Storage mode is decided in `src/server/config.ts` — the only file in the codebase that reads `process.env`:
 
-- `CLOUDBASE_STORAGE=file` — the git-versioned registry. No infrastructure required.
 - `CLOUDBASE_STORAGE=postgres` — PostgreSQL, via `DATABASE_URL`.
-- Neither set: setting `DATABASE_URL` alone switches to `postgres`; otherwise `file`.
+- Anything else, including unset — the git-versioned registry. No infrastructure required.
+
+Serving from the database is a deliberate opt-in, and only this one variable does it. A `DATABASE_URL` in the environment — put there so `db:migrate` can reach the database, or left over from another project — must never switch a working deployment onto a database that has not been migrated yet, so it doesn't.
 
 **Governance → Integrations** shows the active mode, the database host, and where documents and audit events are being written.
 
@@ -49,14 +50,16 @@ The database becomes worthwhile when you need any of these:
 Both **Neon** (neon.tech) and **Supabase** (supabase.com) offer a free PostgreSQL tier that is sufficient for CloudBase, including a connection string that works unchanged. Supabase additionally provides S3-compatible object storage on the same free plan, which is the simpler choice if you also want uploaded documents off local disk.
 
 1. Create the project and copy the connection string (it must include `sslmode=require` or be a hostname that is not localhost — the client enables TLS automatically for remote hosts).
-2. Put it in `.env.local` as `DATABASE_URL`. It is a secret: never commit it, never paste it into a chat or an issue.
-3. Apply the schema and load the registry:
+2. Put it in `.env.local` as `DATABASE_URL`. It is a secret: never commit it, never paste it into a chat or an issue. On its own it changes nothing — the app keeps serving from the file registry.
+3. Apply the schema and load the registry, then opt in:
 
 ```bash
 npm run db:migrate   # applies the forward-only migrations in /drizzle
 npm run db:seed      # loads content/ into the database (idempotent)
 CLOUDBASE_STORAGE=postgres npm run dev
 ```
+
+If the database is unreachable, unmigrated or unseeded in `postgres` mode, CloudBase says so and names the command to run rather than surfacing a driver stack trace on every page. Removing `CLOUDBASE_STORAGE` puts it straight back on the file registry.
 
 `db:seed` upserts on `(type, id)`, so it can be re-run after any registry change. It never deletes records that exist only in the database — records created by the platform's own approval workflows are safe.
 
