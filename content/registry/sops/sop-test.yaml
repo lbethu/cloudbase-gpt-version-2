@@ -1,0 +1,38 @@
+id: sop-test
+title: Test
+summary: ""
+owningTeam: company-wide
+teams: []
+owner: dev@cloudpoint.local
+classification: internal
+accessGrants: []
+tags: []
+createdAt: 2026-09-11
+updatedAt: 2026-09-11
+version: "1.0"
+repositories: []
+sopNumber: test
+kind: sop
+category: Test
+versions:
+  - version: "1.0"
+    status: draft
+    changeSummary: Uploaded by dev@cloudpoint.local on 2026-09-11.
+    importedContentId: imported:uploads-2026-330-postgresql-upgrades-docx
+    sourceFile:
+      id: file-uploads-2026-330-postgresql-upgrades-docx
+      path: uploads/2026/330 - PostgreSQL Upgrades.docx
+      mediaType: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      label: 330 - PostgreSQL Upgrades.docx
+    purpose: ""
+    prerequisites: []
+    procedure: []
+    verification: []
+    warnings: []
+    references: []
+relatedSystems: []
+provenance:
+  importedFrom: uploaded in CloudBase by dev@cloudpoint.local
+  importedAt: 2026-09-11
+  note: Uploaded through the governed workflow. Awaiting review and approval.
+  locked: true

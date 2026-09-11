@@ -64,3 +64,38 @@ describe("full-text SOP search (regression: keyword only inside a document)", ()
     }
   });
 });
+
+describe("ranking intent", () => {
+  /**
+   * Regression: a query word that happens to belong to a large synonym group
+   * used to expand the token list, and the coverage rule was then applied to
+   * the expanded set — so the document that literally matched the query was
+   * scored below threshold and dropped entirely, while documents matching many
+   * unrelated synonyms of the same concept ranked top. Synonyms must widen what
+   * can be found, never redefine what the query means.
+   */
+  const synonyms = [{ concept: "marketing", terms: ["marketing content", "campaign", "newsletter", "webinar", "blog", "conference", "showcase", "exhibiting"] }];
+  const provider = new LexicalSearchProvider(synonyms);
+
+  it("ranks the document that matches the literal query above documents matching only its synonyms", async () => {
+    const hits = await provider.search({ q: "conference abstract" }, index);
+    expect(hits.length).toBeGreaterThan(0);
+    expect(hits[0].item.title.toLowerCase()).toContain("abstract");
+  });
+
+  it("puts a title containing every query word first", async () => {
+    for (const [q, expected] of [
+      ["employee expenses", "employee expenses"],
+      ["vendor invoices", "vendor invoices"],
+      ["monthly budget", "monthly budget"],
+    ] as const) {
+      const hits = await provider.search({ q }, index);
+      expect(hits[0]?.item.title.toLowerCase(), `top hit for "${q}"`).toContain(expected);
+    }
+  });
+
+  it("still finds a single keyword inside a document body", async () => {
+    const hits = await provider.search({ q: "sql" }, index);
+    expect(hits.some((h) => h.item.ref.type === "sop")).toBe(true);
+  });
+});

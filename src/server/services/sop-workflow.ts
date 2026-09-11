@@ -3,7 +3,7 @@ import path from "node:path";
 import { Sop, type SopVersion } from "@/domain";
 import type { Identity } from "@/server/auth/identity";
 import { can, canRead } from "@/server/authz";
-import { getRepositories } from "@/server/repositories";
+import { ensureRepositories, getRepositories } from "@/server/repositories";
 import { getRegistryWriter } from "@/server/repositories/writer";
 import { getBlobStorage } from "@/server/storage/blob";
 import { recordAudit } from "./audit";
@@ -36,6 +36,9 @@ async function writeSop(sop: ReturnType<typeof Sop.parse>, actor: string) {
   const validated = Sop.parse(sop); // fail loudly before touching storage
   const effective = validated.versions.find((v) => v.version === validated.effectiveVersion) ?? validated.versions[validated.versions.length - 1];
   await getRegistryWriter().upsertRecord("sop", { id: validated.id, title: validated.title, owningTeam: validated.owningTeam, classification: validated.classification, status: effective.status, data: validated as unknown as Record<string, unknown> }, actor);
+  // Refresh the read model immediately: an approver acting straight after a
+  // submit must see the version they just moved, not the previous snapshot.
+  await ensureRepositories();
 }
 
 type Loaded = { ok: true; sop: ReturnType<typeof Sop.parse> };
@@ -43,7 +46,7 @@ type Failure = Extract<WorkflowResult, { ok: false }>;
 
 function guard(identity: Identity, permission: Parameters<typeof can>[1], sopId: string): Loaded | Failure {
   if (!can(identity, permission)) {
-    recordAudit({ actor: identity.subject, action: `sop.${permission}`, target: { type: "sop", id: sopId }, outcome: "denied", detail: { reason: "not-granted" } });
+    recordAudit({ actor: identity.subject, action: permission, target: { type: "sop", id: sopId }, outcome: "denied", detail: { reason: "not-granted" } });
     return { ok: false, status: 403, error: `${permission} is required.` };
   }
   const loaded = readSop(sopId);

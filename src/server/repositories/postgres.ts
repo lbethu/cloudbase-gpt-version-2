@@ -49,9 +49,18 @@ interface Snapshot {
 
 let snapshot: Snapshot | null = null;
 let loading: Promise<Snapshot> | null = null;
+let stale = false;
 
+/**
+ * Marks the read model out of date without discarding it.
+ *
+ * A write happens in the middle of a request that is still reading — an upload
+ * indexes the document, then looks up existing SOPs to pick a free id. Dropping
+ * the snapshot outright made those reads throw. The snapshot is kept and
+ * reloaded at the next request boundary instead.
+ */
 export function invalidateSnapshot() {
-  snapshot = null;
+  stale = true;
 }
 
 const parseAll = <T>(name: string, rows: unknown[], s: ZodType<T>): T[] =>
@@ -76,10 +85,11 @@ async function load(): Promise<Snapshot> {
 
 /** Ensures a fresh snapshot exists. Called once per request (layouts, routes, actions). */
 export async function ensureSnapshot(): Promise<void> {
-  if (snapshot && Date.now() - snapshot.loadedAt < TTL_MS) return;
+  if (snapshot && !stale && Date.now() - snapshot.loadedAt < TTL_MS) return;
   if (!loading) loading = load().finally(() => (loading = null));
   try {
     snapshot = await loading;
+    stale = false;
   } catch (error) {
     // A database that is unreachable, unmigrated or unseeded would otherwise
     // surface as a raw driver stack on every page. Say what to do instead.

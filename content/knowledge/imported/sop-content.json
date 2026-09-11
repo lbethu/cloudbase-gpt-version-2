@@ -10443,5 +10443,406 @@
         ]
       }
     ]
+  },
+  {
+    "id": "imported:uploads-2026-330-postgresql-upgrades-docx",
+    "sourcePath": "uploads/2026/330 - PostgreSQL Upgrades.docx",
+    "extractedAt": "2026-09-11",
+    "extractor": "mammoth",
+    "characterCount": 9328,
+    "sections": [
+      {
+        "title": "Document",
+        "summary": "330 - PostgreSQL Upgrades 330 - PostgreSQL Upgrades "
+      },
+      {
+        "title": "Purpose",
+        "summary": "The purpose of this SOP is to upgrade clients' Relational Database Management System (RDBMS) to the latest compatible version to mitigate performance issues and"
+      },
+      {
+        "title": "Scope",
+        "summary": "This procedure applies to Cloudpoint’s EVEREST and CYPRESS Enterprise deployments, as well as any client leveraging PostgreSQL as their RDBMS. This procedure do"
+      },
+      {
+        "title": "Responsibilities",
+        "summary": "The Enterprise and Cloud Services Division Lead will maintain this SOP; it consists of the Solutions Engineer and Enterprise GIS Specialist. "
+      },
+      {
+        "title": "Systems & Prerequisites",
+        "summary": "Most Windows and Linux machines support versions of PostgreSQL. More information on specific system requirements can be found here . Minimum supported database "
+      },
+      {
+        "title": "Definitions & Abbreviations",
+        "summary": "CM- Campaign Manager EM- Executive Manager IT- IT Admin MC-Marketing Coordinator NE-New employee OM- Office Manager PM- Project Manager SL-Sales Lead SM- Staff "
+      },
+      {
+        "title": "Standard Operating Folder",
+        "summary": "Postgres Folder "
+      },
+      {
+        "title": "Automations",
+        "summary": "N/A "
+      },
+      {
+        "title": "Video Links",
+        "summary": "N/A "
+      },
+      {
+        "title": "Pre-checks",
+        "summary": "Copy this card to a separate board if you'd like to check off tasks as they are complete Take snapshot of C and D drive volumes on the EC2 instance where Postgr"
+      },
+      {
+        "title": "Install Latest PostgreSQL",
+        "summary": "Run as Administrator the PostgreSQL_DBMS_for_Windows installer for the new version Point the installation files to a folder other than the user folders and leav"
+      },
+      {
+        "title": "Backup Data from Old Installation",
+        "summary": "Navigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\PGDum"
+      },
+      {
+        "title": "Restore Data to New Installation",
+        "summary": "Stop the old PostgreSQL service and start the new one Navigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Di"
+      },
+      {
+        "title": "Post-Installation Checks",
+        "summary": "Run the same queries from earlier in the procedure and record the results in the \"Post\" column for each database sheet in the workbook created earlier. Queries "
+      }
+    ],
+    "chunks": [
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s1-c1",
+        "section": "Document",
+        "content": "330 - PostgreSQL Upgrades\n330 - PostgreSQL Upgrades",
+        "keywords": [
+          "postgresql",
+          "upgrades"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s2-c1",
+        "section": "Purpose",
+        "content": "The purpose of this SOP is to upgrade clients' Relational Database Management System (RDBMS) to the latest compatible version to mitigate performance issues and ensure users are using the most robust and secure version possible. All ArcGIS Enterprise deployments must leverage a RDBMS for Enterprise Geodatabase functionality, and PostgreSQL is an option officially supported by Esri. A fair amount of clients opt to leverage PostgreSQL instead of the more common SQL Server in order to save on licensing. This procedure pertains primarily to the ArcGIS Enterprise and Cloud Services Division, due to it serving as an essential workflow for ArcGIS Enterprise support and maintenance.",
+        "keywords": [
+          "enterprise",
+          "arcgis",
+          "clients",
+          "rdbms",
+          "version",
+          "leverage",
+          "postgresql",
+          "purpose",
+          "sop",
+          "upgrade",
+          "relational",
+          "database"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s3-c1",
+        "section": "Scope",
+        "content": "This procedure applies to Cloudpoint’s EVEREST and CYPRESS Enterprise deployments, as well as any client leveraging PostgreSQL as their RDBMS. This procedure does not apply to client environments that use an alternative RDBMS, such as SQL Server.",
+        "keywords": [
+          "procedure",
+          "client",
+          "applies",
+          "cloudpoint",
+          "everest",
+          "cypress",
+          "enterprise",
+          "deployments",
+          "well",
+          "any",
+          "leveraging",
+          "postgresql"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s4-c1",
+        "section": "Responsibilities",
+        "content": "The Enterprise and Cloud Services Division Lead will maintain this SOP; it consists of the Solutions Engineer and Enterprise GIS Specialist.",
+        "keywords": [
+          "enterprise",
+          "cloud",
+          "services",
+          "division",
+          "lead",
+          "maintain",
+          "sop",
+          "consists",
+          "solutions",
+          "engineer",
+          "gis",
+          "specialist."
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s5-c1",
+        "section": "Systems & Prerequisites",
+        "content": "Most Windows and Linux machines support versions of PostgreSQL. More information on specific system requirements can be found here . Minimum supported database versions for ArcGIS Enterprise can be found here .",
+        "keywords": [
+          "versions",
+          "can",
+          "found",
+          "here",
+          "most",
+          "windows",
+          "linux",
+          "machines",
+          "support",
+          "postgresql.",
+          "more",
+          "information"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s6-c1",
+        "section": "Definitions & Abbreviations",
+        "content": "CM- Campaign Manager\nEM- Executive Manager\nIT- IT Admin\nMC-Marketing Coordinator\nNE-New employee\nOM- Office Manager\nPM- Project Manager\nSL-Sales Lead\nSM- Staff Manager\nTL-Team Lead\nRDBMS - Relational Database Management System",
+        "keywords": [
+          "manager",
+          "lead",
+          "cm-",
+          "campaign",
+          "em-",
+          "executive",
+          "it-",
+          "admin",
+          "mc-marketing",
+          "coordinator",
+          "ne-new",
+          "employee"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s7-c1",
+        "section": "Standard Operating Folder",
+        "content": "Postgres Folder",
+        "keywords": [
+          "postgres",
+          "folder"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s8-c1",
+        "section": "Automations",
+        "content": "N/A",
+        "keywords": []
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s9-c1",
+        "section": "Video Links",
+        "content": "N/A",
+        "keywords": []
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s10-c1",
+        "section": "Pre-checks",
+        "content": "Copy this card to a separate board if you'd like to check off tasks as they are complete\nTake snapshot of C and D drive volumes on the EC2 instance where PostgreSQL will be upgraded\nMake sure Snapshot Status says Completed before continuing\nMake sure the version of PostgreSQL that you plan to upgrade to falls within the compatibility matrix for the version of ArcGIS Enterprise in the deployment you are working with\nDownload PostgreSQL and the appropriate ST_Geometry Dll from My Esri My Esri - Login\nRun pre-backup queries on current version databases. Each query result should be resulted in an Excel workbook, with a sheet for each database and two columns for both pre- and post-query results. The queries are found here: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\QueriesToCheckDataAfterUpgrade.sql",
+        "keywords": [
+          "postgresql",
+          "version",
+          "snapshot",
+          "make",
+          "sure",
+          "arcgis",
+          "enterprise",
+          "esri",
+          "queries",
+          "each",
+          "copy",
+          "card"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s10-c2",
+        "section": "Pre-checks",
+        "content": "Change the encryption method from Md5 to scram-sha-256, if applicable. User passwords will need to be set to updated so they are set using the new encryption method.\nStop the PostgreSQL service and open the pg_hba.conf file and change the METHOD to scram-sha-256 and save.\nOpen the postgresql.conf file and set the passwords to the same value.\nThen, change the #password_encryption to scram-sha-256.\nRestart the PostgreSQL service and test logins\nStop the PostgreSQL Windows service",
+        "keywords": [
+          "change",
+          "encryption",
+          "set",
+          "postgresql",
+          "service",
+          "method",
+          "scram-sha-256",
+          "passwords",
+          "stop",
+          "open",
+          "file",
+          "md5"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s11-c1",
+        "section": "Install Latest PostgreSQL",
+        "content": "Run as Administrator the PostgreSQL_DBMS_for_Windows installer for the new version\nPoint the installation files to a folder other than the user folders and leave the installation directory at C:\\Program Files\\PostgreSQL.\nLeave all components checked except pgAdmin 4, as you will install or upgrade to the latest version.\nChange the Data Directory to a secondary drive and create a folder for the data (e.g. D:\\PostgreSQL14)\nCreate a password for the postgres super user. (Use the same password from the previous version)\nLeave the default port for 5432. (If this port is not available, ensure that the current PostgreSQL Windows service is stopped because they cannot run on the same port)\nLeave locale as the default\nClick Next through the rest of the installer, and then choose Finish to launch Stack Builder. Select the new version of PostgreSQL from the dropdown",
+        "keywords": [
+          "leave",
+          "postgresql",
+          "version",
+          "port",
+          "run",
+          "windows",
+          "installer",
+          "new",
+          "installation",
+          "files",
+          "folder",
+          "directory"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s11-c2",
+        "section": "Install Latest PostgreSQL",
+        "content": "Check the boxes for the following applications, which are typical for most installs: psqlJDBC, psqlODBC (both under Database Drivers), PostGIS (check version compatibility in Esri documentation). If the application version being installed is the same as the current version of PostgreSQL, do not check the box; if they are not the same, then check the box to update\nClick Next through the installer, leaving the Download directory as the default and ensuring the Skip Installation box is unchecked. Agree to the license. Click through the rest of the installer, leaving the destination folder and file path. Click Close and then Finish\nDownload the latest PG Admin version. Ensure Windows and the latest version (pgadmin4-x.x-x64.exe) is selected Download\nRun as Administrator the PG Admin installer",
+        "keywords": [
+          "check",
+          "version",
+          "box",
+          "click",
+          "installer",
+          "download",
+          "same",
+          "not",
+          "then",
+          "through",
+          "leaving",
+          "latest"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s11-c3",
+        "section": "Install Latest PostgreSQL",
+        "content": "Navigate to Programs and Features and uninstall the older version of pgAdmin. Then, go to the following location and delete the folder for the previous version of pgAdmin: C:\\Program Files\\pgAdmin 2)\nStop the new version of PostgreSQL Windows service and copy the ST_Geometry.dll file downloaded from My Esri into the install location for the new PostgreSQL version: C:\\Program Files\\PostgreSQL\\XX\\lib, where \"XX\" is the new version of PostgreSQL\nWith the Windows service stopped, navigate to your PostgreSQL data folder and open the pg_hba.conf file. In a multi-machine deployment where users will be making a connection directly to the database, you will need to allow for authentication from the IP address of their machine. If ArcGIS Server is on a different machine, it will need access as well",
+        "keywords": [
+          "version",
+          "postgresql",
+          "new",
+          "navigate",
+          "location",
+          "folder",
+          "pgadmin",
+          "program",
+          "files",
+          "windows",
+          "service",
+          "where"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s11-c4",
+        "section": "Install Latest PostgreSQL",
+        "content": "Leave the Windows service stopped for the new version of PostgreSQL and start the Windows Service for the old version of PostgreSQL. This ensures we can create backups of the databases we need to move to the new installation",
+        "keywords": [
+          "windows",
+          "service",
+          "new",
+          "version",
+          "leave",
+          "stopped",
+          "postgresql",
+          "start",
+          "old",
+          "postgresql.",
+          "ensures",
+          "can"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s12-c1",
+        "section": "Backup Data from Old Installation",
+        "content": "Navigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\PGDumpAll_GlobalsOnly.txt\nOpen a command prompt as administrator and change the directory to the following location: C:\\Program Files\\PostgreSQL\\XX\\bin (Ensure this directory refers to the new PostgreSQL install since we will be using tools from the new install)\nRun the code from the PGDumpAll_GlobalsOnly.txt file found above and enter the PostgreSQL password when prompted\nRun checksum on the database for comparison to the backup after the restore and record this number for future reference",
+        "keywords": [
+          "directory",
+          "postgresql",
+          "following",
+          "pgdumpall",
+          "globalsonly.txt",
+          "new",
+          "install",
+          "run",
+          "navigate",
+          "shared",
+          "drives",
+          "pro"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s12-c2",
+        "section": "Backup Data from Old Installation",
+        "content": "Each database will need to be individually backed up from the old PostgreSQL installation. Navigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\PGDump_Database.txt\nModify the code in the PGDump_Database.txt file found above by changing the -d variable to the database you want to dump and name the .sql file the name of the database\nOpen a command prompt as administrator and change the directory to the following location: C:\\Program Files\\PostgreSQL\\XX\\bin (Once again, ensure this directory refers to the new PostgreSQL install)\nRun the modified code and enter the PostgreSQL password when prompted\nRun checksum on each database for comparison to the backup after restore and record these numbers for future reference",
+        "keywords": [
+          "database",
+          "postgresql",
+          "directory",
+          "each",
+          "following",
+          "pgdump",
+          "database.txt",
+          "code",
+          "file",
+          "name",
+          "run",
+          "need"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s13-c1",
+        "section": "Restore Data to New Installation",
+        "content": "Stop the old PostgreSQL service and start the new one\nNavigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\RestoreUsingPSLQ.txt\nOpen a command prompt as administrator and change the directory to the following location: C:\\Program Files\\PostgreSQL\\XX\\bin (New PostgreSQL install)\nModify the code in the PostgreCodeRestorUsingPSLQ.txt file found above by changing the -f variable to the full path to your .sql backup file\nRun the modified code and enter the PostgreSQL password when prompted\nRun checksum on the database and compare to the previous number. If they match, there was likely no corruption when restoring the database",
+        "keywords": [
+          "postgresql",
+          "new",
+          "following",
+          "directory",
+          "code",
+          "file",
+          "run",
+          "when",
+          "database",
+          "stop",
+          "old",
+          "service"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s13-c2",
+        "section": "Restore Data to New Installation",
+        "content": "Each database will now need to be individually restored to the new PostgreSQL installation. Navigate to the following directory: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\RestoreUsingPSLQ.txt\nModify the code in the PostgreCodeRestoreUsingPSLQ.txt file found above by changing the -f variable to the full path to your .sql backup file for the database\nOpen a command prompt as administrator and change the directory to the following location: C:\\Program Files\\PostgreSQL\\XX\\bin (New PostgreSQL install)\nRun the modified code and enter the PostgreSQL password when prompted\nRun checksum on each database and compare to each previous number. If they match, there was likely no corruption when restoring the database",
+        "keywords": [
+          "database",
+          "postgresql",
+          "each",
+          "new",
+          "following",
+          "directory",
+          "code",
+          "file",
+          "run",
+          "when",
+          "now",
+          "need"
+        ]
+      },
+      {
+        "id": "uploads-2026-330-postgresql-upgrades-docx-s14-c1",
+        "section": "Post-Installation Checks",
+        "content": "Run the same queries from earlier in the procedure and record the results in the \"Post\" column for each database sheet in the workbook created earlier. Queries can be found here: G:\\Shared drives\\300_PRO_Production & Project Management\\Technical Divisions\\ArcGIS Enterprise\\Scripting\\PostgresCode\\QueriesToCheckDataAfterUpgrade.sql\nVerify that all databases can be connected to in ArcGIS Pro and that all databases are functioning as expected\nValidate the user-managed data stores in ArcGIS Server Manager to make sure ArcGIS Server can communicate with the new installation\nUninstall Postgres for the previous version and set a calendar reminder to delete the old data folder in one month",
+        "keywords": [
+          "arcgis",
+          "can",
+          "queries",
+          "pro",
+          "all",
+          "databases",
+          "data",
+          "server",
+          "run",
+          "same",
+          "earlier",
+          "procedure"
+        ]
+      }
+    ]
   }
 ]
