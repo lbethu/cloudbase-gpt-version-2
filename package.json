@@ -16,7 +16,8 @@
     "extract:sources": "node scripts/extract-source-documents.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --conditions=react-server scripts/migrate-database.ts",
-    "db:seed": "tsx --conditions=react-server scripts/seed-database.ts"
+    "db:seed": "tsx --conditions=react-server scripts/seed-database.ts",
+    "blob:upload": "tsx --conditions=react-server scripts/upload-documents-to-blob.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1129.0",
