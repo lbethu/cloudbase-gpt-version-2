@@ -35,7 +35,7 @@ async function main() {
     add("fail", "Identity: none configured", "Everyone sees the sign-in wall and no content. Set CLOUDBASE_AUTH_MODE=email (CloudBase signs people in itself), or access / entra.");
   } else if (cfg.auth.mode === "email") {
     if (!cfg.auth.sessionSecret) add("fail", "Identity: email sign-in without a session secret", "CLOUDBASE_SESSION_SECRET is required — without it the mode disables itself and nobody can sign in. Generate one with: openssl rand -base64 32");
-    else if (cfg.mail.driver === "log") add(hosted ? "fail" : "warn", "Identity: email sign-in with no mail driver", "Codes would only be written to the server log, which is refused in production. Set CLOUDBASE_MAIL_DRIVER=smtp with SMTP_HOST/USER/PASSWORD.");
+    else if (cfg.mail.driver === "log") add(hosted ? "fail" : "warn", "Identity: email sign-in with no mail driver", "Codes would only be written to the server log, which is refused in production. Set CLOUDBASE_MAIL_DRIVER=brevo with BREVO_API_KEY (no DNS or admin needed), or smtp with SMTP_HOST/USER/PASSWORD.");
     else add("pass", `Identity: email sign-in via ${cfg.mail.driver}`, `Codes sent from ${cfg.mail.from}`);
     if (hosted && cfg.storage.mode !== "postgres") add("fail", "Email sign-in needs the database when hosted", "Codes are held in memory without it, and a serverless deployment runs many instances — a code issued by one would be invisible to the next.");
   } else if (cfg.auth.mode === "access") {

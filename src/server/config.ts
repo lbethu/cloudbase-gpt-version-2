@@ -39,13 +39,14 @@ export interface CloudBaseConfig {
     tenantId: string;
   };
   mail: {
-    driver: "smtp" | "resend" | "log";
+    driver: "smtp" | "brevo" | "resend" | "log";
     from: string;
     smtpHost: string;
     smtpPort: number;
     smtpUser: string;
     smtpPassword: string;
     resendApiKey: string;
+    brevoApiKey: string;
   };
   ai: {
     provider: AiProviderName;
@@ -127,13 +128,14 @@ export function getConfig(): CloudBaseConfig {
       azureDeployment: process.env.CLOUDBASE_AI_AZURE_DEPLOYMENT ?? "",
     },
     mail: {
-      driver: (process.env.CLOUDBASE_MAIL_DRIVER?.trim() as "smtp" | "resend" | "log" | undefined) || (process.env.SMTP_HOST ? "smtp" : process.env.RESEND_API_KEY ? "resend" : "log"),
+      driver: (process.env.CLOUDBASE_MAIL_DRIVER?.trim() as "smtp" | "brevo" | "resend" | "log" | undefined) || (process.env.SMTP_HOST ? "smtp" : process.env.BREVO_API_KEY ? "brevo" : process.env.RESEND_API_KEY ? "resend" : "log"),
       from: process.env.CLOUDBASE_MAIL_FROM ?? "CloudBase <no-reply@cloudpointgeo.com>",
       smtpHost: (process.env.SMTP_HOST ?? "").trim(),
       smtpPort: Number(process.env.SMTP_PORT ?? 587),
       smtpUser: (process.env.SMTP_USER ?? "").trim(),
       smtpPassword: process.env.SMTP_PASSWORD ?? "",
       resendApiKey: (process.env.RESEND_API_KEY ?? "").trim(),
+      brevoApiKey: (process.env.BREVO_API_KEY ?? "").trim(),
     },
     search: { provider: (process.env.CLOUDBASE_SEARCH_PROVIDER as "lexical" | "hybrid" | undefined) ?? "lexical" },
     // The file registry is the default and never has to be asked for. Serving
