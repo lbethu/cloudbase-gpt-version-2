@@ -16,7 +16,7 @@ const list = (value: string | undefined) =>
     .map((v) => v.trim())
     .filter(Boolean);
 
-export type AuthMode = "dev" | "entra" | "none";
+export type AuthMode = "dev" | "entra" | "access" | "none";
 export type AiProviderName = "disabled" | "openai" | "azure-openai" | "anthropic" | "gemini";
 
 export interface CloudBaseConfig {
@@ -30,6 +30,9 @@ export interface CloudBaseConfig {
     /** JSON map of Entra group object ids → CloudBase role ids. */
     entraGroupRoleMap: Record<string, string>;
     entraGroupTeamMap: Record<string, string>;
+    /** Cloudflare Access: team domain and Application Audience tag. */
+    accessTeamDomain: string;
+    accessAud: string;
     tenantId: string;
   };
   ai: {
@@ -89,6 +92,8 @@ export function getConfig(): CloudBaseConfig {
       },
       entraGroupRoleMap: parseJsonMap(process.env.CLOUDBASE_ENTRA_GROUP_ROLE_MAP),
       entraGroupTeamMap: parseJsonMap(process.env.CLOUDBASE_ENTRA_GROUP_TEAM_MAP),
+      accessTeamDomain: (process.env.CLOUDBASE_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:\/\//, "").replace(/\/$/, ""),
+      accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
       tenantId: process.env.CLOUDBASE_TENANT_ID ?? "cloudpoint",
     },
     ai: {

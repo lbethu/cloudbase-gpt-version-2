@@ -30,9 +30,15 @@ export function excerptAround(text: string, terms: string[], maxLength = 600): s
 
 /** Every chunk of an SOP that mentions the query, best first (for "find everywhere" answers). */
 export function matchingPassages(repos: Repositories, item: KnowledgeItem, query: string, limit = 3, maxLength = 420): PassageMatch[] {
+  if (item.ref.type !== "sop") return [];
+  return passagesForSop(repos, item.ref.id, query, limit, maxLength);
+}
+
+/** The same, addressed by SOP id — for callers that hold a search hit rather than an index item. */
+export function passagesForSop(repos: Repositories, sopId: string, query: string, limit = 3, maxLength = 420): PassageMatch[] {
   const terms = tokenize(query);
-  if (item.ref.type !== "sop" || !terms.length) return [];
-  const scored = chunksForSop(repos, item.ref.id)
+  if (!terms.length) return [];
+  const scored = chunksForSop(repos, sopId)
     .map((chunk) => {
       const text = normalize(`${chunk.section} ${chunk.content}`);
       const occ = terms.reduce((acc, t) => acc + countOccurrences(text, t), 0);

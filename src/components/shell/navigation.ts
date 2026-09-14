@@ -40,6 +40,7 @@ export const NAVIGATION: NavSection[] = [
     label: "Knowledge",
     items: [
       { label: "Team Workspaces", href: "/teams", icon: "users", permission: "knowledge.read" },
+      { label: "Find an SOP", href: "/find", icon: "search", permission: "sop.read" },
       { label: "SOPs", href: "/sops", icon: "book", permission: "sop.read" },
       { label: "Documentation", href: "/docs", icon: "file-code", permission: "knowledge.read" },
       { label: "Research", href: "/research", icon: "flask", permission: "knowledge.read" },
@@ -97,6 +98,7 @@ export interface PaletteCommand {
 }
 
 export const PALETTE_COMMANDS: PaletteCommand[] = [
+  { id: "find", label: "Find an SOP by keyword", href: "/find", permission: "sop.read", hint: "Searches inside the documents" },
   { id: "ask", label: "Ask CloudBase", href: "/ask", permission: "ask.use", hint: "Governed answer with sources" },
   { id: "sop-upload", label: "Upload SOP document", href: "/sops/upload", permission: "sop.author", hint: "Word or PDF → draft" },
   { id: "sop-draft", label: "Create SOP draft record", href: "/sops/new", permission: "sop.author" },

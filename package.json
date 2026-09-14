@@ -26,6 +26,7 @@
     "drizzle-orm": "^0.45.2",
     "googleapis": "^174.0.0",
     "gray-matter": "^4.0.3",
+    "jose": "^6.2.12",
     "lucide-react": "^0.468.0",
     "mammoth": "^1.12.2",
     "marked": "^18.0.12",

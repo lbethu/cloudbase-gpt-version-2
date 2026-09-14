@@ -1,0 +1,38 @@
+# Who may use CloudBase, and as what.
+#
+# This file is the access list while Cloudpoint has no directory administration
+# in place. Someone who signs in successfully but is NOT listed here gets no
+# access at all — not a read-only view, nothing. That is what scopes the first
+# launch to the admin team.
+#
+# Every change here is a reviewable diff with an author and a date, which is
+# the property an Entra group would otherwise give you. Treat adding an
+# approver with the same seriousness.
+#
+# roles  — ids from content/registry/roles.yaml. `employee` is implicit.
+#            contributor  upload SOPs and create drafts
+#            reviewer     send a version back to its author
+#            approver     approve — this is what makes a document official
+#            admin        governance centre, audit history, delete
+# teams  — ids from content/registry/teams.yaml. `company-wide` is implicit.
+# active — set false to revoke access while keeping the record that they had it.
+#
+# When Entra group mapping is configured later, this file becomes redundant and
+# can be emptied without a code change.
+
+- email: bethu.lokendrasrisai@gmail.com
+  name: Lokendra Bethu
+  title: Platform owner
+  roles: [contributor, reviewer, approver, admin, ai-steward]
+  teams: [ai-automation, technical-gis]
+  active: true
+  note: Built and operates CloudBase. First account — required to administer the launch.
+
+# Add the admin team below. Copy this block, one per person.
+#
+# - email: firstname.lastname@cloudpointgeo.com
+#   name: Firstname Lastname
+#   title: ""
+#   roles: [contributor]          # add reviewer / approver only where the person genuinely owns SOP content
+#   teams: [operations-admin]
+#   active: true

@@ -2,6 +2,8 @@ import "server-only";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { getConfig } from "@/server/config";
+import { ACCESS_JWT_HEADER, verifyAccessJwt } from "./access";
+import { findPerson } from "./people";
 
 /**
  * Identity seam.
@@ -20,7 +22,7 @@ export interface Identity {
   roles: string[];
   teams: string[];
   tenantId: string;
-  provider: "dev" | "entra";
+  provider: "dev" | "entra" | "access";
 }
 
 export interface IdentityProvider {
@@ -88,10 +90,41 @@ class EntraEasyAuthIdentityProvider implements IdentityProvider {
   }
 }
 
+/**
+ * Cloudflare Access + the people register.
+ *
+ * Access proves who the visitor is; the register says what they may do. A
+ * person who signs in successfully but is not listed (or is listed as
+ * inactive) gets no identity at all — the launch is scoped by naming people,
+ * not by trusting whoever can reach the URL.
+ */
+class AccessIdentityProvider implements IdentityProvider {
+  readonly name = "access";
+  async resolve(requestHeaders: Headers): Promise<Identity | null> {
+    const token = requestHeaders.get(ACCESS_JWT_HEADER);
+    if (!token) return null;
+    const principal = await verifyAccessJwt(token);
+    if (!principal) return null;
+    const person = findPerson(principal.email);
+    if (!person || !person.active) return null; // authenticated, but not authorized to be here at all
+    const cfg = getConfig();
+    return {
+      subject: principal.subject,
+      name: person.name,
+      email: person.email,
+      roles: [...new Set(["employee", ...person.roles])],
+      teams: [...new Set(["company-wide", ...person.teams])],
+      tenantId: cfg.auth.tenantId,
+      provider: "access",
+    };
+  }
+}
+
 export function getIdentityProvider(): IdentityProvider | null {
   const mode = getConfig().auth.mode;
   if (mode === "dev") return new DevIdentityProvider();
   if (mode === "entra") return new EntraEasyAuthIdentityProvider();
+  if (mode === "access") return new AccessIdentityProvider();
   return null;
 }
 
