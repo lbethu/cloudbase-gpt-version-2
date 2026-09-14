@@ -1,0 +1,122 @@
+# AI delivery pipeline — one record per business problem answered with an
+# agent + copilot pair.
+#
+# These entries are INTAKE records: problems stated by their requester and
+# accepted into the pipeline. Nothing here is built, owned, evaluated or
+# operational. Delivery owners, evidence and access links stay empty until they
+# are real — an empty field is the honest answer, an invented one is not.
+#
+# Add a new request by copying content/templates/solution-intake.yaml.
+
+- id: SOL-001
+  title: SOP authoring takes too long and the results are inconsistent
+  problem: >-
+    Writing a new SOP from scratch takes an author days, and the result varies
+    by author: different structure, different level of detail, and no reliable
+    link to the SOPs it depends on. People avoid writing them, so process
+    knowledge stays in individual heads.
+  stage: intake
+  requestingTeam: company-wide
+  owningTeam: ai-automation
+  classification: internal
+  summary: An agent that drafts an SOP from existing approved material, paired with a copilot that answers questions about what the SOPs actually say.
+  pairingRationale: >-
+    The agent produces a structured first draft from approved SOPs and the
+    template, so the author starts from something rather than a blank page. The
+    copilot is what the author interrogates while editing — "what does the
+    current close-out SOP say about this step, and which SOP supersedes it" —
+    and is also what every other employee uses day to day. Neither half is
+    useful alone: a generator with nothing to check against invents process,
+    and a reference copilot alone never reduces authoring effort.
+  copilotIds: [sop-knowledge-assistant]
+  authorityBoundaries:
+    - Drafts are drafts. Nothing enters the SOP library except through upload, review and human approval.
+    - The generator never cites an SOP that is not approved and effective.
+  humanReview: The named SOP owner edits and submits; an approver approves. Unchanged from the existing SOP workflow.
+  dataTouched: [Approved SOP library, SOP templates]
+  createdAt: 2026-09-14
+  updatedAt: 2026-09-14
+  tags: [sop, authoring, knowledge]
+
+- id: SOL-002
+  title: Geospatial product questions bottleneck on a few specialists
+  problem: >-
+    Questions about the geospatial products Cloudpoint builds and delivers —
+    how a workflow is configured, why a tool behaves a certain way, what the
+    supported approach is — go to the same small number of specialists. Answers
+    are correct but slow, and the same question is answered repeatedly.
+  stage: intake
+  requestingTeam: technical-gis
+  owningTeam: ai-automation
+  classification: internal
+  summary: A product copilot for the geospatial stack, paired with an agent that watches for questions the documentation cannot answer.
+  pairingRationale: >-
+    The copilot answers the question at the moment it is asked, from approved
+    documentation and SOPs. The agent reads what the copilot could not answer
+    confidently and reports those gaps to the documentation owners, so the
+    bottleneck shrinks over time instead of being permanently mediated by a
+    chatbot. Without the agent, the same documentation gaps persist invisibly.
+  copilotIds: [experience-builder-engineering-copilot]
+  authorityBoundaries:
+    - Answers cite approved documentation; where none exists, it says so rather than inferring a supported approach.
+    - Never states a configuration as supported without a governed source.
+  humanReview: Documentation owners review reported gaps; specialists spot-check answers during the pilot.
+  dataTouched: [Technical documentation, SOPs, project references]
+  createdAt: 2026-09-14
+  updatedAt: 2026-09-14
+  tags: [geospatial, product, support]
+
+- id: SOL-003
+  title: Leadership has no reliable weekly picture of technical delivery
+  problem: >-
+    Status reaches leadership through meetings and individual messages. It is
+    assembled by hand each week, arrives in different shapes, and what is missing
+    is invisible — nobody can tell whether a project is quiet because it is fine
+    or because nobody looked.
+  stage: intake
+  requestingTeam: technical-gis
+  owningTeam: ai-automation
+  classification: internal
+  summary: A weekly summary agent that reports technical delivery from governed records, paired with a copilot leadership can question about anything in the report.
+  pairingRationale: >-
+    The agent produces the same report every week from the same sources, so the
+    shape is stable and gaps are visible. The copilot exists because a summary
+    always provokes a follow-up question, and a leader who cannot ask it either
+    calls a meeting or acts on a headline. Report plus interrogation is one
+    capability, not two features.
+  authorityBoundaries:
+    - Reports what the records say and names what is missing. It never infers progress from silence.
+    - No status is changed, approved or promoted by the agent.
+  humanReview: The technical lead reviews the report before it is circulated during pilot, and at any time after.
+  dataTouched: [Project references, SOP review queue, CROS records]
+  createdAt: 2026-09-14
+  updatedAt: 2026-09-14
+  tags: [reporting, leadership, delivery]
+
+- id: SOL-004
+  title: The admin team finds out about problems after they have become urgent
+  problem: >-
+    Governance problems — an SOP overdue for review, an approval queue nobody is
+    clearing, a capability claimed without evidence, an access grant nobody
+    revisited — surface when someone happens to notice or when they cause an
+    incident. There is no standing view of what is drifting.
+  stage: intake
+  requestingTeam: company-wide
+  owningTeam: ai-automation
+  classification: internal
+  summary: An intelligence radar for the admin team — a standing report of what is drifting across governed records, paired with a copilot for investigating any single item.
+  pairingRationale: >-
+    The radar is an agent because it must run whether or not anyone remembers to
+    look. The copilot is what turns a flagged line into a decision — who owns
+    this, what changed, what happened last time — without the administrator
+    reading five pages to find out. The existing deterministic platform agents
+    already produce most of the findings; this solution is about making them
+    into one governed report with an owner.
+  authorityBoundaries:
+    - Reports and recommends. Every remedy — approving, revoking, retiring, publishing — stays a human action under its existing permission.
+    - Never escalates its own findings into changes.
+  humanReview: Administrators triage the radar; Governance → Reviews remains where decisions are recorded.
+  dataTouched: [All governed records, audit history]
+  createdAt: 2026-09-14
+  updatedAt: 2026-09-14
+  tags: [governance, admin, radar]

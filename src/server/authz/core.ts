@@ -53,6 +53,9 @@ export const READ_PERMISSION_BY_TYPE: Record<ContentType, Permission> = {
   contact: "crm.read",
   opportunity: "crm.read",
   agent: "agent.read",
+  // Everyone who can read knowledge can see what the AI team is building and why;
+  // a sensitive request is protected by its own classification, as everywhere else.
+  solution: "knowledge.read",
 };
 
 export function effectivePermissions(principal: Principal | null, roles: Role[]): { grants: Set<Permission>; denies: Set<Permission> } {

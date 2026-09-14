@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 const SECTIONS: Array<{ title: string; types: ContentType[] }> = [
   { title: "SOPs", types: ["sop", "policy"] },
-  { title: "Tools & Copilots", types: ["copilot"] },
+  { title: "AI built for this team", types: ["solution", "agent", "copilot"] },
   { title: "Automations", types: ["automation"] },
   { title: "Documentation", types: ["documentation"] },
   { title: "Project References", types: ["project-reference", "rfp"] },
@@ -49,6 +49,22 @@ export default async function TeamPage({ params }: { params: Promise<{ id: strin
       <DetailLayout
         aside={
           <>
+            <AsideCard title="Using AI on this team's work">
+              <ul className="cb-aside-list">
+                <li>
+                  <a href="/docs/cloudbase/using-ai-safely">Using AI safely at Cloudpoint</a>
+                  <small>Which tool for which information — read before pasting company data anywhere</small>
+                </li>
+                <li>
+                  <a href="/solutions">Submit a problem to the AI &amp; Automation team</a>
+                  <small>Every request is answered with an agent and a copilot</small>
+                </li>
+                <li>
+                  <a href="/ask">Ask CloudBase</a>
+                  <small>Answers from this team's approved SOPs and documentation, with citations</small>
+                </li>
+              </ul>
+            </AsideCard>
             <AsideCard title="Owners / experts">
               {team.experts.length || team.owners.length ? (
                 <ul className="cb-aside-list">

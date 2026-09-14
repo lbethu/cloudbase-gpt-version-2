@@ -22,6 +22,7 @@ import {
   RfpRecord,
   Role,
   RndProject,
+  Solution,
   Sop,
   Team,
   TechnicalDocument,
@@ -86,6 +87,7 @@ export function createFileRepositories(contentDir: string): Repositories {
   const contacts = () => loadYamlCollection(reg("crm", "contacts.yaml"), Contact);
   const opportunities = () => loadYamlCollection(reg("crm", "opportunities.yaml"), Opportunity);
   const agents = () => loadYamlCollection(reg("agents"), AgentDefinition);
+  const solutions = () => loadYamlCollection(reg("solutions"), Solution);
 
   return {
     crm: {
@@ -98,6 +100,7 @@ export function createFileRepositories(contentDir: string): Repositories {
       activities: () => loadYamlCollection(reg("crm", "activities.yaml"), Activity),
     },
     agents: { list: agents, get: (id) => byId(agents()).get(id) },
+    solutions: { list: solutions, get: (id) => byId(solutions()).get(id) },
     teams: { list: teams, get: (id) => byId(teams()).get(id) },
     roles: { list: roles },
     sops: {

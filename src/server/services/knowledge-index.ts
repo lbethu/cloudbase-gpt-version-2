@@ -1,5 +1,5 @@
 import type { ContentType, GovernedBase, KnowledgeItem } from "@/domain";
-import { MATURITY_MODEL, SOP_STATUS_LABELS } from "@/domain";
+import { MATURITY_MODEL, SOLUTION_STAGE_LABELS, SOP_STATUS_LABELS } from "@/domain";
 import { urlFor } from "@/lib/urls";
 import type { Repositories } from "@/server/repositories/interfaces";
 
@@ -107,8 +107,13 @@ export function buildKnowledgeIndex(repos: Repositories): KnowledgeItem[] {
   for (const a of repos.crm.accounts()) items.push(base("account", a, { status: a.status, category: a.kind, body: text(a.region, a.serviceLines) }));
   for (const c of repos.crm.contacts()) items.push(base("contact", c, { status: c.role, body: text(c.role, c.accountId) }));
   for (const o of repos.crm.opportunities()) items.push(base("opportunity", o, { status: o.stage, category: o.serviceLine, body: text(o.source, o.nextStep, o.rfpDecision, o.accountId) }));
+  for (const s of repos.solutions.list()) {
+    // The requesting team sees its own request on its board, even though the
+    // AI & Automation team owns delivery.
+    items.push(base("solution", s, { teams: [...new Set([...s.teams, s.requestingTeam].filter(Boolean))], status: SOLUTION_STAGE_LABELS[s.stage].split(" — ")[0], body: text(s.problem, s.pairingRationale, s.requestedBy, s.requestingTeam, s.humanReview, s.dataTouched, s.authorityBoundaries, s.outcome?.measure, s.notes) }));
+  }
   for (const a of repos.agents.list()) {
-    items.push({ ref: { type: "agent", id: a.id }, title: a.title, summary: a.purpose, owningTeam: a.owningTeam, teams: [], status: a.status, classification: "internal", tags: a.audiences, url: urlFor({ type: "agent", id: a.id }), body: text(a.kind, a.implementation, a.authorityBoundaries) });
+    items.push({ ref: { type: "agent", id: a.id }, title: a.title, summary: a.purpose, owningTeam: a.owningTeam, teams: [], status: a.status, classification: "internal", tags: a.audiences, url: urlFor({ type: "agent", id: a.id }), body: text(a.kind, a.platform, a.implementation, a.authorityBoundaries, a.permittedInputs) });
   }
   for (const t of repos.teams.list()) {
     items.push({

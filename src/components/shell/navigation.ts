@@ -70,6 +70,7 @@ export const NAVIGATION: NavSection[] = [
     id: "ai",
     label: "AI",
     items: [
+      { label: "AI Solutions", href: "/solutions", icon: "workflow", permission: "knowledge.read" },
       { label: "Copilots", href: "/copilots", icon: "bot", permission: "copilot.read" },
       { label: "Automations", href: "/automations", icon: "workflow", permission: "automation.read" },
       { label: "Agents", href: "/agents", icon: "radar", permission: "agent.read" },
@@ -106,6 +107,8 @@ export const PALETTE_COMMANDS: PaletteCommand[] = [
   { id: "copilot-create", label: "How to create a Cloudpoint Copilot", href: "/copilots/create", permission: "copilot.read" },
   { id: "graph", label: "Open Knowledge Graph", href: "/graph", permission: "knowledge.read" },
   { id: "agents", label: "Run platform agents", href: "/agents", permission: "agent.read" },
+  { id: "solutions", label: "AI Solutions — submit a problem", href: "/solutions", permission: "knowledge.read", hint: "Answered with an agent + copilot pair" },
+  { id: "ai-safety", label: "Using AI safely at Cloudpoint", href: "/docs/cloudbase/using-ai-safely", permission: "knowledge.read", hint: "Which tool for which information" },
   { id: "pipeline", label: "Open sales pipeline", href: "/crm", permission: "crm.read" },
   { id: "dash-lead", label: "Leadership dashboard", href: "/dashboards/leadership", permission: "knowledge.read" },
 ];

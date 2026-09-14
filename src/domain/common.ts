@@ -94,6 +94,7 @@ export const ContentType = z.enum([
   "contact",
   "opportunity",
   "agent",
+  "solution",
 ]);
 export type ContentType = z.infer<typeof ContentType>;
 
@@ -119,6 +120,7 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   contact: "Contact",
   opportunity: "Opportunity",
   agent: "Agent",
+  solution: "Solution",
 };
 
 /** A reference to any governed object, used by relationships, citations and search. */

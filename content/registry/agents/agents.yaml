@@ -56,3 +56,15 @@
   implementation: rfp-appraisal
   authorityBoundaries:
     - Recommends only; a human records the pursuit decision.
+- id: assurance-agent
+  title: AI Assurance Agent
+  purpose: Checks that every solution and hosted agent carries what the delivery standard requires — a named owner, an agreed success measure, stated authority boundaries, an assessed data boundary and a recorded evaluation.
+  owningTeam: ai-automation
+  owner: ""
+  platform: in-platform
+  audiences: [leadership, ai, operations]
+  cadence: daily
+  implementation: assurance
+  dataBoundary: cloudpoint-tenant
+  authorityBoundaries:
+    - Reports missing evidence; never promotes, approves or demotes anything itself.

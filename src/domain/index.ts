@@ -7,3 +7,4 @@ export * from "./knowledge";
 export * from "./governance";
 export * from "./crm";
 export * from "./agents";
+export * from "./solution";

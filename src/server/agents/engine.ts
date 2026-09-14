@@ -136,7 +136,49 @@ const pipeline: Impl = (agent, ctx) => {
   return out;
 };
 
-const IMPLEMENTATIONS: Record<string, Impl> = { coverage, freshness, relationships, duplicates, pipeline };
+/**
+ * Enforces the delivery standard: a solution or agent that claims to be in
+ * service must carry the evidence that justifies the claim. This is the agent
+ * that makes "operational" mean something.
+ */
+const assurance: Impl = (agent, ctx) => {
+  const out: AgentFinding[] = [];
+  const { repos } = ctx;
+
+  for (const s of repos.solutions.list()) {
+    if (!visible(ctx, "solution", s.id)) continue;
+    const inService = s.stage === "operational" || s.stage === "pilot";
+    if (s.stage !== "intake" && !s.deliveryOwner.trim())
+      out.push(finding(agent, "high", `Solution past intake with no delivery owner: ${s.title}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "Name the human accountable for this answer before any building starts." }));
+    if (inService && s.agentIds.length === 0 && s.copilotIds.length === 0)
+      out.push(finding(agent, "high", `Solution in use with neither agent nor copilot registered: ${s.title}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "Register what was actually delivered, or move the stage back to building." }));
+    if (inService && s.copilotIds.length === 0)
+      out.push(finding(agent, "medium", `Solution in use with no copilot: ${s.title}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "People have no way to question the agent's output. Register the copilot or record why one is not needed." }));
+    if (s.stage !== "intake" && !s.outcome?.measure)
+      out.push(finding(agent, "medium", `Solution with no agreed success measure: ${s.title}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "Agree during scoping how anyone would tell whether this helped." }));
+    if (inService && s.authorityBoundaries.length === 0)
+      out.push(finding(agent, "high", `Solution in use with no authority boundaries: ${s.title}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "State what this pair may never decide on its own." }));
+    for (const id of s.agentIds) if (!repos.agents.get(id)) out.push(finding(agent, "medium", `Solution references an agent that is not registered: ${id}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "Register the agent or correct the reference." }));
+    for (const id of s.copilotIds) if (!repos.copilots.get(id)) out.push(finding(agent, "medium", `Solution references a copilot that is not registered: ${id}`, { target: { type: "solution", id: s.id }, owningTeam: s.owningTeam, recommendedAction: "Register the copilot or correct the reference." }));
+  }
+
+  for (const a of repos.agents.list()) {
+    if (a.status !== "active") continue;
+    if (a.platform !== "in-platform") {
+      if (a.dataBoundary === "unassessed")
+        out.push(finding(agent, "high", `Hosted agent with an unassessed data boundary: ${a.title}`, { target: { type: "agent", id: a.id }, owningTeam: a.owningTeam, recommendedAction: "Record where this agent's inputs go before anyone gives it company information." }));
+      if (a.dataBoundary === "vendor-consumer")
+        out.push(finding(agent, "high", `Active agent on a consumer account: ${a.title}`, { target: { type: "agent", id: a.id }, owningTeam: a.owningTeam, recommendedAction: "Consumer accounts may only ever receive public information. Move it into the tenant or restrict its use." }));
+      if (!a.owner.trim())
+        out.push(finding(agent, "medium", `Hosted agent with no named owner: ${a.title}`, { target: { type: "agent", id: a.id }, owningTeam: a.owningTeam, recommendedAction: "Name the human accountable for this agent's behaviour." }));
+      if (!a.evaluation)
+        out.push(finding(agent, "medium", `Active agent with no recorded evaluation: ${a.title}`, { target: { type: "agent", id: a.id }, owningTeam: a.owningTeam, recommendedAction: "Run its test cases and record the date, the reviewer and the pass count." }));
+    }
+  }
+  return out;
+};
+
+const IMPLEMENTATIONS: Record<string, Impl> = { coverage, freshness, relationships, duplicates, pipeline, assurance };
 
 export function runAgent(agent: AgentDefinition, ctx: AgentContext): { findings: AgentFinding[]; skipped?: string } {
   if (agent.status !== "active") return { findings: [], skipped: `agent is ${agent.status}` };

@@ -20,6 +20,7 @@ import type {
   RfpRecord,
   Role,
   RndProject,
+  Solution,
   Sop,
   Team,
   TechnicalDocument,
@@ -38,6 +39,12 @@ export interface TeamRepository {
 
 export interface RoleRepository {
   list(): Role[];
+}
+
+/** The AI delivery pipeline: one record per problem answered with an agent + copilot pair. */
+export interface SolutionRepository {
+  list(): Solution[];
+  get(id: string): Solution | undefined;
 }
 
 export interface SopRepository {
@@ -117,6 +124,7 @@ export interface Repositories {
   agents: AgentRepository;
   teams: TeamRepository;
   roles: RoleRepository;
+  solutions: SolutionRepository;
   sops: SopRepository;
   cros: CrosRegistry;
   copilots: CopilotRepository;

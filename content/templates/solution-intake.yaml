@@ -1,0 +1,46 @@
+# Solution intake — copy this block into content/registry/solutions/solutions.yaml
+#
+# Write the problem in the requester's own words. A request that arrives already
+# describing the answer ("we need a chatbot for X") usually hides the problem,
+# and the pair that gets built answers the wrong question.
+#
+# Leave every field you do not know empty. An empty field is a true statement
+# about where this stands; a filled-in guess is not.
+
+- id: SOL-000                      # next free number
+  title: ""                        # the problem in one line, not the solution
+  problem: >-
+    # Who is affected, what they do today, what it costs them. Their words.
+  stage: intake                    # intake | scoping | building | pilot | operational | retired
+  requestedBy: ""                  # person who asked
+  requestingTeam: ""               # team id from content/registry/teams.yaml
+  owningTeam: ai-automation
+  submittedAt: ""                  # YYYY-MM-DD
+  classification: internal         # internal | confidential | restricted
+  summary: ""                      # one line describing the intended pair
+  deliveryOwner: ""                # named human, assigned at scoping — not before
+
+  # The pair. Ids from content/registry/agents/ and content/registry/copilots/.
+  # Both stay empty until the thing actually exists.
+  agentIds: []
+  copilotIds: []
+  pairingRationale: >-
+    # Why an agent, why a copilot, and why neither alone is enough here.
+    # If only one half is justified, say so — a forced pair is worse than an
+    # honest single, and this is where that decision gets recorded.
+
+  # Agreed at scoping, BEFORE building. Afterwards it is too easy to describe
+  # whatever happened as the goal.
+  outcome:
+    measure: ""                    # how anyone would tell whether this helped
+    baseline: ""                   # what it is today
+    target: ""                     # what would count as success
+    observed: ""                   # filled in during pilot
+
+  authorityBoundaries:             # what the pair may never decide on its own
+    - ""
+  humanReview: ""                  # who checks the output, and how often
+  dataTouched: []                  # systems and data — drives the boundary review
+  tags: []
+  createdAt: ""
+  updatedAt: ""

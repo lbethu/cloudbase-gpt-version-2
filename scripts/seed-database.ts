@@ -58,6 +58,7 @@ async function main() {
     ["opportunity", repos.crm.opportunities() as unknown as Rec[]],
     ["activity", repos.crm.activities() as unknown as Rec[]],
     ["agent", repos.agents.list() as unknown as Rec[]],
+    ["solution", repos.solutions.list() as unknown as Rec[]],
   ];
 
   let written = 0;

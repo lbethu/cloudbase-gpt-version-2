@@ -22,6 +22,7 @@ import {
   RfpRecord,
   Role,
   RndProject,
+  Solution,
   Sop,
   Team,
   TechnicalDocument,
@@ -126,9 +127,11 @@ export function createPostgresRepositories(): Repositories {
   const contacts = () => list("contact", Contact);
   const opportunities = () => list("opportunity", Opportunity);
   const agents = () => list("agent", AgentDefinition);
+  const solutions = () => list("solution", Solution);
   return {
     crm: { accounts, account: (id) => byId(accounts()).get(id), contacts, contact: (id) => byId(contacts()).get(id), opportunities, opportunity: (id) => byId(opportunities()).get(id), activities: () => list("activity", Activity) },
     agents: { list: agents, get: (id) => byId(agents()).get(id) },
+    solutions: { list: solutions, get: (id) => byId(solutions()).get(id) },
     teams: { list: teams, get: (id) => byId(teams()).get(id) },
     roles: { list: () => list("role", Role) },
     sops: { list: sops, get: (id) => byId(sops()).get(id), importedContent: (id) => current().imported.find((c) => c.id === id), allImportedContent: () => current().imported },

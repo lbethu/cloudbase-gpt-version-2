@@ -23,6 +23,7 @@ const BASE: Record<ContentType, string> = {
   contact: "/crm/contacts",
   opportunity: "/crm/opportunities",
   agent: "/agents",
+  solution: "/solutions",
 };
 
 export const urlFor = (ref: ContentRef) => `${BASE[ref.type]}/${encodeURIComponent(ref.id)}`;
