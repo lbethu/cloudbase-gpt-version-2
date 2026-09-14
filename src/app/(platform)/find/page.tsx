@@ -77,17 +77,16 @@ export default async function FindPage({ searchParams }: { searchParams: Promise
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                   <Badge tone={effective ? "success" : "warning"}>{effective ? "Approved" : hit.item.status}</Badge>
-                  {file && canOpenFiles && (
-                    <>
-                      <a className="cb-btn cb-btn--primary cb-btn--sm" href={`/api/files/${encodeURIComponent(file.id)}`} target="_blank" rel="noopener noreferrer">
-                        <FileText /> Open document
-                      </a>
-                      {driveConfigured && (
-                        <a className="cb-btn cb-btn--sm" href={`/api/files/${encodeURIComponent(file.id)}/drive`} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink /> Open in Drive
-                        </a>
-                      )}
-                    </>
+                  {/* Opens inside CloudBase — the navigation, the approval state and
+                      the version history stay with the reader. Downloading a .docx
+                      would drop them out of the platform entirely. */}
+                  <Link className="cb-btn cb-btn--primary cb-btn--sm" href={`/sops/${encodeURIComponent(sop.id)}/document?q=${encodeURIComponent(query)}`}>
+                    <FileText /> Open document
+                  </Link>
+                  {file && canOpenFiles && driveConfigured && (
+                    <a className="cb-btn cb-btn--sm" href={`/api/files/${encodeURIComponent(file.id)}/drive`} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink /> Open in Drive
+                    </a>
                   )}
                 </div>
               </div>

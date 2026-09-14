@@ -78,9 +78,9 @@ export default async function SopPage({ params, searchParams }: { params: Promis
                     <FolderOpen /> Open in Google Drive — not connected
                   </span>
                 )}
-                <a className="cb-btn" href={`/api/files/${encodeURIComponent(shown.sourceFile.id)}`} target="_blank" rel="noopener">
-                  <ExternalLink /> View file
-                </a>
+                <Link className="cb-btn" href={`/sops/${encodeURIComponent(sop.id)}/document?v=${encodeURIComponent(shown.version)}`}>
+                  <ExternalLink /> Read in CloudBase
+                </Link>
                 <a className="cb-btn" href={`/api/files/${encodeURIComponent(shown.sourceFile.id)}?download=1`}>
                   <Download /> Download
                 </a>
