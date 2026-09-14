@@ -11,6 +11,8 @@ import { NAVIGATION } from "./navigation";
 interface Props {
   permissions: Permission[];
   viewer: { name: string; detail: string } | null;
+  /** True when this deployment signs people in itself (email code), so a sign-out means something. */
+  canSignOut?: boolean;
   open: boolean;
   onClose: () => void;
   developerCredit?: string;
@@ -18,7 +20,7 @@ interface Props {
 
 const STORAGE_KEY = "cloudbase.nav.collapsed";
 
-export function Sidebar({ permissions, viewer, open, onClose, developerCredit }: Props) {
+export function Sidebar({ permissions, viewer, open, onClose, developerCredit, canSignOut }: Props) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
@@ -94,11 +96,18 @@ export function Sidebar({ permissions, viewer, open, onClose, developerCredit }:
             <>
               <strong>{viewer.name}</strong>
               <span>{viewer.detail}</span>
+              {canSignOut && (
+                <form action="/api/auth/signout" method="post">
+                  <button className="cb-signout" type="submit">
+                    Sign out
+                  </button>
+                </form>
+              )}
             </>
           ) : (
             <>
               <strong>Not signed in</strong>
-              <span>Identity provider not configured</span>
+              {canSignOut ? <a href="/signin">Sign in</a> : <span>No sign-in method configured</span>}
             </>
           )}
           <span className="cb-credit">Developed by {developerCredit ?? "Cloudpoint Geospatial"}</span>

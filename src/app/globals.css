@@ -2159,3 +2159,135 @@ mark {
   .cb-finding { grid-template-columns: 1fr; gap: 6px; }
   .cb-graph-wrap { height: 70vh; }
 }
+
+/* ── Sign-in ───────────────────────────────────────────────────────────────
+   A page people meet before they know anything about the platform, so it says
+   what this is and who it is for, and nothing else competes for attention. */
+.cb-signin {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, var(--hero-from) 0%, var(--hero-to) 100%);
+}
+.cb-signin::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+.cb-signin-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 26px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+}
+.cb-signin-card h1 {
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: 18px 0 14px;
+}
+.cb-signin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cb-signin-brand strong {
+  display: block;
+  font-size: 14px;
+}
+.cb-signin-brand span {
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+.cb-signin-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+.cb-signin-form {
+  display: grid;
+  gap: 10px;
+}
+.cb-signin-label {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.cb-signin-form .cb-input {
+  height: 42px;
+  font-size: 14.5px;
+}
+.cb-signin-code {
+  letter-spacing: 0.4em;
+  font-size: 19px !important;
+  text-align: center;
+  font-family: var(--font-mono);
+}
+.cb-signin-submit {
+  height: 42px;
+  justify-content: center;
+}
+.cb-signin-back {
+  height: 34px;
+  justify-content: center;
+  font-size: 12.5px;
+}
+.cb-signin-note {
+  margin: 4px 0 0;
+  line-height: 1.55;
+}
+.cb-signin-problem {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.cb-signin-problem code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+.cb-signin-foot {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+  line-height: 1.55;
+}
+.cb-signout,
+.cb-sidebar-footer a {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sidebar-fg);
+  font-size: 11.5px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.cb-signout:hover,
+.cb-sidebar-footer a:hover {
+  color: var(--sidebar-fg-strong);
+}

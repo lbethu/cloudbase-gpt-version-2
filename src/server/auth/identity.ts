@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { getConfig } from "@/server/config";
 import { ACCESS_JWT_HEADER, verifyAccessJwt } from "./access";
 import { findPerson } from "./people";
+import { readSessionEmail, readSessionEmailFrom } from "./session";
 
 /**
  * Identity seam.
@@ -22,7 +23,7 @@ export interface Identity {
   roles: string[];
   teams: string[];
   tenantId: string;
-  provider: "dev" | "entra" | "access";
+  provider: "dev" | "entra" | "access" | "email";
 }
 
 export interface IdentityProvider {
@@ -120,11 +121,50 @@ class AccessIdentityProvider implements IdentityProvider {
   }
 }
 
+/**
+ * Sign-in by emailed one-time code, with the people register deciding who may
+ * be here and as what. Self-contained: no directory, no proxy, no third party
+ * beyond a mailbox to send from.
+ *
+ * Roles are read from the register on every request rather than carried in the
+ * cookie, so removing someone takes effect at once instead of whenever their
+ * session happens to lapse.
+ */
+class EmailCodeIdentityProvider implements IdentityProvider {
+  readonly name = "email";
+  private build(email: string | null): Identity | null {
+    if (!email) return null;
+    const person = findPerson(email);
+    if (!person || !person.active) return null;
+    return {
+      subject: person.email,
+      name: person.name,
+      email: person.email,
+      roles: [...new Set(["employee", ...person.roles])],
+      teams: [...new Set(["company-wide", ...person.teams])],
+      tenantId: getConfig().auth.tenantId,
+      provider: "email",
+    };
+  }
+  async resolve(requestHeaders: Headers): Promise<Identity | null> {
+    // cookies() is only available inside a request scope; fall back to parsing
+    // the header when called from a route handler that holds a bare Request.
+    try {
+      const fromStore = await readSessionEmail();
+      if (fromStore) return this.build(fromStore);
+    } catch {
+      /* not in a request scope */
+    }
+    return this.build(await readSessionEmailFrom(requestHeaders));
+  }
+}
+
 export function getIdentityProvider(): IdentityProvider | null {
   const mode = getConfig().auth.mode;
   if (mode === "dev") return new DevIdentityProvider();
   if (mode === "entra") return new EntraEasyAuthIdentityProvider();
   if (mode === "access") return new AccessIdentityProvider();
+  if (mode === "email") return new EmailCodeIdentityProvider();
   return null;
 }
 

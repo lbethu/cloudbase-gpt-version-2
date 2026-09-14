@@ -21,11 +21,12 @@ interface Props {
   /** Items awaiting the viewer's review (server-computed). */
   inboxCount?: number;
   developerCredit?: string;
+  canSignOut?: boolean;
   children: React.ReactNode;
 }
 
 /** Client shell: sidebar state, ⌘K palette. Everything it renders is permission-filtered server-side data. */
-export function AppShell({ permissions, viewer, environmentLabel, inboxCount = 0, developerCredit, children }: Props) {
+export function AppShell({ permissions, viewer, environmentLabel, inboxCount = 0, developerCredit, canSignOut, children }: Props) {
   const [navOpen, setNavOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const closeNav = useCallback(() => setNavOpen(false), []);
@@ -44,7 +45,7 @@ export function AppShell({ permissions, viewer, environmentLabel, inboxCount = 0
 
   return (
     <div className="cb-shell">
-      <Sidebar permissions={permissions} viewer={viewer ? { name: viewer.name, detail: viewer.detail } : null} open={navOpen} onClose={closeNav} developerCredit={developerCredit} />
+      <Sidebar permissions={permissions} viewer={viewer ? { name: viewer.name, detail: viewer.detail } : null} open={navOpen} onClose={closeNav} developerCredit={developerCredit} canSignOut={canSignOut} />
       <div className="cb-main">
         <header className="cb-topbar">
           <button className="cb-menu-button" onClick={() => setNavOpen(true)} aria-label="Open navigation">

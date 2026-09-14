@@ -81,6 +81,19 @@ export const auditEvents = pgTable(
   (t) => [index("audit_events_at_idx").on(t.at), index("audit_events_actor_idx").on(t.actor)],
 );
 
+/**
+ * One-time sign-in codes. Stored hashed, single-use, short-lived, and keyed by
+ * email so a new request replaces the previous code rather than leaving two
+ * valid ways in.
+ */
+export const signInCodes = pgTable("sign_in_codes", {
+  email: text("email").primaryKey(),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const agentRuns = pgTable("agent_runs", {
   id: text("id").primaryKey(),
   agentId: text("agent_id").notNull(),

@@ -1,4 +1,5 @@
-import { ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { LogIn, ShieldAlert } from "lucide-react";
 import { AppShell } from "@/components/shell/AppShell";
 import { getConfig } from "@/server/config";
 import { getRepositories } from "@/server/repositories";
@@ -16,7 +17,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
 
   const inboxCount = viewer.has("review.read") ? deriveReviewTasks(getRepositories()).filter((t) => viewer.has(t.requiredPermission)).length : 0;
   return (
-    <AppShell permissions={viewer.permissions} viewer={shellViewer} environmentLabel={viewer.environmentLabel} inboxCount={inboxCount} developerCredit={cfg.branding.developer}>
+    <AppShell permissions={viewer.permissions} viewer={shellViewer} environmentLabel={viewer.environmentLabel} inboxCount={inboxCount} developerCredit={cfg.branding.developer} canSignOut={cfg.auth.mode === "email"}>
       {viewer.identity ? (
         children
       ) : (
@@ -26,8 +27,17 @@ export default async function PlatformLayout({ children }: { children: React.Rea
           </div>
           <h3>Sign-in required</h3>
           <p>
-            CloudBase AI only serves authenticated Cloudpoint employees. {cfg.auth.mode === "none" ? "No identity provider is configured for this deployment — configure Microsoft Entra ID (CLOUDBASE_AUTH_MODE=entra) behind the authenticating proxy." : "Your identity could not be established for this request."}
+            {cfg.auth.mode === "email"
+              ? "CloudBase serves people on the Cloudpoint register. Sign in with your work email address and we will send you a code."
+              : cfg.auth.mode === "none"
+                ? "No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set CLOUDBASE_AUTH_MODE to email, access or entra and redeploy."
+                : "CloudBase AI only serves authenticated Cloudpoint employees. Your identity could not be established for this request."}
           </p>
+          {cfg.auth.mode === "email" && (
+            <Link className="cb-btn cb-btn--primary" href="/signin" style={{ marginTop: 12 }}>
+              <LogIn /> Sign in
+            </Link>
+          )}
         </div>
       )}
     </AppShell>

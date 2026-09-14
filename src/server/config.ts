@@ -16,7 +16,7 @@ const list = (value: string | undefined) =>
     .map((v) => v.trim())
     .filter(Boolean);
 
-export type AuthMode = "dev" | "entra" | "access" | "none";
+export type AuthMode = "dev" | "entra" | "access" | "email" | "none";
 export type AiProviderName = "disabled" | "openai" | "azure-openai" | "anthropic" | "gemini";
 
 export interface CloudBaseConfig {
@@ -33,7 +33,19 @@ export interface CloudBaseConfig {
     /** Cloudflare Access: team domain and Application Audience tag. */
     accessTeamDomain: string;
     accessAud: string;
+    /** Signs the session cookie and the stored sign-in codes. Required for email sign-in. */
+    sessionSecret: string;
+    sessionHours: number;
     tenantId: string;
+  };
+  mail: {
+    driver: "smtp" | "resend" | "log";
+    from: string;
+    smtpHost: string;
+    smtpPort: number;
+    smtpUser: string;
+    smtpPassword: string;
+    resendApiKey: string;
   };
   ai: {
     provider: AiProviderName;
@@ -75,7 +87,14 @@ export function getConfig(): CloudBaseConfig {
   const env = (process.env.NODE_ENV as CloudBaseConfig["env"]) ?? "development";
   const requestedMode = (process.env.CLOUDBASE_AUTH_MODE as AuthMode | undefined) ?? (env === "production" ? "none" : "dev");
   // Never allow the development identity provider in production builds.
-  const mode: AuthMode = env === "production" && requestedMode === "dev" ? "none" : requestedMode;
+  let mode: AuthMode = env === "production" && requestedMode === "dev" ? "none" : requestedMode;
+  // Email sign-in signs its session cookie and hashes its codes with this
+  // secret. Without one, sessions would be forgeable — so the mode turns
+  // itself off rather than pretending to authenticate anybody.
+  if (mode === "email" && !(process.env.CLOUDBASE_SESSION_SECRET ?? "").trim()) {
+    if (env === "production") console.error("[config] CLOUDBASE_AUTH_MODE=email requires CLOUDBASE_SESSION_SECRET. Sign-in is disabled until it is set.");
+    mode = "none";
+  }
 
   const rootDir = process.cwd();
   cached = {
@@ -96,6 +115,8 @@ export function getConfig(): CloudBaseConfig {
       entraGroupTeamMap: parseJsonMap(process.env.CLOUDBASE_ENTRA_GROUP_TEAM_MAP),
       accessTeamDomain: (process.env.CLOUDBASE_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:\/\//, "").replace(/\/$/, ""),
       accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
+      sessionSecret: process.env.CLOUDBASE_SESSION_SECRET ?? "",
+      sessionHours: Math.max(1, Number(process.env.CLOUDBASE_SESSION_HOURS ?? 12)),
       tenantId: process.env.CLOUDBASE_TENANT_ID ?? "cloudpoint",
     },
     ai: {
@@ -104,6 +125,15 @@ export function getConfig(): CloudBaseConfig {
       apiKey: process.env.CLOUDBASE_AI_API_KEY ?? "",
       baseUrl: process.env.CLOUDBASE_AI_BASE_URL ?? "",
       azureDeployment: process.env.CLOUDBASE_AI_AZURE_DEPLOYMENT ?? "",
+    },
+    mail: {
+      driver: (process.env.CLOUDBASE_MAIL_DRIVER?.trim() as "smtp" | "resend" | "log" | undefined) || (process.env.SMTP_HOST ? "smtp" : process.env.RESEND_API_KEY ? "resend" : "log"),
+      from: process.env.CLOUDBASE_MAIL_FROM ?? "CloudBase <no-reply@cloudpointgeo.com>",
+      smtpHost: (process.env.SMTP_HOST ?? "").trim(),
+      smtpPort: Number(process.env.SMTP_PORT ?? 587),
+      smtpUser: (process.env.SMTP_USER ?? "").trim(),
+      smtpPassword: process.env.SMTP_PASSWORD ?? "",
+      resendApiKey: (process.env.RESEND_API_KEY ?? "").trim(),
     },
     search: { provider: (process.env.CLOUDBASE_SEARCH_PROVIDER as "lexical" | "hybrid" | undefined) ?? "lexical" },
     // The file registry is the default and never has to be asked for. Serving
