@@ -130,7 +130,7 @@ export function getConfig(): CloudBaseConfig {
     drive: { configured: Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) },
     github: { token: process.env.GITHUB_TOKEN ?? "", configured: bool(process.env.CLOUDBASE_GITHUB_ENABLED, true) },
     pipedrive: { token: process.env.PIPEDRIVE_API_TOKEN ?? "", domain: process.env.PIPEDRIVE_COMPANY_DOMAIN ?? "", configured: Boolean(process.env.PIPEDRIVE_API_TOKEN) },
-    branding: { developer: process.env.CLOUDBASE_DEVELOPER_CREDIT ?? "Cloudpoint" },
+    branding: { developer: process.env.CLOUDBASE_DEVELOPER_CREDIT ?? "Cloudpoint Geospatial" },
   };
   return cached;
 }

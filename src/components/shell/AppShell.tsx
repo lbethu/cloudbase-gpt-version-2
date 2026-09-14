@@ -76,7 +76,7 @@ export function AppShell({ permissions, viewer, environmentLabel, inboxCount = 0
         </main>
         <footer className="cb-footer">
           <span>CloudBase AI · Cloudpoint Knowledge &amp; Intelligence Hub</span>
-          <span>Developed by <b>{developerCredit ?? "Cloudpoint"}</b></span>
+          <span>Developed by <b>{developerCredit ?? "Cloudpoint Geospatial"}</b></span>
         </footer>
       </div>
       <CommandPalette open={paletteOpen} onClose={closePalette} permissions={permissions} />
