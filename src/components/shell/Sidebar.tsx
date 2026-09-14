@@ -101,7 +101,7 @@ export function Sidebar({ permissions, viewer, open, onClose, developerCredit }:
               <span>Identity provider not configured</span>
             </>
           )}
-          <span className="cb-credit">Designed, architected, developed &amp; maintained by<br />{developerCredit ?? "Lokendra Bethu"}</span>
+          <span className="cb-credit">Developed by {developerCredit ?? "Cloudpoint"}</span>
         </div>
       </aside>
     </>
