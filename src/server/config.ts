@@ -91,7 +91,19 @@ let cached: CloudBaseConfig | null = null;
 export function getConfig(): CloudBaseConfig {
   if (cached) return cached;
   const env = (process.env.NODE_ENV as CloudBaseConfig["env"]) ?? "development";
-  const requestedMode = (process.env.CLOUDBASE_AUTH_MODE as AuthMode | undefined) ?? (env === "production" ? "none" : "dev");
+  // Pasting a value into a hosting dashboard often carries a stray space or a
+  // trailing newline with it. An unrecognised mode used to fall through every
+  // branch and leave a sign-in page with no way to sign in and nothing to
+  // explain why, so normalise the value and say so plainly when it is wrong.
+  const rawMode = (process.env.CLOUDBASE_AUTH_MODE ?? "").trim().toLowerCase();
+  const known: readonly AuthMode[] = ["dev", "entra", "access", "email", "code", "none"];
+  let requestedMode: AuthMode;
+  if (!rawMode) requestedMode = env === "production" ? "none" : "dev";
+  else if ((known as readonly string[]).includes(rawMode)) requestedMode = rawMode as AuthMode;
+  else {
+    console.error(`[config] CLOUDBASE_AUTH_MODE is "${rawMode}", which is not one of ${known.join(", ")}. Sign-in is disabled until it is corrected.`);
+    requestedMode = "none";
+  }
   // Never allow the development identity provider in production builds.
   let mode: AuthMode = env === "production" && requestedMode === "dev" ? "none" : requestedMode;
   // Email sign-in signs its session cookie and hashes its codes with this
