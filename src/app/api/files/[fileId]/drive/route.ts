@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ fil
   const { fileId } = await context.params;
   await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
-  const access = authorizeSourceFile(identity, fileId, "files.open-drive");
+  const access = await authorizeSourceFile(identity, fileId, "files.open-drive");
   if (!access.ok) return NextResponse.json({ error: access.status === 401 ? "Not authenticated." : access.status === 403 ? "Not authorized." : "Not found." }, { status: access.status });
   const { file, owner } = access.resolved;
   let url = file.driveUrl;
@@ -36,14 +36,14 @@ export async function GET(request: NextRequest, context: { params: Promise<{ fil
         via = "drive-search";
       }
     } catch (error) {
-      recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "error", detail: { fileId, message: error instanceof Error ? error.message : "drive error" } });
+      await recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "error", detail: { fileId, message: error instanceof Error ? error.message : "drive error" } });
       return NextResponse.json({ error: "Drive lookup failed. Confirm the service account can see the folder containing this file." }, { status: 502 });
     }
   }
   if (!url) {
-    recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "error", detail: { fileId, reason: "not-in-drive" } });
+    await recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "error", detail: { fileId, reason: "not-in-drive" } });
     return NextResponse.json({ error: `“${path.basename(file.path)}” was not found in the Drive folders shared with CloudBase. Share its folder with the service account, or set driveUrl on the source file.` }, { status: 404 });
   }
-  recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "allowed", detail: { fileId, via } });
+  await recordAudit({ actor: identity!.subject, action: "files.open-drive", target: { type: "sop", id: owner.id }, outcome: "allowed", detail: { fileId, via } });
   return NextResponse.redirect(url, 302);
 }

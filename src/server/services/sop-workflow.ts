@@ -44,9 +44,9 @@ async function writeSop(sop: ReturnType<typeof Sop.parse>, actor: string) {
 type Loaded = { ok: true; sop: ReturnType<typeof Sop.parse> };
 type Failure = Extract<WorkflowResult, { ok: false }>;
 
-function guard(identity: Identity, permission: Parameters<typeof can>[1], sopId: string): Loaded | Failure {
+async function guard(identity: Identity, permission: Parameters<typeof can>[1], sopId: string): Promise<Loaded | Failure> {
   if (!can(identity, permission)) {
-    recordAudit({ actor: identity.subject, action: permission, target: { type: "sop", id: sopId }, outcome: "denied", detail: { reason: "not-granted" } });
+    await recordAudit({ actor: identity.subject, action: permission, target: { type: "sop", id: sopId }, outcome: "denied", detail: { reason: "not-granted" } });
     return { ok: false, status: 403, error: `${permission} is required.` };
   }
   const loaded = readSop(sopId);
@@ -57,7 +57,7 @@ function guard(identity: Identity, permission: Parameters<typeof can>[1], sopId:
 }
 
 export async function approveSopVersion(identity: Identity, sopId: string, version: string, note: string): Promise<WorkflowResult> {
-  const g = guard(identity, "sop.approve", sopId);
+  const g = await guard(identity, "sop.approve", sopId);
   if (!g.ok) return g;
   const target = g.sop.versions.find((v) => v.version === version);
   if (!target) return { ok: false, status: 404, error: "Version not found." };
@@ -73,12 +73,12 @@ export async function approveSopVersion(identity: Identity, sopId: string, versi
   g.sop.version = version;
   if (g.sop.provenance) g.sop.provenance.locked = true;
   await writeSop(g.sop, identity.subject);
-  recordAudit({ actor: identity.subject, action: "sop.approve", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version, note: note.slice(0, 200) } });
+  await recordAudit({ actor: identity.subject, action: "sop.approve", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version, note: note.slice(0, 200) } });
   return { ok: true, sopId, version, message: `Version ${version} approved and set as the effective version.` };
 }
 
 export async function sendBackSopVersion(identity: Identity, sopId: string, version: string, note: string): Promise<WorkflowResult> {
-  const g = guard(identity, "sop.review", sopId);
+  const g = await guard(identity, "sop.review", sopId);
   if (!g.ok) return g;
   const target = g.sop.versions.find((v) => v.version === version);
   if (!target) return { ok: false, status: 404, error: "Version not found." };
@@ -89,12 +89,12 @@ export async function sendBackSopVersion(identity: Identity, sopId: string, vers
   g.sop.updatedAt = today();
   if (g.sop.provenance) g.sop.provenance.locked = true;
   await writeSop(g.sop, identity.subject);
-  recordAudit({ actor: identity.subject, action: "sop.send-back", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version, note: note.slice(0, 200) } });
+  await recordAudit({ actor: identity.subject, action: "sop.send-back", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version, note: note.slice(0, 200) } });
   return { ok: true, sopId, version, message: `Version ${version} sent back to draft.` };
 }
 
 export async function submitSopVersion(identity: Identity, sopId: string, version: string): Promise<WorkflowResult> {
-  const g = guard(identity, "sop.author", sopId);
+  const g = await guard(identity, "sop.author", sopId);
   if (!g.ok) return g;
   const target = g.sop.versions.find((v) => v.version === version);
   if (!target) return { ok: false, status: 404, error: "Version not found." };
@@ -103,7 +103,7 @@ export async function submitSopVersion(identity: Identity, sopId: string, versio
   g.sop.updatedAt = today();
   if (g.sop.provenance) g.sop.provenance.locked = true;
   await writeSop(g.sop, identity.subject);
-  recordAudit({ actor: identity.subject, action: "sop.submit", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version } });
+  await recordAudit({ actor: identity.subject, action: "sop.submit", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { version } });
   return { ok: true, sopId, version, message: `Version ${version} submitted for review.` };
 }
 
@@ -114,7 +114,7 @@ export async function submitSopVersion(identity: Identity, sopId: string, versio
  * say, and who withdrew it". Reversible by approving a version again.
  */
 export async function retireSop(identity: Identity, sopId: string, reason: string): Promise<WorkflowResult> {
-  const g = guard(identity, "sop.retire", sopId);
+  const g = await guard(identity, "sop.retire", sopId);
   if (!g.ok) return g;
   if (!reason.trim()) return { ok: false, status: 400, error: "A reason for retiring this SOP is required." };
   if (g.sop.versions.every((v) => v.status === "historical")) return { ok: false, status: 409, error: "This SOP is already retired." };
@@ -123,7 +123,7 @@ export async function retireSop(identity: Identity, sopId: string, reason: strin
   g.sop.updatedAt = today();
   if (g.sop.provenance) g.sop.provenance.locked = true;
   await writeSop(g.sop, identity.subject);
-  recordAudit({ actor: identity.subject, action: "sop.retire", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { title: g.sop.title, reason: reason.slice(0, 300) } });
+  await recordAudit({ actor: identity.subject, action: "sop.retire", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { title: g.sop.title, reason: reason.slice(0, 300) } });
   return { ok: true, sopId, version: g.sop.version, message: `${g.sop.title} retired. It no longer appears in the library or in search.` };
 }
 
@@ -135,7 +135,7 @@ export async function retireSop(identity: Identity, sopId: string, reason: strin
  * the record so the deletion itself is never invisible.
  */
 export async function deleteSop(identity: Identity, sopId: string, reason: string): Promise<WorkflowResult> {
-  const g = guard(identity, "sop.delete", sopId);
+  const g = await guard(identity, "sop.delete", sopId);
   if (!g.ok) return g;
   if (reason.trim().length < 5) return { ok: false, status: 400, error: "A reason of at least 5 characters is required to delete an SOP." };
 
@@ -162,7 +162,7 @@ export async function deleteSop(identity: Identity, sopId: string, reason: strin
   await writer.deleteRecord("sop", sopId, identity.subject);
   await ensureRepositories();
 
-  recordAudit({
+  await recordAudit({
     actor: identity.subject,
     action: "sop.delete",
     target: { type: "sop", id: sopId },
@@ -195,7 +195,7 @@ const ALLOWED = new Map([[".docx", "application/vnd.openxmlformats-officedocumen
  */
 export async function uploadSopDocument(identity: Identity, input: UploadInput): Promise<WorkflowResult> {
   if (!can(identity, "sop.author")) {
-    recordAudit({ actor: identity.subject, action: "sop.upload", outcome: "denied", detail: { reason: "not-granted" } });
+    await recordAudit({ actor: identity.subject, action: "sop.upload", outcome: "denied", detail: { reason: "not-granted" } });
     return { ok: false, status: 403, error: "sop.author is required to upload documents." };
   }
   const ext = path.extname(input.fileName).toLowerCase();
@@ -234,7 +234,7 @@ export async function uploadSopDocument(identity: Identity, input: UploadInput):
     existing.sop.updatedAt = today();
     if (existing.sop.provenance) existing.sop.provenance.locked = true;
     await writeSop(existing.sop, identity.subject);
-    recordAudit({ actor: identity.subject, action: "sop.upload", target: { type: "sop", id: existing.sop.id }, outcome: "allowed", detail: { version, path: relPath, bytes: input.bytes.length } });
+    await recordAudit({ actor: identity.subject, action: "sop.upload", target: { type: "sop", id: existing.sop.id }, outcome: "allowed", detail: { version, path: relPath, bytes: input.bytes.length } });
     return { ok: true, sopId: existing.sop.id, version, message: `Uploaded as version ${version} (${status}).` };
   }
 
@@ -258,6 +258,6 @@ export async function uploadSopDocument(identity: Identity, input: UploadInput):
     provenance: { importedFrom: `uploaded in CloudBase by ${identity.email || identity.subject}`, importedAt: today(), note: "Uploaded through the governed workflow. Awaiting review and approval.", locked: true },
   });
   await writeSop(sop, identity.subject);
-  recordAudit({ actor: identity.subject, action: "sop.upload", target: { type: "sop", id }, outcome: "allowed", detail: { version: "1.0", path: relPath, bytes: input.bytes.length } });
+  await recordAudit({ actor: identity.subject, action: "sop.upload", target: { type: "sop", id }, outcome: "allowed", detail: { version: "1.0", path: relPath, bytes: input.bytes.length } });
   return { ok: true, sopId: id, version: "1.0", message: `Created ${id} as version 1.0 (${status}).` };
 }

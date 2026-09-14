@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   await ensureRepositories();
   const identity = await resolveIdentityFromRequest(request);
   if (!identity || !can(identity, "knowledge.read")) {
-    recordAudit({ actor: identity?.subject ?? "anonymous", action: "drive.search", outcome: "denied", detail: {} });
+    await recordAudit({ actor: identity?.subject ?? "anonymous", action: "drive.search", outcome: "denied", detail: {} });
     return NextResponse.json({ configured: isDriveConfigured(), error: "Not authorized.", results: [] }, { status: identity ? 403 : 401 });
   }
   const query = request.nextUrl.searchParams.get("q")?.trim() || "";
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await searchDrive(query);
-    recordAudit({ actor: identity.subject, action: "drive.search", outcome: "allowed", detail: { length: query.length, results: results.length } });
+    await recordAudit({ actor: identity.subject, action: "drive.search", outcome: "allowed", detail: { length: query.length, results: results.length } });
     return NextResponse.json({ configured: true, results });
   } catch (error) {
     console.error("[drive search]", error);

@@ -32,7 +32,7 @@ export async function executeAgent(identity: Identity, agentId: string): Promise
   const result = runAgent(agent, { repos: getRepositories(), index: permittedItems(identity), now: new Date() });
   const run: AgentRun = { id: randomUUID(), agentId, startedAt, finishedAt: new Date().toISOString(), actor: identity.subject, status: result.skipped ? "skipped" : "completed", findingCount: findings.length, summary: result.skipped ?? `${findings.length} finding(s)` };
   await getRegistryWriter().appendAgentRun(run);
-  recordAudit({ actor: identity.subject, action: "agent.run", target: { type: "agent", id: agentId }, outcome: "allowed", detail: { findings: findings.length, status: run.status } });
+  await recordAudit({ actor: identity.subject, action: "agent.run", target: { type: "agent", id: agentId }, outcome: "allowed", detail: { findings: findings.length, status: run.status } });
   return { run, findings };
 }
 

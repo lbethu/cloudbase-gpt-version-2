@@ -35,7 +35,7 @@ export async function requirePermission(permission: Permission, options: { audit
   const identity = await getCurrentIdentity();
   const decision = decide(identity, getRepositories().roles.list(), permission);
   if (options.audit || !decision.allowed) {
-    recordAudit({ actor: identity?.subject ?? "anonymous", action: `authz.${permission}`, outcome: decision.allowed ? "allowed" : "denied", detail: { reason: decision.reason } });
+    await recordAudit({ actor: identity?.subject ?? "anonymous", action: `authz.${permission}`, outcome: decision.allowed ? "allowed" : "denied", detail: { reason: decision.reason } });
   }
   if (!decision.allowed || !identity) throw new ForbiddenError(permission, decision);
   return identity;

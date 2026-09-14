@@ -61,7 +61,7 @@ export async function askCloudBase(identity: Identity, question: string): Promis
 
   trace.push({ step: "Locate passages", detail: `${sources.length} best-matching sections selected (${sources.filter((s) => s.governed).length} approved)` });
   const provider = getAiProvider();
-  recordAudit({ actor: identity.subject, action: "ask.query", outcome: "allowed", detail: { length: q.length, sources: sources.length, provider: provider.name } });
+  await recordAudit({ actor: identity.subject, action: "ask.query", outcome: "allowed", detail: { length: q.length, sources: sources.length, provider: provider.name } });
 
   if (!provider.enabled || sources.length === 0) {
     const answer = buildGovernedAnswer(q, sources, related);
@@ -94,7 +94,7 @@ export async function askCloudBase(identity: Identity, question: string): Promis
     if (sources.some((s) => !s.governed)) notices.push("One or more cited sources are not yet approved. Treat them as imported reference material until the owner confirms them.");
     return { question: q, mode: "ai-grounded", statements, sources, related, lastUpdated: latest(sources), notices, provider: `${result.provider}/${result.model}`, trace };
   } catch (error) {
-    recordAudit({ actor: identity.subject, action: "ask.provider-error", outcome: "error", detail: { message: error instanceof Error ? error.message : "unknown" } });
+    await recordAudit({ actor: identity.subject, action: "ask.provider-error", outcome: "error", detail: { message: error instanceof Error ? error.message : "unknown" } });
     const fallback = buildGovernedAnswer(q, sources, related);
     fallback.notices.unshift("The AI provider was unavailable; showing governed retrieval instead.");
     trace.push({ step: "Fallback", detail: "Provider unavailable — governed retrieval" });
