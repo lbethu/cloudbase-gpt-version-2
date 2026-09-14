@@ -109,3 +109,50 @@ describe("mail delivery", () => {
     fetchSpy.mockRestore();
   });
 });
+
+describe("shared access code (demo mode)", () => {
+  const withCodes = async () => {
+    vi.stubEnv("CLOUDBASE_AUTH_MODE", "code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODE", "cloudpoint-preview-2026");
+    vi.stubEnv("CLOUDBASE_ADMIN_CODE", "a-separate-admin-code");
+    return load();
+  };
+
+  it("needs no session secret of its own — two settings are enough", async () => {
+    vi.stubEnv("CLOUDBASE_SESSION_SECRET", "");
+    const cfg = await withCodes();
+    expect(cfg.getConfig().auth.mode).toBe("code");
+    expect(cfg.getConfig().auth.sessionSecret).not.toBe("");
+  });
+
+  it("turns itself off if no code is set, rather than letting everyone in", async () => {
+    vi.stubEnv("CLOUDBASE_AUTH_MODE", "code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODE", "");
+    const cfg = await load();
+    expect(cfg.getConfig().auth.mode).toBe("none");
+  });
+
+  it("separates the shared code from the admin code", async () => {
+    await withCodes();
+    const { checkAccessCode } = await import("@/server/auth/accesscode");
+    expect(checkAccessCode("cloudpoint-preview-2026")).toEqual({ ok: true, level: "guest" });
+    expect(checkAccessCode("a-separate-admin-code")).toEqual({ ok: true, level: "member" });
+    expect(checkAccessCode("cloudpoint-preview-2025").ok).toBe(false);
+    expect(checkAccessCode("").ok).toBe(false);
+    expect(checkAccessCode("cloudpoint").ok).toBe(false); // a prefix is not a match
+  });
+
+  it("gives a guest reading only — never upload, approval or governance", async () => {
+    await withCodes();
+    const { decide } = await import("@/server/authz/core");
+    const { repos } = await import("../support/repos");
+    const roles = repos.roles.list();
+    const guest = { subject: "guest:jane", roles: ["employee"], teams: ["company-wide"], tenantId: "cloudpoint" };
+
+    expect(decide(guest, roles, "sop.read").allowed).toBe(true);
+    expect(decide(guest, roles, "files.read").allowed).toBe(true);
+    for (const forbidden of ["sop.author", "sop.approve", "sop.retire", "sop.delete", "admin.access", "audit.read", "knowledge.publish"] as const) {
+      expect(decide(guest, roles, forbidden).allowed, `guest must not hold ${forbidden}`).toBe(false);
+    }
+  });
+});

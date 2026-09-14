@@ -27,12 +27,20 @@ const add = (level: Level, title: string, detail = "") => results.push({ level, 
 async function main() {
   const cfg = getConfig();
   const hosted = process.env.VERCEL === "1" || process.env.CLOUDBASE_ASSUME_HOSTED === "1" || cfg.env === "production";
+  // A read-only preview writes nothing, so the file registry and the documents
+  // that ship with the repository are perfectly adequate. Only a deployment
+  // where someone can actually upload or approve needs the database and bucket.
+  const readOnlyPreview = cfg.auth.mode === "code" && !cfg.auth.adminCode;
 
   // ── Identity ───────────────────────────────────────────────────────────────
   if (cfg.auth.mode === "dev") {
     add(hosted ? "fail" : "warn", "Identity: development", "Every visitor is the same fictitious admin. Refused automatically in a production build, but never expose this to anyone.");
   } else if (cfg.auth.mode === "none") {
     add("fail", "Identity: none configured", "Everyone sees the sign-in wall and no content. Set CLOUDBASE_AUTH_MODE=email (CloudBase signs people in itself), or access / entra.");
+  } else if (cfg.auth.mode === "code") {
+    add("pass", "Identity: shared access code (R&D preview)", `Guests can read only${cfg.auth.adminCode ? "; a separate admin code grants register roles" : ""}. A shared code proves someone was told it, not who they are — move to CLOUDBASE_AUTH_MODE=email once people rely on this.`);
+    if (cfg.auth.accessCode.length < 8) add("warn", "Access code is short", "Use something long enough not to be guessed — a few words joined together is fine.");
+    if (cfg.auth.adminCode && cfg.auth.adminCode === cfg.auth.accessCode) add("fail", "The admin code is the same as the shared code", "Everyone with the shared code would be able to upload, approve and delete. Make them different.");
   } else if (cfg.auth.mode === "email") {
     if (!cfg.auth.sessionSecret) add("fail", "Identity: email sign-in without a session secret", "CLOUDBASE_SESSION_SECRET is required — without it the mode disables itself and nobody can sign in. Generate one with: openssl rand -base64 32");
     else if (cfg.mail.driver === "log") add(hosted ? "fail" : "warn", "Identity: email sign-in with no mail driver", "Codes would only be written to the server log, which is refused in production. Set CLOUDBASE_MAIL_DRIVER=brevo with BREVO_API_KEY (no DNS or admin needed), or smtp with SMTP_HOST/USER/PASSWORD.");
@@ -76,6 +84,8 @@ async function main() {
         add("fail", "Database unreachable or unmigrated", /relation .* does not exist/.test(message) ? "Tables are missing — run npm run db:migrate, then npm run db:seed." : message);
       }
     }
+  } else if (hosted && readOnlyPreview) {
+    add("pass", "Storage: file registry", "Fine for a read-only preview — nothing is written. Add CLOUDBASE_STORAGE=postgres before anyone uploads or approves.");
   } else if (hosted) {
     add("fail", "Storage: file registry on a hosted deployment", "Approvals and uploads would be written to a read-only, disposable filesystem. Set CLOUDBASE_STORAGE=postgres.");
   } else {
@@ -98,6 +108,8 @@ async function main() {
     } catch (error) {
       add("fail", "Document bucket unreachable", error instanceof Error ? error.message : String(error));
     }
+  } else if (hosted && readOnlyPreview) {
+    add("pass", "Documents: shipped with the deployment", "Fine for a read-only preview. Add CLOUDBASE_BLOB_STORAGE=s3 before anyone uploads.");
   } else if (hosted) {
     add("fail", "Documents: local filesystem on a hosted deployment", "Uploads would vanish on the next deploy. Set CLOUDBASE_BLOB_STORAGE=s3 with S3_BUCKET and keys.");
   } else {

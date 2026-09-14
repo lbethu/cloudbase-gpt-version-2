@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { getConfig } from "@/server/config";
 import { ACCESS_JWT_HEADER, verifyAccessJwt } from "./access";
 import { findPerson } from "./people";
-import { readSessionEmail, readSessionEmailFrom } from "./session";
+import { readSession, readSessionFrom, type SessionClaims } from "./session";
 
 /**
  * Identity seam.
@@ -23,7 +23,9 @@ export interface Identity {
   roles: string[];
   teams: string[];
   tenantId: string;
-  provider: "dev" | "entra" | "access" | "email";
+  provider: "dev" | "entra" | "access" | "email" | "code";
+  /** True when the person proved only that they know a shared code, so the name is self-declared. */
+  guest?: boolean;
 }
 
 export interface IdentityProvider {
@@ -132,9 +134,9 @@ class AccessIdentityProvider implements IdentityProvider {
  */
 class EmailCodeIdentityProvider implements IdentityProvider {
   readonly name = "email";
-  private build(email: string | null): Identity | null {
-    if (!email) return null;
-    const person = findPerson(email);
+  private build(claims: SessionClaims | null): Identity | null {
+    if (!claims) return null;
+    const person = findPerson(claims.email);
     if (!person || !person.active) return null;
     return {
       subject: person.email,
@@ -147,15 +149,53 @@ class EmailCodeIdentityProvider implements IdentityProvider {
     };
   }
   async resolve(requestHeaders: Headers): Promise<Identity | null> {
-    // cookies() is only available inside a request scope; fall back to parsing
-    // the header when called from a route handler that holds a bare Request.
     try {
-      const fromStore = await readSessionEmail();
+      const fromStore = await readSession();
       if (fromStore) return this.build(fromStore);
     } catch {
       /* not in a request scope */
     }
-    return this.build(await readSessionEmailFrom(requestHeaders));
+    return this.build(await readSessionFrom(requestHeaders));
+  }
+}
+
+/**
+ * Shared-code access for a demo deployment.
+ *
+ * A guest session carries only what the visitor typed, so it is read-only:
+ * the `employee` role grants reading and nothing else. Someone who used the
+ * separate admin code, and whose address is in the register, gets that
+ * person's real roles — which is why the two codes are kept apart.
+ */
+class SharedCodeIdentityProvider implements IdentityProvider {
+  readonly name = "code";
+  private build(claims: SessionClaims | null): Identity | null {
+    if (!claims) return null;
+    const cfg = getConfig();
+    if (!claims.guest) {
+      const person = findPerson(claims.email);
+      if (!person || !person.active) return null;
+      return { subject: person.email, name: person.name, email: person.email, roles: [...new Set(["employee", ...person.roles])], teams: [...new Set(["company-wide", ...person.teams])], tenantId: cfg.auth.tenantId, provider: "code" };
+    }
+    return {
+      subject: `guest:${claims.email}`,
+      name: claims.name || claims.email,
+      email: claims.email,
+      roles: ["employee"], // read-only: no upload, no approval, no governance centre
+      teams: ["company-wide"],
+      tenantId: cfg.auth.tenantId,
+      provider: "code",
+      guest: true,
+    };
+  }
+  async resolve(requestHeaders: Headers): Promise<Identity | null> {
+    try {
+      const fromStore = await readSession();
+      if (fromStore) return this.build(fromStore);
+    } catch {
+      /* not in a request scope */
+    }
+    return this.build(await readSessionFrom(requestHeaders));
   }
 }
 
@@ -165,6 +205,7 @@ export function getIdentityProvider(): IdentityProvider | null {
   if (mode === "entra") return new EntraEasyAuthIdentityProvider();
   if (mode === "access") return new AccessIdentityProvider();
   if (mode === "email") return new EmailCodeIdentityProvider();
+  if (mode === "code") return new SharedCodeIdentityProvider();
   return null;
 }
 

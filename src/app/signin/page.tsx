@@ -4,6 +4,7 @@ import { AlertTriangle, Lock } from "lucide-react";
 import { getConfig } from "@/server/config";
 import { getCurrentIdentity } from "@/server/auth/identity";
 import { SignInForm } from "./SignInForm";
+import { AccessCodeForm } from "./AccessCodeForm";
 
 export const metadata: Metadata = { title: "Sign in" };
 export const dynamic = "force-dynamic";
@@ -29,6 +30,8 @@ export default async function SignInPage() {
 
         {cfg.auth.mode === "email" && !misconfigured && <SignInForm />}
 
+        {cfg.auth.mode === "code" && <AccessCodeForm />}
+
         {misconfigured && (
           <p className="cb-signin-problem">
             <AlertTriangle size={15} /> Email sign-in is selected but <code>CLOUDBASE_SESSION_SECRET</code> is not set, so sessions cannot be signed. Set it in the deployment configuration and redeploy.
@@ -37,7 +40,7 @@ export default async function SignInPage() {
 
         {cfg.auth.mode === "none" && (
           <p className="cb-signin-problem">
-            <AlertTriangle size={15} /> No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set <code>CLOUDBASE_AUTH_MODE</code> to <code>email</code>, <code>access</code> or <code>entra</code> and redeploy.
+            <AlertTriangle size={15} /> No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set <code>CLOUDBASE_AUTH_MODE</code> to <code>code</code> (a shared code, for a demo) or <code>email</code>, and redeploy.
           </p>
         )}
 

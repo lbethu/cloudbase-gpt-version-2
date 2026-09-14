@@ -20,9 +20,17 @@ const ISSUER = "cloudbase";
 
 const key = () => new TextEncoder().encode(getConfig().auth.sessionSecret);
 
-export async function createSession(email: string): Promise<void> {
+export interface SessionClaims {
+  email: string;
+  /** Guest sessions come from the shared demo code: read-only, and the name is self-declared. */
+  guest?: boolean;
+  name?: string;
+}
+
+export async function createSession(claims: string | SessionClaims): Promise<void> {
+  const payload: SessionClaims = typeof claims === "string" ? { email: claims } : claims;
   const hours = getConfig().auth.sessionHours;
-  const token = await new SignJWT({ email })
+  const token = await new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuer(ISSUER)
     .setIssuedAt()
@@ -40,28 +48,38 @@ export async function createSession(email: string): Promise<void> {
 }
 
 export async function readSessionEmail(): Promise<string | null> {
+  return (await readSession())?.email ?? null;
+}
+
+export async function readSession(): Promise<SessionClaims | null> {
   try {
     const token = (await cookies()).get(COOKIE)?.value;
-    if (!token) return null;
-    const { payload } = await jwtVerify(token, key(), { issuer: ISSUER });
-    return typeof payload.email === "string" ? payload.email.toLowerCase() : null;
+    return token ? await verify(token) : null;
   } catch {
     // Expired, tampered with, or signed by a different secret — all the same answer.
     return null;
   }
 }
 
-/** Reads a session from a bare Request (route handlers, which have no cookies() scope). */
-export async function readSessionEmailFrom(headers: Headers): Promise<string | null> {
-  const raw = headers.get("cookie") ?? "";
-  const match = raw.split(/;\s*/).find((c) => c.startsWith(`${COOKIE}=`));
-  if (!match) return null;
+async function verify(token: string): Promise<SessionClaims | null> {
   try {
-    const { payload } = await jwtVerify(decodeURIComponent(match.slice(COOKIE.length + 1)), key(), { issuer: ISSUER });
-    return typeof payload.email === "string" ? payload.email.toLowerCase() : null;
+    const { payload } = await jwtVerify(token, key(), { issuer: ISSUER });
+    if (typeof payload.email !== "string") return null;
+    return { email: payload.email.toLowerCase(), guest: payload.guest === true, name: typeof payload.name === "string" ? payload.name : undefined };
   } catch {
     return null;
   }
+}
+
+/** Reads a session from a bare Request (route handlers, which have no cookies() scope). */
+export async function readSessionFrom(headers: Headers): Promise<SessionClaims | null> {
+  const raw = headers.get("cookie") ?? "";
+  const match = raw.split(/;\s*/).find((c) => c.startsWith(`${COOKIE}=`));
+  return match ? verify(decodeURIComponent(match.slice(COOKIE.length + 1))) : null;
+}
+
+export async function readSessionEmailFrom(headers: Headers): Promise<string | null> {
+  return (await readSessionFrom(headers))?.email ?? null;
 }
 
 export async function clearSession(): Promise<void> {

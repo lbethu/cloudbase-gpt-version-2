@@ -1,5 +1,6 @@
 import "server-only";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 /**
  * Centralized server configuration. Every environment variable the platform
@@ -16,7 +17,7 @@ const list = (value: string | undefined) =>
     .map((v) => v.trim())
     .filter(Boolean);
 
-export type AuthMode = "dev" | "entra" | "access" | "email" | "none";
+export type AuthMode = "dev" | "entra" | "access" | "email" | "code" | "none";
 export type AiProviderName = "disabled" | "openai" | "azure-openai" | "anthropic" | "gemini";
 
 export interface CloudBaseConfig {
@@ -36,6 +37,10 @@ export interface CloudBaseConfig {
     /** Signs the session cookie and the stored sign-in codes. Required for email sign-in. */
     sessionSecret: string;
     sessionHours: number;
+    /** Shared code for a demo deployment: read-only access for anyone who has it. */
+    accessCode: string;
+    /** Optional second code granting the register's own roles. Kept separate on purpose. */
+    adminCode: string;
     tenantId: string;
   };
   mail: {
@@ -92,6 +97,10 @@ export function getConfig(): CloudBaseConfig {
   // Email sign-in signs its session cookie and hashes its codes with this
   // secret. Without one, sessions would be forgeable — so the mode turns
   // itself off rather than pretending to authenticate anybody.
+  if (mode === "code" && !(process.env.CLOUDBASE_ACCESS_CODE ?? "").trim()) {
+    if (env === "production") console.error("[config] CLOUDBASE_AUTH_MODE=code requires CLOUDBASE_ACCESS_CODE. Sign-in is disabled until it is set.");
+    mode = "none";
+  }
   if (mode === "email" && !(process.env.CLOUDBASE_SESSION_SECRET ?? "").trim()) {
     if (env === "production") console.error("[config] CLOUDBASE_AUTH_MODE=email requires CLOUDBASE_SESSION_SECRET. Sign-in is disabled until it is set.");
     mode = "none";
@@ -116,7 +125,12 @@ export function getConfig(): CloudBaseConfig {
       entraGroupTeamMap: parseJsonMap(process.env.CLOUDBASE_ENTRA_GROUP_TEAM_MAP),
       accessTeamDomain: (process.env.CLOUDBASE_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:\/\//, "").replace(/\/$/, ""),
       accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
-      sessionSecret: process.env.CLOUDBASE_SESSION_SECRET ?? "",
+      accessCode: (process.env.CLOUDBASE_ACCESS_CODE ?? "").trim(),
+      adminCode: (process.env.CLOUDBASE_ADMIN_CODE ?? "").trim(),
+      // In code mode the shared codes can stand in for a session secret, so a
+      // demo needs two settings rather than three. Changing a code then signs
+      // everyone out, which is the behaviour you want anyway.
+      sessionSecret: (process.env.CLOUDBASE_SESSION_SECRET ?? "").trim() || (process.env.CLOUDBASE_ACCESS_CODE ? `derived:${createHash("sha256").update(`${process.env.CLOUDBASE_ACCESS_CODE}|${process.env.CLOUDBASE_ADMIN_CODE ?? ""}`).digest("hex")}` : ""),
       sessionHours: Math.max(1, Number(process.env.CLOUDBASE_SESSION_HOURS ?? 12)),
       tenantId: process.env.CLOUDBASE_TENANT_ID ?? "cloudpoint",
     },

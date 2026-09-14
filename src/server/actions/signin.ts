@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getConfig } from "@/server/config";
 import { requestSignInCode, verifySignInCode } from "@/server/auth/signin";
+import { checkAccessCode } from "@/server/auth/accesscode";
 import { clearSession, createSession } from "@/server/auth/session";
 import { recordAudit } from "@/server/services/audit";
 
@@ -32,6 +33,24 @@ export async function verifyCodeAction(_prev: SignInState, formData: FormData): 
   await recordAudit({ actor: email.toLowerCase() || "anonymous", action: "auth.sign-in", outcome: result.ok ? "allowed" : "denied", detail: {} });
   if (!result.ok) return { stage: "code", email, message: result.error };
   await createSession(result.email);
+  redirect("/");
+}
+
+/** Shared-code sign-in for a demo deployment. */
+export async function accessCodeAction(_prev: SignInState, formData: FormData): Promise<SignInState> {
+  if (getConfig().auth.mode !== "code") return { stage: "email", message: "Code access is not enabled for this deployment." };
+  const name = String(formData.get("name") ?? "").trim().slice(0, 80);
+  const code = String(formData.get("code") ?? "");
+  if (!name) return { stage: "email", message: "Enter your name so the access log means something." };
+
+  const check = checkAccessCode(code);
+  await recordAudit({ actor: name || "anonymous", action: "auth.code-access", outcome: check.ok ? "allowed" : "denied", detail: { level: check.ok ? check.level : undefined, selfDeclared: true } });
+  if (!check.ok) return { stage: "email", email: name, message: "That access code is not correct." };
+
+  // A guest session records what the person typed and grants reading only.
+  // The member path still requires the address to be in the people register.
+  const asEmail = /@/.test(name) ? name.toLowerCase() : `${name.toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "")}@guest.cloudbase`;
+  await createSession(check.level === "member" ? { email: asEmail } : { email: asEmail, guest: true, name });
   redirect("/");
 }
 
