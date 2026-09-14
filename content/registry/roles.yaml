@@ -22,7 +22,7 @@
 - id: approver
   name: Approver
   description: Approves SOP publication, R&D decisions, capability promotion.
-  grants: [sop.approve, rnd.approve, knowledge.publish, capability.manage, review.read]
+  grants: [sop.approve, sop.retire, rnd.approve, knowledge.publish, capability.manage, review.read]
 - id: ai-steward
   name: AI Steward
   description: Manages the Copilot and Automation registries.
@@ -30,7 +30,7 @@
 - id: admin
   name: Administrator
   description: Governance center, configuration, audit history — and final approval authority for SOPs, publications, copilots and automations.
-  grants: [admin.access, audit.read, review.read, agent.run, crm.read, sop.review, sop.approve, knowledge.publish, copilot.manage, automation.manage, rnd.approve]
+  grants: [admin.access, audit.read, review.read, agent.run, crm.read, sop.review, sop.approve, sop.retire, sop.delete, knowledge.publish, copilot.manage, automation.manage, rnd.approve]
 - id: restricted-readonly
   name: Restricted read-only
   description: Example of explicit deny precedence — cannot open source files even if another role grants it.

@@ -107,6 +107,71 @@ export async function submitSopVersion(identity: Identity, sopId: string, versio
   return { ok: true, sopId, version, message: `Version ${version} submitted for review.` };
 }
 
+/**
+ * Retires an SOP: every version becomes `historical`, no version stays
+ * effective, and it leaves search and the library. The record and its whole
+ * history stay in the registry, so an audit can still answer "what did this
+ * say, and who withdrew it". Reversible by approving a version again.
+ */
+export async function retireSop(identity: Identity, sopId: string, reason: string): Promise<WorkflowResult> {
+  const g = guard(identity, "sop.retire", sopId);
+  if (!g.ok) return g;
+  if (!reason.trim()) return { ok: false, status: 400, error: "A reason for retiring this SOP is required." };
+  if (g.sop.versions.every((v) => v.status === "historical")) return { ok: false, status: 409, error: "This SOP is already retired." };
+  for (const v of g.sop.versions) v.status = "historical";
+  g.sop.effectiveVersion = undefined;
+  g.sop.updatedAt = today();
+  if (g.sop.provenance) g.sop.provenance.locked = true;
+  await writeSop(g.sop, identity.subject);
+  recordAudit({ actor: identity.subject, action: "sop.retire", target: { type: "sop", id: sopId }, outcome: "allowed", detail: { title: g.sop.title, reason: reason.slice(0, 300) } });
+  return { ok: true, sopId, version: g.sop.version, message: `${g.sop.title} retired. It no longer appears in the library or in search.` };
+}
+
+/**
+ * Permanently deletes an SOP — the record, its extracted text and the stored
+ * document. For genuine mistakes (a wrong file, a duplicate, a test upload),
+ * not for withdrawing guidance: retiring is what preserves history, and this
+ * destroys it. Admin-only, a reason is required, and the audit entry survives
+ * the record so the deletion itself is never invisible.
+ */
+export async function deleteSop(identity: Identity, sopId: string, reason: string): Promise<WorkflowResult> {
+  const g = guard(identity, "sop.delete", sopId);
+  if (!g.ok) return g;
+  if (reason.trim().length < 5) return { ok: false, status: 400, error: "A reason of at least 5 characters is required to delete an SOP." };
+
+  const writer = getRegistryWriter();
+  const storage = getBlobStorage();
+  const removedFiles: string[] = [];
+  const removedContent: string[] = [];
+
+  for (const version of g.sop.versions) {
+    if (version.importedContentId) {
+      await writer.deleteImportedContent(version.importedContentId);
+      removedContent.push(version.importedContentId);
+    }
+    const file = version.sourceFile;
+    // Only documents uploaded through CloudBase are removed from storage. The
+    // originals that came with the repository are shared source material and
+    // are never destroyed by deleting a record that points at them.
+    if (file && file.path.startsWith("uploads/")) {
+      await storage.remove(file.path);
+      await writer.deleteSourceFile(file.id);
+      removedFiles.push(file.path);
+    }
+  }
+  await writer.deleteRecord("sop", sopId, identity.subject);
+  await ensureRepositories();
+
+  recordAudit({
+    actor: identity.subject,
+    action: "sop.delete",
+    target: { type: "sop", id: sopId },
+    outcome: "allowed",
+    detail: { title: g.sop.title, sopNumber: g.sop.sopNumber, owningTeam: g.sop.owningTeam, versions: g.sop.versions.length, removedFiles, removedContent, reason: reason.slice(0, 300) },
+  });
+  return { ok: true, sopId, version: g.sop.version, message: `${g.sop.title} deleted permanently${removedFiles.length ? ` (${removedFiles.length} uploaded document${removedFiles.length === 1 ? "" : "s"} removed from storage)` : ""}.` };
+}
+
 export interface UploadInput {
   fileName: string;
   bytes: Buffer;

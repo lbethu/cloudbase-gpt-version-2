@@ -36,6 +36,9 @@ export function buildKnowledgeIndex(repos: Repositories): KnowledgeItem[] {
   const items: KnowledgeItem[] = [];
 
   for (const sop of repos.sops.list()) {
+    // Retired SOPs stay in the registry for audit and history but leave the
+    // live index: nobody should find guidance the owners have withdrawn.
+    if (sop.versions.every((v) => v.status === "historical")) continue;
     const effective = sop.versions.find((v) => v.version === sop.effectiveVersion) ?? sop.versions[sop.versions.length - 1];
     const imported = sop.versions.map((v) => (v.importedContentId ? repos.sops.importedContent(v.importedContentId) : undefined));
     items.push(

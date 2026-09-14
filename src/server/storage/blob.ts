@@ -2,7 +2,7 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getConfig } from "@/server/config";
 
 /**
@@ -22,6 +22,8 @@ export interface BlobStorage {
   read(key: string): Promise<Buffer>;
   stream(key: string): Promise<Readable>;
   put(key: string, bytes: Buffer, contentType: string): Promise<void>;
+  /** Removes an object. Missing objects are not an error — deletion is idempotent. */
+  remove(key: string): Promise<void>;
 }
 
 const safeKey = (key: string) => {
@@ -56,6 +58,10 @@ class LocalStorage implements BlobStorage {
     fs.mkdirSync(path.dirname(abs), { recursive: true });
     fs.writeFileSync(abs, bytes);
   }
+  async remove(key: string) {
+    const abs = this.abs(key);
+    if (fs.existsSync(abs)) fs.unlinkSync(abs);
+  }
 }
 
 class S3Storage implements BlobStorage {
@@ -89,6 +95,9 @@ class S3Storage implements BlobStorage {
   }
   async put(key: string, bytes: Buffer, contentType: string) {
     await this.client.send(new PutObjectCommand({ Bucket: this.bucket, Key: safeKey(key), Body: bytes, ContentType: contentType }));
+  }
+  async remove(key: string) {
+    await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: safeKey(key) }));
   }
 }
 

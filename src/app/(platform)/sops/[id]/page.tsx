@@ -8,6 +8,7 @@ import { AsideCard, DetailHeader, DetailLayout, MetaList, RelatedPanel } from "@
 import { BodySection, BulletList, Callout, NotRecorded } from "@/components/ui/primitives";
 import { can } from "@/server/authz";
 import { WorkflowActions } from "@/components/sops/WorkflowActions";
+import { RemoveActions } from "@/components/sops/RemoveActions";
 import { getConfig } from "@/server/config";
 import { getRepositories } from "@/server/repositories";
 import { requireVisible } from "@/server/services/access";
@@ -92,6 +93,11 @@ export default async function SopPage({ params, searchParams }: { params: Promis
       {(can(viewer.identity, "sop.approve") || can(viewer.identity, "sop.review") || can(viewer.identity, "sop.author")) && (
         <div style={{ marginBottom: 16 }}>
           <WorkflowActions sopId={sop.id} version={shown.version} status={shown.status} canApprove={can(viewer.identity, "sop.approve")} canReview={can(viewer.identity, "sop.review")} canAuthor={can(viewer.identity, "sop.author")} />
+        </div>
+      )}
+      {(can(viewer.identity, "sop.retire") || can(viewer.identity, "sop.delete")) && (
+        <div style={{ marginBottom: 16 }}>
+          <RemoveActions sopId={sop.id} title={sop.title} retired={sop.versions.every((v) => v.status === "historical")} canRetire={can(viewer.identity, "sop.retire")} canDelete={can(viewer.identity, "sop.delete")} />
         </div>
       )}
       {!effective && (

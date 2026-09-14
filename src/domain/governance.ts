@@ -14,6 +14,8 @@ export const PERMISSIONS = [
   "sop.author",
   "sop.review",
   "sop.approve",
+  "sop.retire",
+  "sop.delete",
   "rnd.read",
   "rnd.submit",
   "rnd.review",

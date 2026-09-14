@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentIdentity } from "@/server/auth/identity";
 import { ensureRepositories } from "@/server/repositories";
-import { approveSopVersion, sendBackSopVersion, submitSopVersion, uploadSopDocument, type WorkflowResult } from "@/server/services/sop-workflow";
+import { approveSopVersion, deleteSop, retireSop, sendBackSopVersion, submitSopVersion, uploadSopDocument, type WorkflowResult } from "@/server/services/sop-workflow";
 
 /** Server actions: identity is resolved server-side; the client only sends intent. */
 
@@ -23,16 +23,20 @@ export async function sopTransitionAction(_prev: ActionState, formData: FormData
   const version = String(formData.get("version") ?? "");
   const note = String(formData.get("note") ?? "");
   const action = String(formData.get("action") ?? "");
-  if (!/^[A-Za-z0-9._-]+$/.test(sopId) || !version) return { ok: false, message: "Invalid request." };
+  const needsVersion = action !== "retire" && action !== "delete";
+  if (!/^[A-Za-z0-9._-]+$/.test(sopId) || (needsVersion && !version)) return { ok: false, message: "Invalid request." };
   let result: WorkflowResult;
   if (action === "approve") result = await approveSopVersion(identity, sopId, version, note);
   else if (action === "send-back") result = await sendBackSopVersion(identity, sopId, version, note);
   else if (action === "submit") result = await submitSopVersion(identity, sopId, version);
+  else if (action === "retire") result = await retireSop(identity, sopId, note);
+  else if (action === "delete") result = await deleteSop(identity, sopId, note);
   else return { ok: false, message: "Unknown action." };
   if (result.ok) {
     revalidatePath(`/sops/${sopId}`);
     revalidatePath("/sops");
     revalidatePath("/governance/reviews");
+    revalidatePath("/search");
     revalidatePath("/");
   }
   return toState(result);

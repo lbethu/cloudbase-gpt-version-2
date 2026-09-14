@@ -20,6 +20,10 @@ export interface RegistryWriter {
   readonly mode: "file" | "postgres";
   upsertRecord(type: string, record: { id: string; title?: string; owningTeam?: string; classification?: string; status?: string; searchText?: string; data: Record<string, unknown> }, actor: string): Promise<void>;
   upsertImportedContent(content: ImportedContent): Promise<void>;
+  /** Removes a governed record and, optionally, the extracted text that belonged to it. */
+  deleteRecord(type: string, id: string, actor: string): Promise<void>;
+  deleteImportedContent(id: string): Promise<void>;
+  deleteSourceFile(id: string): Promise<void>;
   registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3"; storageKey: string; bytes: number; uploadedBy: string }): Promise<void>;
   appendAudit(event: Omit<AuditEvent, "id" | "at">): Promise<AuditEvent> | AuditEvent;
   listAudit(limit: number): Promise<AuditEvent[]>;
@@ -51,6 +55,23 @@ class FileWriter implements RegistryWriter {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, JSON.stringify([...existing.filter((r) => r.id !== content.id), content], null, 2));
     clearRegistryCache();
+  }
+  async deleteRecord(type: string, id: string) {
+    const loc = FILE_LOCATIONS[type];
+    if (!loc?.perFile) throw new Error(`File-mode deletes are supported for SOPs only (got ${type}).`);
+    const file = path.join(getConfig().contentDir, "registry", loc.dir, `${id}.yaml`);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+    clearRegistryCache();
+  }
+  async deleteImportedContent(id: string) {
+    const file = path.join(getConfig().contentDir, "knowledge", "imported", "sop-content.json");
+    if (!fs.existsSync(file)) return;
+    const existing: ImportedContent[] = JSON.parse(fs.readFileSync(file, "utf8")) as ImportedContent[];
+    fs.writeFileSync(file, JSON.stringify(existing.filter((r) => r.id !== id), null, 2));
+    clearRegistryCache();
+  }
+  async deleteSourceFile() {
+    /* file mode: the SOP record's sourceFile pointer is the registration */
   }
   async registerSourceFile() {
     /* file mode: the SOP record's sourceFile pointer is the registration */
@@ -121,6 +142,17 @@ class PostgresWriter implements RegistryWriter {
     await db.insert(schema.importedContent).values({ id: content.id, sourcePath: content.sourcePath, data: content, updatedAt: new Date() }).onConflictDoUpdate({ target: schema.importedContent.id, set: { sourcePath: content.sourcePath, data: content, updatedAt: new Date() } });
     invalidateSnapshot();
   }
+  async deleteRecord(type: string, id: string) {
+    await getDb().delete(schema.governedRecords).where(and(eq(schema.governedRecords.type, type), eq(schema.governedRecords.id, id)));
+    invalidateSnapshot();
+  }
+  async deleteImportedContent(id: string) {
+    await getDb().delete(schema.importedContent).where(eq(schema.importedContent.id, id));
+    invalidateSnapshot();
+  }
+  async deleteSourceFile(id: string) {
+    await getDb().delete(schema.sourceFiles).where(eq(schema.sourceFiles.id, id));
+  }
   async registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3"; storageKey: string; bytes: number; uploadedBy: string }) {
     await getDb().insert(schema.sourceFiles).values(file).onConflictDoUpdate({ target: schema.sourceFiles.id, set: file });
   }
@@ -155,5 +187,3 @@ export function getRegistryWriter(): RegistryWriter {
 export function resetWriterForTests() {
   writer = null;
 }
-void eq;
-void and;
