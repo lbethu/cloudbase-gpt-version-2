@@ -42,6 +42,14 @@ export interface CloudBaseConfig {
     /** Optional second code granting the register's own roles. Kept separate on purpose. */
     adminCode: string;
     tenantId: string;
+    /**
+     * Why the active mode is not the requested one, in words a person can act
+     * on. Hosting dashboards store these values write-only, so when sign-in is
+     * off the only way anyone can tell which variable is at fault is if the
+     * app says so itself.
+     */
+    modeNote: string;
+    requestedMode: string;
   };
   mail: {
     driver: "smtp" | "brevo" | "resend" | "log";
@@ -98,23 +106,31 @@ export function getConfig(): CloudBaseConfig {
   const rawMode = (process.env.CLOUDBASE_AUTH_MODE ?? "").trim().toLowerCase();
   const known: readonly AuthMode[] = ["dev", "entra", "access", "email", "code", "none"];
   let requestedMode: AuthMode;
-  if (!rawMode) requestedMode = env === "production" ? "none" : "dev";
-  else if ((known as readonly string[]).includes(rawMode)) requestedMode = rawMode as AuthMode;
-  else {
-    console.error(`[config] CLOUDBASE_AUTH_MODE is "${rawMode}", which is not one of ${known.join(", ")}. Sign-in is disabled until it is corrected.`);
+  let modeNote = "";
+  if (!rawMode) {
+    requestedMode = env === "production" ? "none" : "dev";
+    if (env === "production") modeNote = "CLOUDBASE_AUTH_MODE is not set in this deployment's environment.";
+  } else if ((known as readonly string[]).includes(rawMode)) {
+    requestedMode = rawMode as AuthMode;
+  } else {
+    modeNote = `CLOUDBASE_AUTH_MODE is set to something that is not one of: ${known.join(", ")}. Check it for a stray space, quotes or a capital letter.`;
+    console.error(`[config] ${modeNote}`);
     requestedMode = "none";
   }
   // Never allow the development identity provider in production builds.
   let mode: AuthMode = env === "production" && requestedMode === "dev" ? "none" : requestedMode;
+  if (mode !== requestedMode && requestedMode === "dev") modeNote = "CLOUDBASE_AUTH_MODE is set to dev, which is refused in a production deployment because it would make every visitor an administrator. Set it to code.";
   // Email sign-in signs its session cookie and hashes its codes with this
   // secret. Without one, sessions would be forgeable — so the mode turns
   // itself off rather than pretending to authenticate anybody.
   if (mode === "code" && !(process.env.CLOUDBASE_ACCESS_CODE ?? "").trim()) {
-    if (env === "production") console.error("[config] CLOUDBASE_AUTH_MODE=code requires CLOUDBASE_ACCESS_CODE. Sign-in is disabled until it is set.");
+    modeNote = "CLOUDBASE_AUTH_MODE is set to code, but CLOUDBASE_ACCESS_CODE is missing or empty in this deployment's environment. Add it (Production scope) and redeploy.";
+    if (env === "production") console.error(`[config] ${modeNote}`);
     mode = "none";
   }
   if (mode === "email" && !(process.env.CLOUDBASE_SESSION_SECRET ?? "").trim()) {
-    if (env === "production") console.error("[config] CLOUDBASE_AUTH_MODE=email requires CLOUDBASE_SESSION_SECRET. Sign-in is disabled until it is set.");
+    modeNote = "CLOUDBASE_AUTH_MODE is set to email, but CLOUDBASE_SESSION_SECRET is missing, so sessions could not be signed.";
+    if (env === "production") console.error(`[config] ${modeNote}`);
     mode = "none";
   }
 
@@ -139,6 +155,8 @@ export function getConfig(): CloudBaseConfig {
       accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
       accessCode: (process.env.CLOUDBASE_ACCESS_CODE ?? "").trim(),
       adminCode: (process.env.CLOUDBASE_ADMIN_CODE ?? "").trim(),
+      modeNote,
+      requestedMode: rawMode,
       // In code mode the shared codes can stand in for a session secret, so a
       // demo needs two settings rather than three. Changing a code then signs
       // everyone out, which is the behaviour you want anyway.

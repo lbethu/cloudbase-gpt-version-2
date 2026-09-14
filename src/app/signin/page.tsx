@@ -40,7 +40,9 @@ export default async function SignInPage() {
 
         {cfg.auth.mode === "none" && (
           <p className="cb-signin-problem">
-            <AlertTriangle size={15} /> No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set <code>CLOUDBASE_AUTH_MODE</code> to <code>code</code> (a shared code, for a demo) or <code>email</code>, and redeploy.
+            <AlertTriangle size={15} />{" "}
+            {cfg.auth.modeNote ||
+              "No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set CLOUDBASE_AUTH_MODE to code (a shared code, for a demo) or email, and redeploy."}
           </p>
         )}
 

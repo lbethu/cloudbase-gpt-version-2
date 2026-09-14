@@ -32,7 +32,7 @@ export default async function PlatformLayout({ children }: { children: React.Rea
               : cfg.auth.mode === "code"
               ? "This is an R&D preview of CloudBase. Enter the access code you were given to look around."
               : cfg.auth.mode === "none"
-                ? "No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set CLOUDBASE_AUTH_MODE to email, access or entra and redeploy."
+                ? cfg.auth.modeNote || "No sign-in method is configured for this deployment, so nobody can get in — including administrators. Set CLOUDBASE_AUTH_MODE to code (a shared code, for a demo) or email, and redeploy."
                 : "CloudBase AI only serves authenticated Cloudpoint employees. Your identity could not be established for this request."}
           </p>
           {(cfg.auth.mode === "email" || cfg.auth.mode === "code") && (
