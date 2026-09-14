@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, BookOpen, Briefcase, FileCode2, FlaskConical, Orbit, Scale, Search, Sparkles, Workflow } from "lucide-react";
+import { Bot, BookOpen, Briefcase, FileCode2, FlaskConical, Lock, Orbit, Scale, Search, Sparkles, Users, Workflow } from "lucide-react";
 import { MATURITY_MODEL } from "@/domain";
 import { Badge, StatusBadge, TypeBadge } from "@/components/ui/Badge";
 import { DomainCard, EmptyState, ItemList, ItemRow, Section } from "@/components/ui/primitives";
@@ -46,19 +46,43 @@ export default async function HomePage() {
     { href: "/docs", title: "Technical Documentation", description: "How-to guides and engineering standards with runnable examples.", icon: <FileCode2 />, count: count("documentation"), permission: "knowledge.read" as const },
   ].filter((d) => viewer.has(d.permission));
 
+  /**
+   * Orientation for someone who has just been given the link. Each entry says
+   * what the area is and, more usefully, when a person would actually come
+   * here — the second sentence is the one that stops people guessing.
+   */
+  const areas = [
+    { href: "/find", title: "Find an SOP", icon: <Search />, what: "Searches inside the documents, not just their titles, and opens them here in CloudBase.", when: "Start here when you know what you need but not which document it is in.", permission: "sop.read" as const },
+    { href: "/sops", title: "SOP Library", icon: <BookOpen />, what: "Every procedure with its version history, owner and approval evidence.", when: "When you want to browse a team's procedures, or upload and approve one.", permission: "sop.read" as const },
+    { href: "/ask", title: "Ask CloudBase", icon: <Sparkles />, what: "Answers built only from documents you are allowed to read, with the source cited every time.", when: "When your question spans several documents. It abstains rather than guessing.", permission: "ask.use" as const },
+    { href: "/teams", title: "Team Workspaces", icon: <Users />, what: "Everything one team owns or shares, in one place, plus the AI built for them.", when: "When you are new to a team, or looking for who owns something.", permission: "knowledge.read" as const },
+    { href: "/cros", title: "CROS · R&D", icon: <Orbit />, what: "Cloudpoint Research Operating System: ideas, experiments, evidence and the maturity of each capability.", when: "When you need to know whether something is proven or still being explored.", permission: "rnd.read" as const },
+    { href: "/solutions", title: "AI Solutions", icon: <Workflow />, what: "Every business problem given to the AI team, answered with an agent and a copilot.", when: "When something you do daily should be automated — describe the problem, not the solution.", permission: "knowledge.read" as const },
+    { href: "/copilots", title: "Copilots & Agents", icon: <Bot />, what: "The registry of Cloudpoint AI assistants: what each may do, what it may never decide, and where its data goes.", when: "Before trusting or building on any AI tool here.", permission: "copilot.read" as const },
+    { href: "/projects", title: "Project Intelligence", icon: <Briefcase />, what: "Past work written up so it can be reused in proposals and delivery.", when: "When writing a proposal, or when a client asks what we have done before.", permission: "knowledge.read" as const },
+    { href: "/docs", title: "Documentation", icon: <FileCode2 />, what: "Engineering standards and how-to guides, including how to use AI safely on Cloudpoint work.", when: "When you need the standard rather than someone's memory of it.", permission: "knowledge.read" as const },
+    { href: "/governance/reviews", title: "Governance", icon: <Scale />, what: "What is waiting for approval, who may approve it, and an audit trail of every privileged action.", when: "When you own content, approve it, or need to show how a decision was made.", permission: "review.read" as const },
+  ].filter((a) => viewer.has(a.permission));
+
   return (
     <>
       <section className="cb-hero">
-        <span className="cb-eyebrow">Cloudpoint Knowledge &amp; Intelligence Hub</span>
+        <span className="cb-eyebrow">Cloudpoint Geospatial · Internal</span>
         <h1>CloudBase AI</h1>
-        <p className="cb-hero-sub">One place to discover Cloudpoint knowledge, SOPs, R&amp;D, capabilities, projects, AI copilots, automations, and technical guidance.</p>
-        <form className="cb-hero-search" action="/search" method="get" role="search">
+        <p className="cb-hero-sub">
+          The single place Cloudpoint keeps how we do things — standard operating procedures, project history, research and the AI we build on top of them. Every
+          document here has an owner, a version and an approval; nothing becomes official because software said so.
+        </p>
+        <span className="cb-hero-tag">
+          <Lock size={12} /> Internal platform — not a public site
+        </span>
+        <form className="cb-hero-search" action="/find" method="get" role="search">
           <div className="cb-hero-search-wrap">
             <Search aria-hidden="true" />
-            <input className="cb-input" type="search" name="q" placeholder="Search Cloudpoint knowledge…" aria-label="Search Cloudpoint knowledge" autoComplete="off" />
+            <input className="cb-input" type="search" name="q" placeholder="Type a word that appears in an SOP — expenses, invoice, startup…" aria-label="Find an SOP" autoComplete="off" />
           </div>
           <button className="cb-btn cb-btn--primary" type="submit">
-            Search
+            Find an SOP
           </button>
           {viewer.has("ask.use") && (
             <Link className="cb-btn" href="/ask">
@@ -67,14 +91,29 @@ export default async function HomePage() {
           )}
         </form>
         <div className="cb-quick-actions">
-          {viewer.has("sop.read") && <Link className="cb-chip" href="/sops">Find an SOP</Link>}
-          {viewer.has("rnd.read") && <Link className="cb-chip" href="/cros">Explore R&amp;D</Link>}
-          {viewer.has("copilot.read") && <Link className="cb-chip" href="/copilots">Find a Copilot</Link>}
-          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/projects">Find a Project Reference</Link>}
-          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/teams">Browse Team Knowledge</Link>}
-          {viewer.has("automation.read") && <Link className="cb-chip" href="/automations">View AI Automations</Link>}
+          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/search">Search everything</Link>}
+          {viewer.has("sop.author") && <Link className="cb-chip" href="/sops/upload">Upload an SOP</Link>}
+          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/teams">Team workspaces</Link>}
+          {viewer.has("rnd.read") && <Link className="cb-chip" href="/cros">CROS · R&amp;D</Link>}
+          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/solutions">AI Solutions</Link>}
+          {viewer.has("knowledge.read") && <Link className="cb-chip" href="/docs/cloudbase/using-ai-safely">Using AI safely</Link>}
         </div>
       </section>
+
+      <Section title="What lives where">
+        <div className="cb-map">
+          {areas.map((a) => (
+            <Link key={a.href} href={a.href} className="cb-map-card">
+              <span className="cb-map-card-head">
+                {a.icon}
+                {a.title}
+              </span>
+              <p>{a.what}</p>
+              <span className="cb-map-when">{a.when}</span>
+            </Link>
+          ))}
+        </div>
+      </Section>
 
       <div className="cb-kpi-grid" style={{ marginTop: 28 }}>
         <Kpi label="Governed objects" value={items.filter((i) => i.ref.type !== "team").length} foot={<span>{chunkCount.toLocaleString()} searchable passages</span>} href="/search" />
