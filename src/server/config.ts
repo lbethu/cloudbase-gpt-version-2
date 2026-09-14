@@ -43,6 +43,8 @@ export interface CloudBaseConfig {
     azureDeployment: string;
   };
   search: { provider: "lexical" | "hybrid" };
+  /** Largest document the upload workflow accepts, in megabytes. */
+  maxUploadMb: number;
   storage: { mode: "file" | "postgres" };
   database: { url: string };
   blob: { mode: "local" | "s3"; bucket: string; endpoint: string; region: string; accessKeyId: string; secretAccessKey: string; forcePathStyle: boolean };
@@ -119,6 +121,11 @@ export function getConfig(): CloudBaseConfig {
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
       forcePathStyle: bool(process.env.S3_FORCE_PATH_STYLE, true),
     },
+    // Serverless platforms cap the request body well below the app's own limit
+    // (Vercel functions stop at 4.5 MB), and the platform rejects the upload
+    // before any of this code runs — so the limit has to be configurable and
+    // shown to the person choosing the file.
+    maxUploadMb: Math.max(1, Number(process.env.CLOUDBASE_MAX_UPLOAD_MB ?? 25)),
     features: { legacyPrototype: bool(process.env.CLOUDBASE_ENABLE_LEGACY_PROTOTYPE, env !== "production") },
     drive: { configured: Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) },
     github: { token: process.env.GITHUB_TOKEN ?? "", configured: bool(process.env.CLOUDBASE_GITHUB_ENABLED, true) },

@@ -149,3 +149,37 @@ describe("removing an SOP", () => {
     expect(events.some((e) => e.action === "sop.retire")).toBe(true);
   });
 });
+
+describe("hosted deployment guards", () => {
+  /**
+   * On a serverless host the filesystem is read-only or disposable. Writing
+   * there either fails with an unreadable EROFS or, worse, appears to succeed
+   * and vanishes on the next deploy — so a production deployment that has not
+   * been pointed at a database and a bucket must refuse the upload and say
+   * which setting is missing.
+   */
+  it("refuses uploads in production when storage would hit the filesystem", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const { resetConfigForTests } = await import("@/server/config");
+    resetConfigForTests();
+    const { uploadSopDocument } = await import("@/server/services/sop-workflow");
+    const bytes = fs.readFileSync(path.resolve(__dirname, "../../source-documents/sop/223- Project Reference Creation and Updates.docx"));
+    const r = await uploadSopDocument(identity(["employee", "contributor"]), { fileName: "x.docx", bytes, title: "Hosted guard", owningTeam: "company-wide" });
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.error).toMatch(/CLOUDBASE_STORAGE=postgres/);
+      expect(r.error).toMatch(/CLOUDBASE_BLOB_STORAGE=s3/);
+    }
+    vi.stubEnv("NODE_ENV", "test");
+    resetConfigForTests();
+  });
+
+  it("honours a platform upload cap smaller than the app default", async () => {
+    vi.stubEnv("CLOUDBASE_MAX_UPLOAD_MB", "1");
+    const { resetConfigForTests, getConfig } = await import("@/server/config");
+    resetConfigForTests();
+    expect(getConfig().maxUploadMb).toBe(1);
+    vi.unstubAllEnvs();
+    resetConfigForTests();
+  });
+});

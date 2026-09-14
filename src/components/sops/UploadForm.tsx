@@ -5,19 +5,21 @@ import { useActionState } from "react";
 import { uploadSopAction, type ActionState } from "@/server/actions/sops";
 
 interface Props {
+  /** From server configuration — a hosted platform may cap uploads well below the app default. */
+  maxUploadMb: number;
   teams: Array<{ id: string; name: string }>;
   sops: Array<{ id: string; title: string }>;
   defaultTeam?: string;
   defaultExisting?: string;
 }
 
-export function UploadForm({ teams, sops, defaultTeam, defaultExisting }: Props) {
+export function UploadForm({ teams, sops, defaultTeam, defaultExisting, maxUploadMb }: Props) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(uploadSopAction, {});
   return (
     <form action={formAction} className="cb-card cb-card--pad" style={{ display: "grid", gap: 16 }} encType="multipart/form-data">
       <div className="cb-form-grid">
         <label className="cb-field cb-field--wide">
-          <span>Document (.docx or .pdf, up to 25 MB) *</span>
+          <span>Document (.docx or .pdf, up to {maxUploadMb} MB) *</span>
           <input className="cb-input" type="file" name="file" accept=".docx,.pdf" required style={{ paddingTop: 6 }} />
         </label>
         <label className="cb-field">

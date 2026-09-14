@@ -73,6 +73,47 @@ Set `CLOUDBASE_AUTH_MODE=entra` and follow the deployment doc. The proxy must st
 
 A single shared password, or an unlisted URL. Both mean any leaked link is permanent access to every Cloudpoint SOP, with no record of who opened what. The audit trail is worth nothing if everyone is the same person.
 
+## Hosting on Vercel
+
+Vercel deploys this in minutes and is a reasonable choice, with three things that are specific to it and one that is a genuine blocker.
+
+### The blocker: the `.vercel.app` URL
+
+Every Vercel deployment keeps a public `*.vercel.app` address. Putting a custom domain behind Cloudflare Access does **not** close it — anyone with the deployment URL reaches the app directly and never meets the front door. Cloudflare Access in front of Vercel therefore only works if you also turn on Vercel's **Deployment Protection** to block direct access to the deployment URLs.
+
+So on Vercel there are two workable shapes, and one that only looks safe:
+
+| Approach | Verdict |
+| --- | --- |
+| Custom domain proxied through Cloudflare + Access + **Deployment Protection on** | Works. Check the `.vercel.app` URL yourself afterwards — it must refuse you. |
+| Vercel's own **Password Protection** or **Vercel Authentication** (paid plans) | Works, and is the least configuration. Vercel Authentication only admits members of your Vercel team, so it suits a small admin group and not a wider rollout. |
+| Cloudflare Access on the custom domain, Deployment Protection off | **Not safe.** The deployment URL is an unauthenticated way in, and it is the URL people paste to each other. |
+
+Whichever you choose, CloudBase still refuses anyone who is not in `content/registry/people.yaml`. That is the second lock, not the first — do not rely on it alone, because it cannot log who tried.
+
+### Uploads are capped at 4.5 MB
+
+Vercel rejects a request body over 4.5 MB before any application code runs, so the app's own 25 MB limit is not what applies. Set:
+
+```
+CLOUDBASE_MAX_UPLOAD_MB=4
+```
+
+so the upload page states the real limit instead of failing at the platform boundary with an opaque error. Most SOPs are far smaller than this; scanned PDFs are the ones that will hit it. If you routinely need larger documents, the fix is a direct-to-bucket upload, which is a change worth making deliberately rather than on launch weekend.
+
+### The filesystem is read-only
+
+Both settings below are mandatory on Vercel, not optional tuning:
+
+```
+CLOUDBASE_STORAGE=postgres
+CLOUDBASE_BLOB_STORAGE=s3
+```
+
+Without them the app would try to write governed records and documents to the server's disk, which on Vercel is read-only and disposable. CloudBase now refuses the upload in production with a message naming the missing setting, rather than failing deep inside a filesystem call — but the refusal is a safety net, not a substitute for setting them.
+
+**Vercel plan note:** the Hobby plan is for non-commercial use. An internal company tool needs a paid plan; worth knowing before it becomes a surprise.
+
 ## Step 3 — Documents in the bucket
 
 On a hosted server the filesystem is disposable: uploads vanish on the next deploy and every document link breaks. Create a private Cloudflare R2 bucket and a scoped token, then from the machine that has the documents:

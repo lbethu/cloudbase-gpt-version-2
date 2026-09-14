@@ -3,6 +3,7 @@ import path from "node:path";
 import { Sop, type SopVersion } from "@/domain";
 import type { Identity } from "@/server/auth/identity";
 import { can, canRead } from "@/server/authz";
+import { getConfig } from "@/server/config";
 import { ensureRepositories, getRepositories } from "@/server/repositories";
 import { getRegistryWriter } from "@/server/repositories/writer";
 import { getBlobStorage } from "@/server/storage/blob";
@@ -185,7 +186,7 @@ export interface UploadInput {
   submitForReview?: boolean;
 }
 
-const MAX_BYTES = 25 * 1024 * 1024;
+
 const ALLOWED = new Map([[".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"], [".pdf", "application/pdf"]]);
 
 /**
@@ -201,7 +202,17 @@ export async function uploadSopDocument(identity: Identity, input: UploadInput):
   const ext = path.extname(input.fileName).toLowerCase();
   const mediaType = ALLOWED.get(ext);
   if (!mediaType) return { ok: false, status: 400, error: "Only .docx and .pdf files are accepted." };
-  if (!input.bytes.length || input.bytes.length > MAX_BYTES) return { ok: false, status: 400, error: "File must be between 1 byte and 25 MB." };
+  const maxBytes = getConfig().maxUploadMb * 1024 * 1024;
+  if (!input.bytes.length || input.bytes.length > maxBytes) return { ok: false, status: 400, error: `File must be between 1 byte and ${getConfig().maxUploadMb} MB.` };
+
+  // A hosted deployment usually has a read-only, disposable filesystem. Writing
+  // there either fails with an unreadable EROFS or — worse — appears to work
+  // and disappears on the next deploy. Say which setting is missing instead.
+  const cfg = getConfig();
+  if (cfg.env === "production" && (cfg.storage.mode !== "postgres" || getBlobStorage().name !== "s3")) {
+    const missing = [cfg.storage.mode !== "postgres" ? "CLOUDBASE_STORAGE=postgres (with DATABASE_URL)" : "", getBlobStorage().name !== "s3" ? "CLOUDBASE_BLOB_STORAGE=s3 (with S3_BUCKET and keys)" : ""].filter(Boolean);
+    return { ok: false, status: 400, error: `Uploads are not configured for this deployment: it would write to the server's filesystem, which is read-only or disposable when hosted. Set ${missing.join(" and ")}, then try again.` };
+  }
   if (!input.title.trim()) return { ok: false, status: 400, error: "Title is required." };
   const repos = getRepositories();
   if (!repos.teams.get(input.owningTeam)) return { ok: false, status: 400, error: "Unknown team." };

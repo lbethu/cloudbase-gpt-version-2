@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { UploadForm } from "@/components/sops/UploadForm";
+import { getConfig } from "@/server/config";
 import { Callout, PageHeader, Section } from "@/components/ui/primitives";
 import { getRepositories } from "@/server/repositories";
 import { filterVisible } from "@/server/services/access";
@@ -17,7 +18,7 @@ export default async function UploadSopPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <PageHeader eyebrow="SOP Library" title="Upload an SOP document" description="Upload a Word or PDF document as a new SOP or as a new version of an existing one. It is extracted and searchable immediately, and enters the governed lifecycle as a draft — approval is a separate, audited human decision." />
-      <UploadForm teams={teams} sops={sops} defaultExisting={existing} defaultTeam={viewer.identity?.teams.find((t) => t !== "company-wide") ?? "company-wide"} />
+      <UploadForm teams={teams} sops={sops} maxUploadMb={getConfig().maxUploadMb} defaultExisting={existing} defaultTeam={viewer.identity?.teams.find((t) => t !== "company-wide") ?? "company-wide"} />
       <Section title="How the lifecycle works">
         <div className="cb-grid cb-grid--4">
           {[
