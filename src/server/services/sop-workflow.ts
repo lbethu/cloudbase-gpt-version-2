@@ -4,7 +4,7 @@ import { Sop, type SopVersion } from "@/domain";
 import type { Identity } from "@/server/auth/identity";
 import { can, canRead } from "@/server/authz";
 import { getConfig } from "@/server/config";
-import { ensureRepositories, getRepositories } from "@/server/repositories";
+import { ensureRepositories, getRepositories, storageDegradedReason } from "@/server/repositories";
 import { getRegistryWriter } from "@/server/repositories/writer";
 import { getBlobStorage } from "@/server/storage/blob";
 import { recordAudit } from "./audit";
@@ -23,7 +23,7 @@ import { extractAndIndex, slug } from "./extraction";
  * and locks the record against the legacy importer. AI never calls these.
  */
 
-export type WorkflowResult = { ok: true; sopId: string; version: string; message: string } | { ok: false; status: 400 | 403 | 404 | 409; error: string };
+export type WorkflowResult = { ok: true; sopId: string; version: string; message: string } | { ok: false; status: 400 | 403 | 404 | 409 | 503; error: string };
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -34,6 +34,10 @@ function readSop(id: string) {
 
 /** Validates, persists through the active storage (file YAML or Postgres) and refreshes the read model. */
 async function writeSop(sop: ReturnType<typeof Sop.parse>, actor: string) {
+  // Single chokepoint for governed writes, so a degraded database stops all of
+  // them — approve, send back, retire, delete — not only uploads.
+  const degraded = storageDegradedReason();
+  if (degraded) throw new Error(`CloudBase cannot reach its database, so governed records cannot be changed right now. ${degraded}`);
   const validated = Sop.parse(sop); // fail loudly before touching storage
   const effective = validated.versions.find((v) => v.version === validated.effectiveVersion) ?? validated.versions[validated.versions.length - 1];
   await getRegistryWriter().upsertRecord("sop", { id: validated.id, title: validated.title, owningTeam: validated.owningTeam, classification: validated.classification, status: effective.status, data: validated as unknown as Record<string, unknown> }, actor);
@@ -211,6 +215,10 @@ export async function uploadSopDocument(identity: Identity, input: UploadInput):
   // What matters is that neither the record nor the file lands on the local
   // disk — a bucket and the database are both durable, the filesystem is not.
   const cfg = getConfig();
+  // While the database is unreadable the platform serves the built-in registry
+  // read-only. Writing then would either vanish or diverge from the database.
+  const degraded = storageDegradedReason();
+  if (degraded) return { ok: false, status: 503, error: `Uploads are paused: CloudBase cannot reach its database, so it is serving the built-in library read-only. ${degraded}` };
   const blobIsDurable = getBlobStorage().name !== "local";
   if (cfg.env === "production" && (cfg.storage.mode !== "postgres" || !blobIsDurable)) {
     const missing = [

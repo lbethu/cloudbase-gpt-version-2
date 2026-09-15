@@ -2291,3 +2291,37 @@ mark {
 .cb-sidebar-footer a:hover {
   color: var(--sidebar-fg-strong);
 }
+
+/* Degraded-storage banner: serving the built-in registry because the database
+   could not be read. Deliberately conspicuous — the content below it may be
+   out of date, and a reader must not have to notice a subtlety to learn that. */
+.cb-banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--radius, 10px);
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.cb-banner svg {
+  flex: none;
+  margin-top: 2px;
+}
+.cb-banner > div {
+  display: grid;
+  gap: 3px;
+}
+.cb-banner--warn {
+  background: color-mix(in srgb, #d98324 14%, var(--surface, transparent));
+  border-color: color-mix(in srgb, #d98324 42%, transparent);
+  color: var(--text, inherit);
+}
+.cb-banner--warn svg {
+  color: #d98324;
+}
+.cb-banner span {
+  color: var(--text-muted, inherit);
+}

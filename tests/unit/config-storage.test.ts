@@ -57,3 +57,62 @@ describe("storage selection", () => {
     expect((await config()).blob.mode).toBe("s3");
   });
 });
+
+describe("an unreadable database must not take the platform down", () => {
+  afterEach(async () => {
+    vi.unstubAllEnvs();
+    const { resetConfigForTests } = await import("@/server/config");
+    resetConfigForTests();
+    const { resetRepositoriesForTests } = await import("@/server/repositories");
+    resetRepositoriesForTests();
+  });
+
+  it("serves the built-in registry, says why, and refuses governed writes", async () => {
+    vi.resetModules();
+    // A host that cannot be resolved: the same shape of failure as a database
+    // that is unreachable, wrongly addressed, or asleep.
+    vi.stubEnv("CLOUDBASE_STORAGE", "postgres");
+    vi.stubEnv("DATABASE_URL", "postgres://nobody@no-such-host.invalid:5432/nothing");
+    const { resetConfigForTests } = await import("@/server/config");
+    resetConfigForTests();
+    const { ensureRepositories, storageDegradedReason, resetRepositoriesForTests } = await import("@/server/repositories");
+    resetRepositoriesForTests();
+
+    // Reading keeps working rather than throwing.
+    const repos = await ensureRepositories();
+    expect(repos.sops.list().length).toBeGreaterThan(0);
+    expect(repos.teams.list().length).toBeGreaterThan(0);
+
+    // And the reason is available to say so on the page.
+    const reason = storageDegradedReason();
+    expect(reason).toBeTruthy();
+    expect(reason).toMatch(/database/i);
+
+    // Writing is refused for as long as it lasts: a governed record written
+    // against the fallback would diverge from the database it belongs to.
+    // Writing is refused for as long as it lasts: a governed record written
+    // against the fallback would diverge from the database it belongs to.
+    const { uploadSopDocument } = await import("@/server/services/sop-workflow");
+    // Deliberately over-privileged, so what stops the write is the storage
+    // state and nothing else.
+    const identity = {
+      subject: "test",
+      email: "bethu.lokendrasrisai@gmail.com",
+      name: "T",
+      roles: ["contributor", "reviewer", "approver", "admin"],
+      teams: ["company-wide"],
+      tenantId: "cloudpoint",
+    };
+    const attempt = await uploadSopDocument(identity as never, {
+      fileName: "anything.docx",
+      bytes: Buffer.from("not a real document, and it never gets that far"),
+      title: "Anything",
+      owningTeam: "operations-admin",
+    } as never);
+    expect(attempt.ok).toBe(false);
+    if (!attempt.ok) {
+      expect(attempt.status).toBe(503);
+      expect(attempt.error).toMatch(/cannot reach its database/i);
+    }
+  }, 30000);
+});

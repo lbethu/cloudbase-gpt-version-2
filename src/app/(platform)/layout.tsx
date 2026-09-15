@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { LogIn, ShieldAlert } from "lucide-react";
+import { DatabaseZap, LogIn, ShieldAlert } from "lucide-react";
 import { AppShell } from "@/components/shell/AppShell";
 import { getConfig } from "@/server/config";
-import { getRepositories } from "@/server/repositories";
+import { getRepositories, storageDegradedReason } from "@/server/repositories";
 import { deriveReviewTasks } from "@/server/services/reviews";
 import { getViewer, initialsOf } from "@/server/services/viewer";
 
@@ -16,8 +16,24 @@ export default async function PlatformLayout({ children }: { children: React.Rea
     : null;
 
   const inboxCount = viewer.has("review.read") ? deriveReviewTasks(getRepositories()).filter((t) => viewer.has(t.requiredPermission)).length : 0;
+  // Serving the built-in registry because the database could not be read. Say
+  // so on every page: content that may be out of date must never be mistaken
+  // for the live library.
+  const degraded = storageDegradedReason();
   return (
     <AppShell permissions={viewer.permissions} viewer={shellViewer} environmentLabel={viewer.environmentLabel} inboxCount={inboxCount} developerCredit={cfg.branding.developer} canSignOut={cfg.auth.mode === "email" || cfg.auth.mode === "code"}>
+      {degraded && viewer.identity && (
+        <div className="cb-banner cb-banner--warn" role="status">
+          <DatabaseZap size={16} />
+          <div>
+            <strong>Showing the built-in library — the database is not reachable.</strong>
+            <span>
+              You can search and read every SOP that ships with CloudBase, but anything uploaded or approved since is not shown, and uploading and approving are paused until the
+              connection is restored. Nothing has been lost.
+            </span>
+          </div>
+        </div>
+      )}
       {viewer.identity ? (
         children
       ) : (
