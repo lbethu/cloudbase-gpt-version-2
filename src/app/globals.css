@@ -2325,3 +2325,76 @@ mark {
 .cb-banner span {
   color: var(--text-muted, inherit);
 }
+
+/* Home page: who built it, and the three steps for getting an SOP made. */
+.cb-hero-by {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  color: var(--text-muted, inherit);
+}
+
+.cb-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.cb-step {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.25));
+  border-radius: var(--radius, 12px);
+  background: var(--surface, transparent);
+}
+.cb-step-num {
+  position: absolute;
+  top: -11px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 999px;
+  background: var(--accent, #0b6a7d);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.cb-step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.cb-step-head svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent, #0b6a7d);
+  flex: none;
+}
+.cb-step p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted, inherit);
+}
+.cb-step .cb-btn {
+  justify-self: start;
+  margin-top: 2px;
+}
+
+.cb-keepcode {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+.cb-keepcode svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--accent, #0b6a7d);
+}

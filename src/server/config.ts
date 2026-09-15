@@ -83,6 +83,13 @@ export interface CloudBaseConfig {
   github: { token: string; configured: boolean };
   pipedrive: { token: string; domain: string; configured: boolean };
   branding: { developer: string };
+  /**
+   * Where the SOP process actually happens. Both are real destinations people
+   * are sent to from the home page, so they are configuration rather than
+   * markup: they can be changed in the deployment without a code edit, and an
+   * empty value hides its step rather than offering a dead link.
+   */
+  links: { sopCopilot: string; sopDriveFolder: string };
 }
 
 const parseJsonMap = (value: string | undefined): Record<string, string> => {
@@ -247,7 +254,11 @@ export function getConfig(): CloudBaseConfig {
     drive: { configured: Boolean(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) },
     github: { token: process.env.GITHUB_TOKEN ?? "", configured: bool(process.env.CLOUDBASE_GITHUB_ENABLED, true) },
     pipedrive: { token: process.env.PIPEDRIVE_API_TOKEN ?? "", domain: process.env.PIPEDRIVE_COMPANY_DOMAIN ?? "", configured: Boolean(process.env.PIPEDRIVE_API_TOKEN) },
-    branding: { developer: process.env.CLOUDBASE_DEVELOPER_CREDIT ?? "Cloudpoint Geospatial" },
+    branding: { developer: process.env.CLOUDBASE_DEVELOPER_CREDIT ?? "Cloudpoint Geospatial · AI & Automation" },
+    links: {
+      sopCopilot: (process.env.CLOUDBASE_SOP_COPILOT_URL ?? "https://chatgpt.com/agents/a/agt_6aa94e2b76308191b29e62e50e28d355").trim(),
+      sopDriveFolder: (process.env.CLOUDBASE_SOP_DRIVE_FOLDER_URL ?? "https://drive.google.com/drive/folders/1R8nMuTCM8rUL74pfo9WkAQTtyWeyIDe4?usp=drive_link").trim(),
+    },
   };
   return cached;
 }

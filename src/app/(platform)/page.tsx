@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, BookOpen, Briefcase, FileCode2, FlaskConical, Lock, Orbit, Scale, Search, Sparkles, Users, Workflow } from "lucide-react";
+import { ArrowUpRight, Bot, BookOpen, Briefcase, CheckCircle2, FileCode2, FlaskConical, FolderUp, KeyRound, Lock, Orbit, Scale, Search, Sparkles, Users, Wand2, Workflow } from "lucide-react";
 import { MATURITY_MODEL } from "@/domain";
 import { Badge, StatusBadge, TypeBadge } from "@/components/ui/Badge";
 import { DomainCard, EmptyState, ItemList, ItemRow, Section } from "@/components/ui/primitives";
@@ -7,7 +7,8 @@ import { FindingsList, Kpi } from "@/components/dashboard/widgets";
 import { summarizeFindings } from "@/server/agents/engine";
 import { agentFindings } from "@/server/services/agents";
 import { DASHBOARDS } from "@/server/services/dashboards";
-import { getRepositories } from "@/server/repositories";
+import { getConfig } from "@/server/config";
+import { getRepositories, storageDegradedReason } from "@/server/repositories";
 import { filterVisible } from "@/server/services/access";
 import { deriveReviewTasks } from "@/server/services/reviews";
 import { permittedItems, recentlyUpdated } from "@/server/services/search";
@@ -16,6 +17,47 @@ import { urlFor } from "@/lib/urls";
 
 export default async function HomePage() {
   const viewer = await getViewer();
+  const cfg = getConfig();
+  // Whether an upload could actually be saved. Offering the link when it
+  // cannot only teaches people that the platform lies to them; the Drive route
+  // below is the honest answer until the database and document store are on.
+  const uploadsPossible =
+    !storageDegradedReason() && (cfg.env !== "production" || (cfg.storage.mode === "postgres" && cfg.blob.mode !== "local"));
+  const firstName = (viewer.identity?.name || viewer.identity?.email || "").split(/[\s@.]/)[0];
+  const greeting = firstName ? `Welcome, ${firstName[0].toUpperCase()}${firstName.slice(1)}.` : "Welcome.";
+
+  /**
+   * How an SOP actually comes into existence at Cloudpoint, in the order a
+   * person does it. This is the first thing on the page because "how do I add
+   * one?" is the question that otherwise gets asked in a message to someone.
+   * A step whose destination is not configured is dropped rather than shown as
+   * a dead link.
+   */
+  const sopSteps = [
+    cfg.links.sopCopilot && {
+      n: 1,
+      icon: <Wand2 />,
+      title: "Draft it with the SOP Copilot",
+      body: "Describe the procedure in your own words and the copilot writes it up in Cloudpoint's structure — purpose, prerequisites, steps, verification. Minutes, not an afternoon.",
+      cta: "Open the SOP Copilot",
+      href: cfg.links.sopCopilot,
+    },
+    cfg.links.sopDriveFolder && {
+      n: 2,
+      icon: <FolderUp />,
+      title: "Put it in the SOP folder",
+      body: "Upload the finished document to the shared Cloudpoint SOP folder in Google Drive. Updating an existing SOP works the same way — keep the same structure so the versions stay comparable.",
+      cta: "Open the SOP folder",
+      href: cfg.links.sopDriveFolder,
+    },
+    {
+      n: 3,
+      icon: <CheckCircle2 />,
+      title: "Wait for it to be verified",
+      body: "The AI & Automation team checks the structure and an owner approves it. Only then does it become official and appear here in search. Nothing is published because software said so.",
+    },
+  ].filter(Boolean) as Array<{ n: number; icon: React.ReactNode; title: string; body: string; cta?: string; href?: string }>;
+
   const repos = getRepositories();
   const items = permittedItems(viewer.identity);
   const count = (type: string) => items.filter((i) => i.ref.type === type).length;
@@ -53,7 +95,7 @@ export default async function HomePage() {
    */
   const areas = [
     { href: "/find", title: "Find an SOP", icon: <Search />, what: "Searches inside the documents, not just their titles, and opens them here in CloudBase.", when: "Start here when you know what you need but not which document it is in.", permission: "sop.read" as const },
-    { href: "/sops", title: "SOP Library", icon: <BookOpen />, what: "Every procedure with its version history, owner and approval evidence.", when: "When you want to browse a team's procedures, or upload and approve one.", permission: "sop.read" as const },
+    { href: "/sops", title: "SOP Library", icon: <BookOpen />, what: "Every procedure with its version history, owner and approval evidence.", when: uploadsPossible ? "When you want to browse a team's procedures, or upload and approve one." : "When you want to browse a team's procedures and see what has been approved.", permission: "sop.read" as const },
     { href: "/ask", title: "Ask CloudBase", icon: <Sparkles />, what: "Answers built only from documents you are allowed to read, with the source cited every time.", when: "When your question spans several documents. It abstains rather than guessing.", permission: "ask.use" as const },
     { href: "/teams", title: "Team Workspaces", icon: <Users />, what: "Everything one team owns or shares, in one place, plus the AI built for them.", when: "When you are new to a team, or looking for who owns something.", permission: "knowledge.read" as const },
     { href: "/cros", title: "CROS · R&D", icon: <Orbit />, what: "Cloudpoint Research Operating System: ideas, experiments, evidence and the maturity of each capability.", when: "When you need to know whether something is proven or still being explored.", permission: "rnd.read" as const },
@@ -68,11 +110,13 @@ export default async function HomePage() {
     <>
       <section className="cb-hero">
         <span className="cb-eyebrow">Cloudpoint Geospatial · Internal</span>
-        <h1>CloudBase AI</h1>
+        <h1>{greeting}</h1>
         <p className="cb-hero-sub">
-          The single place Cloudpoint keeps how we do things — standard operating procedures, project history, research and the AI we build on top of them. Every
-          document here has an owner, a version and an approval; nothing becomes official because software said so.
+          This is <strong>CloudBase AI</strong> — the one place Cloudpoint keeps how we do things. Standard operating procedures, project history, research, and
+          the AI we build on top of them. Search it in plain words and it looks <em>inside</em> the documents, not just at their titles. Every document here has
+          an owner, a version and an approval; nothing becomes official because software said so.
         </p>
+        <p className="cb-hero-by">Developed by Loki &amp; Team · Cloudpoint Geospatial AI &amp; Automation</p>
         <span className="cb-hero-tag">
           <Lock size={12} /> Internal platform — not a public site
         </span>
@@ -92,13 +136,43 @@ export default async function HomePage() {
         </form>
         <div className="cb-quick-actions">
           {viewer.has("knowledge.read") && <Link className="cb-chip" href="/search">Search everything</Link>}
-          {viewer.has("sop.author") && <Link className="cb-chip" href="/sops/upload">Upload an SOP</Link>}
+          {viewer.has("sop.author") && uploadsPossible && <Link className="cb-chip" href="/sops/upload">Upload an SOP</Link>}
           {viewer.has("knowledge.read") && <Link className="cb-chip" href="/teams">Team workspaces</Link>}
           {viewer.has("rnd.read") && <Link className="cb-chip" href="/cros">CROS · R&amp;D</Link>}
           {viewer.has("knowledge.read") && <Link className="cb-chip" href="/solutions">AI Solutions</Link>}
           {viewer.has("knowledge.read") && <Link className="cb-chip" href="/docs/cloudbase/using-ai-safely">Using AI safely</Link>}
         </div>
       </section>
+
+      <Section title="Need a new SOP? Three steps.">
+        <p className="cb-subtle cb-small" style={{ marginTop: -4, marginBottom: 12 }}>
+          The same three steps whether you are writing a new procedure or updating one that already exists.
+        </p>
+        <div className="cb-steps">
+          {sopSteps.map((step) => (
+            <div key={step.n} className="cb-step">
+              <span className="cb-step-num">{step.n}</span>
+              <span className="cb-step-head">
+                {step.icon}
+                {step.title}
+              </span>
+              <p>{step.body}</p>
+              {step.href && (
+                <a className="cb-btn cb-btn--sm" href={step.href} target="_blank" rel="noopener noreferrer">
+                  {step.cta} <ArrowUpRight size={13} />
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+        <p className="cb-subtle cb-small" style={{ marginTop: 12 }}>
+          <strong>Already have the SOP and just need to read it?</strong> Don't go to Drive — search above, or open the{" "}
+          <Link href="/find">SOP finder</Link>. That searches the text inside every approved SOP and opens the document right here.
+        </p>
+        <p className="cb-subtle cb-small cb-keepcode">
+          <KeyRound size={13} /> <span>Keep your access code somewhere safe — it is how you get back in, it belongs to you alone, and it should not be forwarded to anyone.</span>
+        </p>
+      </Section>
 
       <Section title="What lives where">
         <div className="cb-map">
