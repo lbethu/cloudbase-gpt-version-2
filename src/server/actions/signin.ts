@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { getConfig } from "@/server/config";
 import { requestSignInCode, verifySignInCode } from "@/server/auth/signin";
-import { checkAccessCode } from "@/server/auth/accesscode";
+import { checkAccessCode, hasPersonalCodes } from "@/server/auth/accesscode";
 import { clearSession, createSession } from "@/server/auth/session";
 import { recordAudit } from "@/server/services/audit";
 
@@ -39,16 +39,27 @@ export async function verifyCodeAction(_prev: SignInState, formData: FormData): 
 /** Shared-code sign-in for a demo deployment. */
 export async function accessCodeAction(_prev: SignInState, formData: FormData): Promise<SignInState> {
   if (getConfig().auth.mode !== "code") return { stage: "email", message: "Code access is not enabled for this deployment." };
-  const name = String(formData.get("name") ?? "").trim().slice(0, 80);
+  const typedName = String(formData.get("name") ?? "").trim().slice(0, 80);
   const code = String(formData.get("code") ?? "");
-  if (!name) return { stage: "email", message: "Enter your name so the access log means something." };
+  const personal = hasPersonalCodes();
+  // With a code per person the code says who they are, so no name is asked
+  // for. Only the shared-code form needs one, and then only for the log.
+  if (!personal && !typedName) return { stage: "email", message: "Enter your name so the access log means something." };
 
   const check = checkAccessCode(code);
-  await recordAudit({ actor: name || "anonymous", action: "auth.code-access", outcome: check.ok ? "allowed" : "denied", detail: { level: check.ok ? check.level : undefined, selfDeclared: true } });
-  if (!check.ok) return { stage: "email", email: name, message: "That access code is not correct." };
+  // The name a personal code belongs to is known, not claimed; a typed one is
+  // whatever the visitor felt like writing. The log distinguishes the two.
+  const name = (check.ok && check.name) || typedName;
+  await recordAudit({
+    actor: name || "anonymous",
+    action: "auth.code-access",
+    outcome: check.ok ? "allowed" : "denied",
+    detail: { level: check.ok ? check.level : undefined, selfDeclared: !(check.ok && check.name) },
+  });
+  if (!check.ok) return { stage: "email", email: typedName, message: "That access code is not correct." };
 
-  // A guest session records what the person typed and grants reading only.
-  // The member path still requires the address to be in the people register.
+  // A guest session grants reading only. The member path still requires the
+  // address to be in the people register.
   const asEmail = /@/.test(name) ? name.toLowerCase() : `${name.toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "")}@guest.cloudbase`;
   await createSession(check.level === "member" ? { email: asEmail } : { email: asEmail, guest: true, name });
   redirect("/");

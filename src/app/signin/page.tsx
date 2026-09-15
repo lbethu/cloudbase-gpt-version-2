@@ -30,7 +30,7 @@ export default async function SignInPage() {
 
         {cfg.auth.mode === "email" && !misconfigured && <SignInForm />}
 
-        {cfg.auth.mode === "code" && <AccessCodeForm />}
+        {cfg.auth.mode === "code" && <AccessCodeForm personal={cfg.auth.personalCodes.length > 0} />}
 
         {misconfigured && (
           <p className="cb-signin-problem">

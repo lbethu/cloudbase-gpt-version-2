@@ -39,6 +39,8 @@ export interface CloudBaseConfig {
     sessionHours: number;
     /** Shared code for a demo deployment: read-only access for anyone who has it. */
     accessCode: string;
+    /** One code per person, so access can be withdrawn from one of them alone. */
+    personalCodes: Array<{ name: string; code: string }>;
     /** Optional second code granting the register's own roles. Kept separate on purpose. */
     adminCode: string;
     tenantId: string;
@@ -94,6 +96,34 @@ const parseJsonMap = (value: string | undefined): Record<string, string> => {
   return {};
 };
 
+/**
+ * Reads CLOUDBASE_ACCESS_CODES: one entry per person, as `Name=code`,
+ * separated by newlines, commas or semicolons. For example
+ *
+ *     Hunter=quiet-harbor-lantern; Jon=amber-ridge-compass
+ *
+ * A code per person is still a shared secret rather than proof of identity —
+ * anyone it is passed to can use it — but it is revocable one person at a time
+ * and it puts a real name in the access log instead of a typed one. Entries
+ * without both halves are dropped rather than silently becoming a blank code
+ * that would match an empty submission.
+ */
+function parsePersonalCodes(raw: string | undefined): Array<{ name: string; code: string }> {
+  if (!raw?.trim()) return [];
+  const seen = new Set<string>();
+  const out: Array<{ name: string; code: string }> = [];
+  for (const entry of raw.split(/[\n,;]+/)) {
+    const at = entry.indexOf("=");
+    if (at < 0) continue;
+    const name = entry.slice(0, at).trim();
+    const code = entry.slice(at + 1).trim();
+    if (!name || !code || seen.has(code)) continue;
+    seen.add(code);
+    out.push({ name, code });
+  }
+  return out;
+}
+
 let cached: CloudBaseConfig | null = null;
 
 export function getConfig(): CloudBaseConfig {
@@ -123,8 +153,8 @@ export function getConfig(): CloudBaseConfig {
   // Email sign-in signs its session cookie and hashes its codes with this
   // secret. Without one, sessions would be forgeable — so the mode turns
   // itself off rather than pretending to authenticate anybody.
-  if (mode === "code" && !(process.env.CLOUDBASE_ACCESS_CODE ?? "").trim()) {
-    modeNote = "CLOUDBASE_AUTH_MODE is set to code, but CLOUDBASE_ACCESS_CODE is missing or empty in this deployment's environment. Add it (Production scope) and redeploy.";
+  if (mode === "code" && !(process.env.CLOUDBASE_ACCESS_CODE ?? "").trim() && parsePersonalCodes(process.env.CLOUDBASE_ACCESS_CODES).length === 0) {
+    modeNote = "CLOUDBASE_AUTH_MODE is set to code, but neither CLOUDBASE_ACCESS_CODE nor CLOUDBASE_ACCESS_CODES is set in this deployment's environment. Add one (Production scope) and redeploy.";
     if (env === "production") console.error(`[config] ${modeNote}`);
     mode = "none";
   }
@@ -154,6 +184,7 @@ export function getConfig(): CloudBaseConfig {
       accessTeamDomain: (process.env.CLOUDBASE_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:\/\//, "").replace(/\/$/, ""),
       accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
       accessCode: (process.env.CLOUDBASE_ACCESS_CODE ?? "").trim(),
+      personalCodes: parsePersonalCodes(process.env.CLOUDBASE_ACCESS_CODES),
       adminCode: (process.env.CLOUDBASE_ADMIN_CODE ?? "").trim(),
       modeNote,
       requestedMode: rawMode,

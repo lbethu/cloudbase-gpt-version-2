@@ -11,7 +11,11 @@ import { getConfig } from "@/server/config";
  * to can get in, and the name recorded against their session is whatever they
  * typed. It is therefore deliberately limited:
  *
- *  - Everyone who enters the shared code is a **read-only guest**. They can
+ *  - CLOUDBASE_ACCESS_CODES gives each person their own code, which is the
+ *    better shape: access can be withdrawn from one person without disturbing
+ *    the others, and the access log carries the name the code belongs to
+ *    rather than one the visitor typed about themselves.
+ *  - Everyone who enters a preview code is a **read-only guest**. They can
  *    find and read SOPs; they cannot upload, approve, retire, delete, or open
  *    the governance centre.
  *  - A second, separate code (CLOUDBASE_ADMIN_CODE) grants the roles the
@@ -33,13 +37,27 @@ const constantTimeEqual = (a: string, b: string): boolean => {
   return timingSafeEqual(left, right);
 };
 
-export type CodeCheck = { ok: true; level: "guest" | "member" } | { ok: false };
+export type CodeCheck = { ok: true; level: "guest" | "member"; name?: string } | { ok: false };
 
 export function checkAccessCode(submitted: string): CodeCheck {
-  const { accessCode, adminCode } = getConfig().auth;
+  const { accessCode, adminCode, personalCodes } = getConfig().auth;
   const value = submitted.trim();
-  if (!value || !accessCode) return { ok: false };
+  if (!value) return { ok: false };
+
   if (adminCode && constantTimeEqual(value, adminCode)) return { ok: true, level: "member" };
-  if (constantTimeEqual(value, accessCode)) return { ok: true, level: "guest" };
+
+  // Every personal code is compared, and the match is remembered rather than
+  // returned early, so the time taken does not reveal how far down the list a
+  // code sits — or whether it matched at all.
+  let matched: string | undefined;
+  for (const person of personalCodes) if (constantTimeEqual(value, person.code)) matched = person.name;
+  if (matched) return { ok: true, level: "guest", name: matched };
+
+  if (accessCode && constantTimeEqual(value, accessCode)) return { ok: true, level: "guest" };
   return { ok: false };
+}
+
+/** Whether this deployment issues a code per person, rather than one shared code. */
+export function hasPersonalCodes(): boolean {
+  return getConfig().auth.personalCodes.length > 0;
 }

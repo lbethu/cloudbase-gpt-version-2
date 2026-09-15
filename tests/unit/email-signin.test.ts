@@ -142,6 +142,37 @@ describe("shared access code (demo mode)", () => {
     expect(checkAccessCode("cloudpoint").ok).toBe(false); // a prefix is not a match
   });
 
+  it("gives each person their own code, and names the one that matched", async () => {
+    vi.stubEnv("CLOUDBASE_AUTH_MODE", "code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODE", "");
+    vi.stubEnv("CLOUDBASE_ADMIN_CODE", "a-separate-admin-code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODES", "Hunter=quiet-harbor-lantern; Jon=amber-ridge-compass\nErin=copper-willow-beacon");
+    const cfg = await load();
+    expect(cfg.getConfig().auth.mode).toBe("code"); // personal codes alone are enough
+
+    const { checkAccessCode, hasPersonalCodes } = await import("@/server/auth/accesscode");
+    expect(hasPersonalCodes()).toBe(true);
+    expect(checkAccessCode("quiet-harbor-lantern")).toEqual({ ok: true, level: "guest", name: "Hunter" });
+    expect(checkAccessCode("amber-ridge-compass")).toEqual({ ok: true, level: "guest", name: "Jon" });
+    expect(checkAccessCode("copper-willow-beacon")).toEqual({ ok: true, level: "guest", name: "Erin" });
+    // One person's code says nothing about anyone else's, and the admin code
+    // is still the only way to hold more than reading.
+    expect(checkAccessCode("a-separate-admin-code")).toEqual({ ok: true, level: "member" });
+    expect(checkAccessCode("quiet-harbor").ok).toBe(false);
+    expect(checkAccessCode("").ok).toBe(false);
+  });
+
+  it("drops malformed personal entries rather than creating a blank code", async () => {
+    vi.stubEnv("CLOUDBASE_AUTH_MODE", "code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODE", "");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODES", "Hunter=; =orphan-code; no-equals-sign; Jon=amber-ridge-compass");
+    const cfg = await load();
+    expect(cfg.getConfig().auth.personalCodes).toEqual([{ name: "Jon", code: "amber-ridge-compass" }]);
+    const { checkAccessCode } = await import("@/server/auth/accesscode");
+    expect(checkAccessCode("").ok).toBe(false);
+    expect(checkAccessCode(" ").ok).toBe(false);
+  });
+
   it("gives a guest reading only — never upload, approval or governance", async () => {
     await withCodes();
     const { decide } = await import("@/server/authz/core");
