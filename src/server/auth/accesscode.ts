@@ -40,11 +40,11 @@ const constantTimeEqual = (a: string, b: string): boolean => {
 export type CodeCheck = { ok: true; level: "guest" | "member"; name?: string } | { ok: false };
 
 export function checkAccessCode(submitted: string): CodeCheck {
-  const { accessCode, adminCode, personalCodes } = getConfig().auth;
+  const { accessCode, adminCode, adminName, personalCodes } = getConfig().auth;
   const value = submitted.trim();
   if (!value) return { ok: false };
 
-  if (adminCode && constantTimeEqual(value, adminCode)) return { ok: true, level: "member" };
+  if (adminCode && constantTimeEqual(value, adminCode)) return { ok: true, level: "member", name: adminName || undefined };
 
   // Every personal code is compared, and the match is remembered rather than
   // returned early, so the time taken does not reveal how far down the list a

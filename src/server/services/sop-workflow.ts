@@ -208,9 +208,15 @@ export async function uploadSopDocument(identity: Identity, input: UploadInput):
   // A hosted deployment usually has a read-only, disposable filesystem. Writing
   // there either fails with an unreadable EROFS or — worse — appears to work
   // and disappears on the next deploy. Say which setting is missing instead.
+  // What matters is that neither the record nor the file lands on the local
+  // disk — a bucket and the database are both durable, the filesystem is not.
   const cfg = getConfig();
-  if (cfg.env === "production" && (cfg.storage.mode !== "postgres" || getBlobStorage().name !== "s3")) {
-    const missing = [cfg.storage.mode !== "postgres" ? "CLOUDBASE_STORAGE=postgres (with DATABASE_URL)" : "", getBlobStorage().name !== "s3" ? "CLOUDBASE_BLOB_STORAGE=s3 (with S3_BUCKET and keys)" : ""].filter(Boolean);
+  const blobIsDurable = getBlobStorage().name !== "local";
+  if (cfg.env === "production" && (cfg.storage.mode !== "postgres" || !blobIsDurable)) {
+    const missing = [
+      cfg.storage.mode !== "postgres" ? "CLOUDBASE_STORAGE=postgres (with DATABASE_URL)" : "",
+      blobIsDurable ? "" : "CLOUDBASE_BLOB_STORAGE=postgres (documents in the database you already have), or =s3 with S3_BUCKET and keys",
+    ].filter(Boolean);
     return { ok: false, status: 400, error: `Uploads are not configured for this deployment: it would write to the server's filesystem, which is read-only or disposable when hosted. Set ${missing.join(" and ")}, then try again.` };
   }
   if (!input.title.trim()) return { ok: false, status: 400, error: "Title is required." };

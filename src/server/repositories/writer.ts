@@ -24,7 +24,7 @@ export interface RegistryWriter {
   deleteRecord(type: string, id: string, actor: string): Promise<void>;
   deleteImportedContent(id: string): Promise<void>;
   deleteSourceFile(id: string): Promise<void>;
-  registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3"; storageKey: string; bytes: number; uploadedBy: string }): Promise<void>;
+  registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3" | "postgres"; storageKey: string; bytes: number; uploadedBy: string }): Promise<void>;
   appendAudit(event: Omit<AuditEvent, "id" | "at">): Promise<AuditEvent> | AuditEvent;
   listAudit(limit: number): Promise<AuditEvent[]>;
   appendAgentRun(run: AgentRun): Promise<void>;
@@ -153,7 +153,7 @@ class PostgresWriter implements RegistryWriter {
   async deleteSourceFile(id: string) {
     await getDb().delete(schema.sourceFiles).where(eq(schema.sourceFiles.id, id));
   }
-  async registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3"; storageKey: string; bytes: number; uploadedBy: string }) {
+  async registerSourceFile(file: { id: string; path: string; mediaType: string; label: string; storage: "local" | "s3" | "postgres"; storageKey: string; bytes: number; uploadedBy: string }) {
     await getDb().insert(schema.sourceFiles).values(file).onConflictDoUpdate({ target: schema.sourceFiles.id, set: file });
   }
   async appendAudit(event: Omit<AuditEvent, "id" | "at">): Promise<AuditEvent> {

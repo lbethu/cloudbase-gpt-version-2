@@ -62,3 +62,63 @@ describe.skipIf(!url)("postgres storage", () => {
     expect(events.some((e) => e.actor === marker)).toBe(true);
   });
 });
+
+describe.skipIf(!url)("documents stored in the database", () => {
+  beforeAll(() => {
+    vi.stubEnv("DATABASE_URL", url);
+    vi.stubEnv("CLOUDBASE_STORAGE", "postgres");
+    vi.stubEnv("CLOUDBASE_BLOB_STORAGE", "postgres");
+  });
+  afterAll(async () => {
+    const { closeDb } = await import("@/server/db/client");
+    await closeDb();
+    vi.unstubAllEnvs();
+  });
+
+  it("round-trips bytes, overwrites in place, and forgets on remove", async () => {
+    vi.resetModules();
+    const { resetConfigForTests } = await import("@/server/config");
+    resetConfigForTests();
+    const { getBlobStorage, resetBlobStorageForTests } = await import("@/server/storage/blob");
+    resetBlobStorageForTests();
+    const storage = getBlobStorage();
+    expect(storage.name).toBe("postgres");
+
+    const key = `uploads/test/${Date.now()}-round-trip.bin`;
+    // Bytes that are not valid UTF-8, so a driver that quietly treated the
+    // column as text would corrupt them rather than pass this.
+    const bytes = Buffer.from([0x00, 0xff, 0xfe, 0x42, 0x0a, 0x80]);
+    await storage.put(key, bytes, "application/octet-stream");
+
+    expect(await storage.exists(key)).toBe(true);
+    expect(await storage.stat(key)).toEqual({ size: 6, contentType: "application/octet-stream" });
+    expect(Buffer.compare(await storage.read(key), bytes)).toBe(0);
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of await storage.stream(key)) chunks.push(Buffer.from(chunk as Buffer));
+    expect(Buffer.compare(Buffer.concat(chunks), bytes)).toBe(0);
+
+    // A second put replaces rather than duplicating or failing on the key.
+    const replaced = Buffer.from("replaced");
+    await storage.put(key, replaced, "text/plain");
+    expect((await storage.read(key)).toString()).toBe("replaced");
+    expect((await storage.stat(key))?.contentType).toBe("text/plain");
+
+    await storage.remove(key);
+    expect(await storage.exists(key)).toBe(false);
+    await storage.remove(key); // idempotent
+    await expect(storage.read(key)).rejects.toThrow();
+  });
+
+  it("refuses keys that try to climb out of their prefix", async () => {
+    vi.resetModules();
+    const { resetConfigForTests } = await import("@/server/config");
+    resetConfigForTests();
+    const { getBlobStorage, resetBlobStorageForTests } = await import("@/server/storage/blob");
+    resetBlobStorageForTests();
+    const storage = getBlobStorage();
+    for (const bad of ["../escape.docx", "uploads/../../etc/passwd", "uploads//double.docx"]) {
+      await expect(storage.stat(bad)).rejects.toThrow(/Invalid storage key/);
+    }
+  });
+});

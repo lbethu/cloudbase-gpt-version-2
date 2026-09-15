@@ -173,6 +173,33 @@ describe("shared access code (demo mode)", () => {
     expect(checkAccessCode(" ").ok).toBe(false);
   });
 
+  it("lets the admin code name who it signs in as", async () => {
+    vi.stubEnv("CLOUDBASE_AUTH_MODE", "code");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODE", "");
+    vi.stubEnv("CLOUDBASE_ACCESS_CODES", "Hunter=quiet-harbor-lantern");
+    vi.stubEnv("CLOUDBASE_ADMIN_CODE", "Lokendra Bethu=amber-ridge-compass");
+    const cfg = await load();
+    expect(cfg.getConfig().auth.adminCode).toBe("amber-ridge-compass");
+    expect(cfg.getConfig().auth.adminName).toBe("Lokendra Bethu");
+
+    const { checkAccessCode } = await import("@/server/auth/accesscode");
+    expect(checkAccessCode("amber-ridge-compass")).toEqual({ ok: true, level: "member", name: "Lokendra Bethu" });
+  });
+
+  it("resolves a code's name against the register, and only when it is unambiguous", async () => {
+    const { findPersonByLabel } = await import("@/server/auth/people");
+    // Registered by name and by address, both find the same person.
+    expect(findPersonByLabel("Hunter")?.email).toBe("hunter@cloudpoint.invalid");
+    expect(findPersonByLabel("hunter@cloudpoint.invalid")?.email).toBe("hunter@cloudpoint.invalid");
+    expect(findPersonByLabel("HUNTER")?.roles).toContain("contributor");
+    // A contributor is not an approver — the register is what decides that.
+    expect(findPersonByLabel("Hunter")?.roles).not.toContain("approver");
+    expect(findPersonByLabel("Lokendra Bethu")?.roles).toContain("approver");
+    // Nobody by that name: nothing is granted.
+    expect(findPersonByLabel("Nobody At All")).toBeUndefined();
+    expect(findPersonByLabel("")).toBeUndefined();
+  });
+
   it("gives a guest reading only — never upload, approval or governance", async () => {
     await withCodes();
     const { decide } = await import("@/server/authz/core");

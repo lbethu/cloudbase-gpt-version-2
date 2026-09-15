@@ -1,4 +1,9 @@
-import { index, integer, jsonb, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
+import { customType, index, integer, jsonb, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
+
+/** Raw bytes. Drizzle has no first-class bytea, so the mapping is declared once here. */
+const customBytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 /**
  * CloudBase PostgreSQL schema.
@@ -103,4 +108,23 @@ export const agentRuns = pgTable("agent_runs", {
   status: text("status").notNull(),
   findingCount: integer("finding_count").notNull().default(0),
   summary: text("summary").notNull().default(""),
+});
+
+/**
+ * Document bytes, for deployments with a database but no object store.
+ *
+ * An object store is the right home for files and remains the recommended
+ * one — a database pays for every byte in backups, replication and memory,
+ * and rows this large are awkward to stream. But requiring a second service
+ * and a second set of credentials before anyone can upload their first
+ * document is a real cost too, and for a small library it is the larger one.
+ * The storage seam makes this a configuration choice rather than a commitment:
+ * moving to a bucket later is a copy and one environment variable.
+ */
+export const documentBlobs = pgTable("document_blobs", {
+  key: text("key").primaryKey(),
+  bytes: customBytea("bytes").notNull(),
+  contentType: text("content_type").notNull().default("application/octet-stream"),
+  size: integer("size").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

@@ -7,8 +7,11 @@ import { getConfig } from "@/server/config";
 
 /**
  * Provider-neutral private document storage.
- *  - local: files under source-documents/ (git-tracked or not — never /public)
- *  - s3:    any S3-compatible bucket (Supabase Storage, AWS S3, Cloudflare R2, MinIO, Azure via gateway)
+ *  - local:    files under source-documents/ (git-tracked or not — never /public)
+ *  - s3:       any S3-compatible bucket (Supabase Storage, AWS S3, Cloudflare R2, MinIO, Azure via gateway)
+ *  - postgres: bytes in the database, for a deployment that has one and no
+ *              object store. Not the shape to grow into, but it needs no
+ *              second service and no second set of credentials.
  * Objects are never public; every read goes through the authorized file route.
  */
 export interface BlobStat {
@@ -16,7 +19,7 @@ export interface BlobStat {
   contentType?: string;
 }
 export interface BlobStorage {
-  readonly name: "local" | "s3";
+  readonly name: "local" | "s3" | "postgres";
   exists(key: string): Promise<boolean>;
   stat(key: string): Promise<BlobStat | null>;
   read(key: string): Promise<Buffer>;
@@ -101,10 +104,59 @@ class S3Storage implements BlobStorage {
   }
 }
 
+/**
+ * Documents held as rows in the database.
+ *
+ * `stream` reads the row whole rather than streaming it: these are SOP
+ * documents of a few megabytes, and the upload limit caps them well below
+ * anything worth the complexity of a chunked read. If that stops being true,
+ * that is the signal to move to a bucket rather than to make this cleverer.
+ */
+class PostgresBlobStorage implements BlobStorage {
+  readonly name = "postgres" as const;
+  private async db() {
+    const { getDb, schema } = await import("@/server/db/client");
+    return { db: getDb(), table: schema.documentBlobs };
+  }
+  async stat(key: string) {
+    const { db, table } = await this.db();
+    const { eq } = await import("drizzle-orm");
+    const rows = await db.select({ size: table.size, contentType: table.contentType }).from(table).where(eq(table.key, safeKey(key))).limit(1);
+    return rows[0] ? { size: rows[0].size, contentType: rows[0].contentType } : null;
+  }
+  async exists(key: string) {
+    return (await this.stat(key)) !== null;
+  }
+  async read(key: string) {
+    const { db, table } = await this.db();
+    const { eq } = await import("drizzle-orm");
+    const rows = await db.select({ bytes: table.bytes }).from(table).where(eq(table.key, safeKey(key))).limit(1);
+    if (!rows[0]) throw new Error(`No such document: ${key}`);
+    return Buffer.from(rows[0].bytes);
+  }
+  async stream(key: string) {
+    return Readable.from(await this.read(key));
+  }
+  async put(key: string, bytes: Buffer, contentType: string) {
+    const { db, table } = await this.db();
+    const safe = safeKey(key);
+    await db
+      .insert(table)
+      .values({ key: safe, bytes, contentType, size: bytes.byteLength, updatedAt: new Date() })
+      .onConflictDoUpdate({ target: table.key, set: { bytes, contentType, size: bytes.byteLength, updatedAt: new Date() } });
+  }
+  async remove(key: string) {
+    const { db, table } = await this.db();
+    const { eq } = await import("drizzle-orm");
+    await db.delete(table).where(eq(table.key, safeKey(key)));
+  }
+}
+
 let instance: BlobStorage | null = null;
 export function getBlobStorage(): BlobStorage {
   if (instance) return instance;
-  instance = getConfig().blob.mode === "s3" ? new S3Storage() : new LocalStorage();
+  const mode = getConfig().blob.mode;
+  instance = mode === "s3" ? new S3Storage() : mode === "postgres" ? new PostgresBlobStorage() : new LocalStorage();
   return instance;
 }
 export function resetBlobStorageForTests() {

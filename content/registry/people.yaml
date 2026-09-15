@@ -28,6 +28,39 @@
   active: true
   note: Built and operates CloudBase. First account — required to administer the launch.
 
+- email: hunter@cloudpoint.invalid
+  name: Hunter
+  title: ""
+  roles: [contributor]
+  teams: [operations-admin]
+  active: true
+  note: R&D preview. Placeholder address — replace with the real one before this is anything but a preview.
+
+- email: jon@cloudpoint.invalid
+  name: Jon
+  title: ""
+  roles: [contributor]
+  teams: [operations-admin]
+  active: true
+  note: R&D preview. Placeholder address — replace with the real one before this is anything but a preview.
+
+- email: erin@cloudpoint.invalid
+  name: Erin
+  title: ""
+  roles: [contributor]
+  teams: [operations-admin]
+  active: true
+  note: R&D preview. Placeholder address — replace with the real one before this is anything but a preview.
+
+# The three above may upload and draft. Approving — the act that makes a
+# document Cloudpoint's official answer — is deliberately not among their
+# roles, so every uploaded SOP still waits for a named approver.
+#
+# `.invalid` is the domain reserved for placeholders, so nothing can ever
+# accidentally send mail to these addresses. Swap in real ones when you have
+# them; the access codes are keyed to the names, so changing an address does
+# not change anyone's code.
+
 # Add the admin team below. Copy this block, one per person.
 #
 # - email: firstname.lastname@cloudpointgeo.com

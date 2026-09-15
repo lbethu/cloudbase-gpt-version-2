@@ -43,6 +43,8 @@ async function main() {
     if (people.length) add("pass", `Preview codes: ${people.length} personal`, `${people.map((p) => p.name).join(", ")} · each revocable on its own`);
     const short = [...people.filter((p) => p.code.length < 8).map((p) => p.name), ...(cfg.auth.accessCode && cfg.auth.accessCode.length < 8 ? ["the shared code"] : [])];
     if (short.length) add("warn", `Code too short: ${short.join(", ")}`, "Use something long enough not to be guessed — a few words joined together is fine.");
+    if (cfg.auth.adminCode && !cfg.auth.adminName && people.length)
+      add("fail", "The admin code is not attached to a person", "With a code per person the form asks for no name, so an unattached admin code signs in as nobody and grants nothing. Write it as CLOUDBASE_ADMIN_CODE=\"Your Name=the-code\".");
     if (cfg.auth.adminCode && (cfg.auth.adminCode === cfg.auth.accessCode || people.some((p) => p.code === cfg.auth.adminCode)))
       add("fail", "The admin code is also being handed out as a preview code", "Whoever has it could upload, approve and delete. Make it a different code that nobody else is given.");
   } else if (cfg.auth.mode === "email") {
@@ -112,10 +114,26 @@ async function main() {
     } catch (error) {
       add("fail", "Document bucket unreachable", error instanceof Error ? error.message : String(error));
     }
+  } else if (cfg.blob.mode === "postgres") {
+    if (cfg.storage.mode !== "postgres" || !cfg.database.url) add("fail", "Documents: in the database, but the database is not configured", "CLOUDBASE_BLOB_STORAGE=postgres needs CLOUDBASE_STORAGE=postgres and DATABASE_URL.");
+    else {
+      try {
+        const { getDb, schema, closeDb } = await import("../src/server/db/client");
+        const rows = await getDb().select({ key: schema.documentBlobs.key, size: schema.documentBlobs.size }).from(schema.documentBlobs);
+        const mb = rows.reduce((n, r) => n + r.size, 0) / (1024 * 1024);
+        const missing = [...referenced].filter((key) => !rows.some((r) => r.key === key));
+        if (missing.length) add("warn", `Documents: ${missing.length} of ${referenced.size} not yet in the database`, `Existing SOPs will not open until they are loaded. Run npm run blob:upload. First missing: ${missing[0]}`);
+        else add("pass", `Documents: all ${referenced.size} in the database`, `${mb.toFixed(1)} MB stored`);
+        if (mb > 400) add("warn", `Documents now take ${mb.toFixed(0)} MB of the database`, "Past a few hundred megabytes an object store is the better home. Move to CLOUDBASE_BLOB_STORAGE=s3 when convenient.");
+        await closeDb();
+      } catch (error) {
+        add("fail", "Document table unreachable", error instanceof Error ? error.message : String(error));
+      }
+    }
   } else if (hosted && readOnlyPreview) {
-    add("pass", "Documents: shipped with the deployment", "Fine for a read-only preview. Add CLOUDBASE_BLOB_STORAGE=s3 before anyone uploads.");
+    add("pass", "Documents: shipped with the deployment", "Fine for a read-only preview. Set CLOUDBASE_BLOB_STORAGE=postgres before anyone uploads.");
   } else if (hosted) {
-    add("fail", "Documents: local filesystem on a hosted deployment", "Uploads would vanish on the next deploy. Set CLOUDBASE_BLOB_STORAGE=s3 with S3_BUCKET and keys.");
+    add("fail", "Documents: local filesystem on a hosted deployment", "Uploads would vanish on the next deploy. Set CLOUDBASE_BLOB_STORAGE=postgres (the database you already have), or =s3 with S3_BUCKET and keys.");
   } else {
     add("warn", "Documents: local filesystem", "Fine locally. A hosted deployment needs CLOUDBASE_BLOB_STORAGE=s3.");
   }

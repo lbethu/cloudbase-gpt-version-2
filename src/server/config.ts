@@ -43,6 +43,8 @@ export interface CloudBaseConfig {
     personalCodes: Array<{ name: string; code: string }>;
     /** Optional second code granting the register's own roles. Kept separate on purpose. */
     adminCode: string;
+    /** Who the admin code signs in as. Written `Name=code`; without it the code has no identity to attach. */
+    adminName: string;
     tenantId: string;
     /**
      * Why the active mode is not the requested one, in words a person can act
@@ -75,7 +77,7 @@ export interface CloudBaseConfig {
   maxUploadMb: number;
   storage: { mode: "file" | "postgres" };
   database: { url: string };
-  blob: { mode: "local" | "s3"; bucket: string; endpoint: string; region: string; accessKeyId: string; secretAccessKey: string; forcePathStyle: boolean };
+  blob: { mode: "local" | "s3" | "postgres"; bucket: string; endpoint: string; region: string; accessKeyId: string; secretAccessKey: string; forcePathStyle: boolean };
   features: { legacyPrototype: boolean };
   drive: { configured: boolean };
   github: { token: string; configured: boolean };
@@ -164,6 +166,11 @@ export function getConfig(): CloudBaseConfig {
     mode = "none";
   }
 
+  // CLOUDBASE_ADMIN_CODE may be written `Name=code`, which is what lets it
+  // resolve to a person in the register. A bare code still works for the
+  // shared-code form, where the visitor types a name.
+  const adminEntry = parsePersonalCodes(process.env.CLOUDBASE_ADMIN_CODE)[0];
+
   const rootDir = process.cwd();
   cached = {
     env,
@@ -185,7 +192,8 @@ export function getConfig(): CloudBaseConfig {
       accessAud: (process.env.CLOUDBASE_ACCESS_AUD ?? "").trim(),
       accessCode: (process.env.CLOUDBASE_ACCESS_CODE ?? "").trim(),
       personalCodes: parsePersonalCodes(process.env.CLOUDBASE_ACCESS_CODES),
-      adminCode: (process.env.CLOUDBASE_ADMIN_CODE ?? "").trim(),
+      adminCode: adminEntry?.code ?? (process.env.CLOUDBASE_ADMIN_CODE ?? "").trim(),
+      adminName: adminEntry?.name ?? "",
       modeNote,
       requestedMode: rawMode,
       // In code mode the shared codes can stand in for a session secret, so a
@@ -220,7 +228,9 @@ export function getConfig(): CloudBaseConfig {
     storage: { mode: process.env.CLOUDBASE_STORAGE?.trim() === "postgres" ? "postgres" : "file" },
     database: { url: process.env.DATABASE_URL?.trim() ?? "" },
     blob: {
-      mode: process.env.CLOUDBASE_BLOB_STORAGE?.trim() === "s3" ? "s3" : "local",
+      // Explicit, like the record store: credentials sitting in the
+      // environment never switch the mode by themselves.
+      mode: ((m) => (m === "s3" ? "s3" : m === "postgres" ? "postgres" : "local"))(process.env.CLOUDBASE_BLOB_STORAGE?.trim().toLowerCase()),
       bucket: process.env.S3_BUCKET ?? "",
       endpoint: process.env.S3_ENDPOINT ?? "",
       region: process.env.S3_REGION ?? "us-east-1",

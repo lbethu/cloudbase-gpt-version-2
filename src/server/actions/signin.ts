@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getConfig } from "@/server/config";
 import { requestSignInCode, verifySignInCode } from "@/server/auth/signin";
 import { checkAccessCode, hasPersonalCodes } from "@/server/auth/accesscode";
+import { findPersonByLabel } from "@/server/auth/people";
 import { clearSession, createSession } from "@/server/auth/session";
 import { recordAudit } from "@/server/services/audit";
 
@@ -58,8 +59,29 @@ export async function accessCodeAction(_prev: SignInState, formData: FormData): 
   });
   if (!check.ok) return { stage: "email", email: typedName, message: "That access code is not correct." };
 
-  // A guest session grants reading only. The member path still requires the
-  // address to be in the people register.
+  // A personal code names someone; if that someone is in the register, they
+  // sign in as themselves and hold the roles the register gives them. The
+  // register stays the only thing that grants anything — a code by itself
+  // never does, so adding a code can never quietly widen what someone can do.
+  const registered = check.name ? findPersonByLabel(check.name) : undefined;
+  if (registered) {
+    await createSession({ email: registered.email });
+    redirect("/");
+  }
+
+  // A code that is meant to grant roles but resolves to nobody used to mint a
+  // session belonging to no one — signed in, holding nothing, with no way to
+  // tell why. Refuse and say what is wrong instead.
+  if (check.level === "member" && !registered) {
+    return {
+      stage: "email",
+      message: name
+        ? `That code is configured to grant the roles held by "${name}", but nobody by that name is active in the people register.`
+        : "That code is configured to grant roles but is not attached to a person. Write it as Name=code so it can be matched to the people register.",
+    };
+  }
+
+  // Otherwise: reading only, under the name on the code or the one typed.
   const asEmail = /@/.test(name) ? name.toLowerCase() : `${name.toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.|\.$/g, "")}@guest.cloudbase`;
   await createSession(check.level === "member" ? { email: asEmail } : { email: asEmail, guest: true, name });
   redirect("/");

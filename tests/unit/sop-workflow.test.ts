@@ -168,7 +168,8 @@ describe("hosted deployment guards", () => {
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.error).toMatch(/CLOUDBASE_STORAGE=postgres/);
-      expect(r.error).toMatch(/CLOUDBASE_BLOB_STORAGE=s3/);
+      expect(r.error).toMatch(/CLOUDBASE_BLOB_STORAGE=postgres/);
+      expect(r.error).toMatch(/s3/); // the bucket remains the other way out
     }
     vi.stubEnv("NODE_ENV", "test");
     resetConfigForTests();
