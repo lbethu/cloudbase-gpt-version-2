@@ -195,9 +195,17 @@ describe("shared access code (demo mode)", () => {
     // A contributor is not an approver — the register is what decides that.
     expect(findPersonByLabel("Hunter")?.roles).not.toContain("approver");
     expect(findPersonByLabel("Lokendra Bethu")?.roles).toContain("approver");
-    // Nobody by that name: nothing is granted.
+    // A label typed into a hosting dashboard loses its spaces and punctuation
+    // easily, and the value cannot be read back to spot it. Match on letters.
+    expect(findPersonByLabel("LokendraBethu")?.email).toBe("bethu.lokendrasrisai@gmail.com");
+    expect(findPersonByLabel("lokendra bethu")?.email).toBe("bethu.lokendrasrisai@gmail.com");
+    expect(findPersonByLabel("  Lokendra-Bethu ")?.email).toBe("bethu.lokendrasrisai@gmail.com");
+    // Forgiving about spacing is not the same as forgiving about identity.
     expect(findPersonByLabel("Nobody At All")).toBeUndefined();
+    expect(findPersonByLabel("LokendraBeth")).toBeUndefined();
     expect(findPersonByLabel("")).toBeUndefined();
+    expect(findPersonByLabel("   ")).toBeUndefined();
+    expect(findPersonByLabel("---")).toBeUndefined();
   });
 
   it("gives a guest reading only — never upload, approval or governance", async () => {

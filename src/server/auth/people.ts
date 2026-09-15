@@ -30,13 +30,25 @@ export function findPerson(email: string): Person | undefined {
  * unique: if two people are registered under the same name, neither is
  * returned, so an ambiguous label grants nothing rather than guessing between
  * two sets of roles.
+ *
+ * Names are compared on their letters and digits alone. These labels are typed
+ * into a hosting dashboard where the value cannot be read back afterwards, so
+ * "LokendraBethu" losing its space is invisible until someone is locked out of
+ * their own platform — and refusing over a space is pedantry, not security.
+ * What actually grants anything is the register entry this resolves to.
  */
+const normalizeName = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+
 export function findPersonByLabel(label: string): Person | undefined {
   const wanted = label.trim().toLowerCase();
   if (!wanted) return undefined;
   const active = listPeople().filter((p) => p.active);
+
   const byEmail = active.find((p) => p.email === wanted);
   if (byEmail) return byEmail;
-  const byName = active.filter((p) => p.name.trim().toLowerCase() === wanted);
+
+  const key = normalizeName(wanted);
+  if (!key) return undefined;
+  const byName = active.filter((p) => normalizeName(p.name) === key);
   return byName.length === 1 ? byName[0] : undefined;
 }
