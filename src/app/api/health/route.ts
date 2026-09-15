@@ -68,12 +68,21 @@ async function checkDatabase(): Promise<StorageReport> {
 
 export async function GET() {
   const cfg = getConfig();
+  // Which commit is actually running. Without this, "is my change deployed?"
+  // can only be answered by hunting for some visible detail of the change and
+  // hoping it is not cached — which is exactly how an afternoon disappears.
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA ?? "";
   const storage = await checkDatabase();
   const authOk = cfg.auth.mode !== "none";
 
   return NextResponse.json({
     ok: authOk && storage.ok,
     env: cfg.env,
+    build: {
+      commit: sha ? sha.slice(0, 7) : "unknown",
+      branch: process.env.VERCEL_GIT_COMMIT_REF || undefined,
+      deployedAt: process.env.VERCEL_DEPLOYMENT_ID ? undefined : "local",
+    },
     auth: {
       mode: cfg.auth.mode,
       ok: authOk,
