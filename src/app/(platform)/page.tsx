@@ -144,10 +144,23 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Section title="Need a new SOP? Three steps.">
-        <p className="cb-subtle cb-small" style={{ marginTop: -4, marginBottom: 12 }}>
-          The same three steps whether you are writing a new procedure or updating one that already exists.
-        </p>
+      <Section title="What do you want to do?">
+        <div className="cb-choice">
+          <div className="cb-choice-card">
+            <span className="cb-choice-kicker">Reading</span>
+            <h3>I need to find an SOP</h3>
+            <p>One step. Type any word that appears in the document — a step, a system, a form name. CloudBase searches inside all {count("sop")} procedures, not just their titles, and opens the document right here.</p>
+            <Link className="cb-btn cb-btn--primary" href="/find">
+              <Search /> Find an SOP
+            </Link>
+            <span className="cb-choice-foot">Don't go looking in Drive for this — it is faster here.</span>
+          </div>
+          <div className="cb-choice-card cb-choice-card--wide">
+            <span className="cb-choice-kicker">Writing</span>
+            <h3>I need to add or update an SOP</h3>
+            <p>Three steps, below. The same three whether the procedure is brand new or you are changing one that already exists.</p>
+          </div>
+        </div>
         <div className="cb-steps">
           {sopSteps.map((step) => (
             <div key={step.n} className="cb-step">
@@ -158,17 +171,13 @@ export default async function HomePage() {
               </span>
               <p>{step.body}</p>
               {step.href && (
-                <a className="cb-btn cb-btn--sm" href={step.href} target="_blank" rel="noopener noreferrer">
+                <a className="cb-btn cb-btn--primary" href={step.href} target="_blank" rel="noopener noreferrer">
                   {step.cta} <ArrowUpRight size={13} />
                 </a>
               )}
             </div>
           ))}
         </div>
-        <p className="cb-subtle cb-small" style={{ marginTop: 12 }}>
-          <strong>Already have the SOP and just need to read it?</strong> Don't go to Drive — search above, or open the{" "}
-          <Link href="/find">SOP finder</Link>. That searches the text inside every approved SOP and opens the document right here.
-        </p>
         <p className="cb-subtle cb-small cb-keepcode">
           <KeyRound size={13} /> <span>Keep your access code somewhere safe — it is how you get back in, it belongs to you alone, and it should not be forwarded to anyone.</span>
         </p>
